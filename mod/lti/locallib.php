@@ -368,7 +368,7 @@ function lti_build_sourcedid($instanceid, $userid, $servicesalt, $typeid = null,
  * @return array                    Request details
  */
 function lti_build_request($instance, $typeconfig, $course, $typeid = null, $islti2 = false) {
-    global $USER, $CFG;
+    global $USER, $CFG, $PAGE;
 
     if (empty($instance->cmid)) {
         $instance->cmid = 0;
@@ -385,10 +385,13 @@ function lti_build_request($instance, $typeconfig, $course, $typeid = null, $isl
         // so we generate the same OAuth signature as the tool provider.
         $intro = str_replace("\n", "\r\n", $intro);
     }
+    $userpicture = new user_picture($USER);
+
     $requestparams = array(
         'resource_link_title' => $instance->name,
         'resource_link_description' => $intro,
         'user_id' => $USER->id,
+        'user_image' => $userpicture->get_url($PAGE)->out(),
         'lis_person_sourcedid' => $USER->idnumber,
         'roles' => $role,
         'context_id' => $course->id,
@@ -458,6 +461,7 @@ function lti_build_request($instance, $typeconfig, $course, $typeid = null, $isl
  * @return array                    Request details
  */
 function lti_build_request_lti2($tool, $params) {
+    global $USER, $PAGE;
 
     $requestparams = array();
 
@@ -473,6 +477,8 @@ function lti_build_request_lti2($tool, $params) {
             }
         }
     }
+    $userpicture = new user_picture($USER);
+    $requestparams['custom_user_image'] = $userpicture->get_url($PAGE)->out();
 
     return $requestparams;
 
