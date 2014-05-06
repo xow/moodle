@@ -87,7 +87,7 @@ class submission_unlocked extends \core\event\base {
     protected function init() {
         $this->data['crud'] = 'u';
         $this->data['level'] = self::LEVEL_TEACHING;
-        $this->data['objecttable'] = 'assign';
+        $this->data['objecttable'] = 'assign_submission';
     }
 
     /**

@@ -5969,7 +5969,7 @@ class assign {
         $addtolog = $this->add_to_log('lock submission', $logmessage, '', true);
         $params = array(
             'context' => $this->context,
-            'objectid' => $flags->assignment,
+            'objectid' => $submission->id,
             'relateduserid' => $user->id
         );
         $event = \mod_assign\event\submission_locked::create($params);
@@ -6137,7 +6137,7 @@ class assign {
         $addtolog = $this->add_to_log('unlock submission', $logmessage, '', true);
         $params = array(
             'context' => $this->context,
-            'objectid' => $flags->assignment,
+            'objectid' => $submission->id,
             'relateduserid' => $user->id
         );
         $event = \mod_assign\event\submission_unlocked::create($params);
