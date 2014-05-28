@@ -754,58 +754,6 @@ $string['xrecords'] = '{$a} records shown';
 
 
 /*
- * FACE TO FACE LANG FILE IMPORTED FROM /MOD/FACETOFACE/RP_SOURCES/LANG/EN/
- */
- 
-// lang file for mod/facetoface/rb_sources/rb_source_facetoface_sessions.php
-$string['sourcetitle'] = 'Face-to-face sessions';
-// columns
-$string['address'] = 'Address';
-$string['building'] = 'Building';
-$string['roomcapacity'] = 'Room capacity';
-$string['discountcode'] = 'Discount code';
-$string['normalcost'] = 'Normal cost';
-$string['discountcost'] = 'Discount cost';
-$string['sesscapacity'] = 'Session Capacity';
-$string['numattendees'] = 'Number of Attendees';
-$string['sessdetails'] = 'Session Details';
-$string['sessduration'] = 'Session Duration';
-$string['status'] = 'Status';
-$string['endtime'] = 'End Time';
-$string['facilitator'] = 'Facilitator';
-$string['ftfname'] = 'Face to Face Name';
-$string['ftfnamelink'] = 'Face to Face Name (linked to session page)';
-$string['roomdescription'] = 'Room description';
-$string['roomname'] = 'Room name';
-$string['sessdate'] = 'Session Start Date';
-$string['sessdatefinish'] = 'Session Finish Date';
-$string['sessdatelink'] = 'Session Start Date (linked to actvity)';
-$string['sessname'] = 'Session Name';
-$string['sessstart'] = 'Session Start Time';
-$string['sessfinish'] = 'Session Finish Time';
-$string['sessionx'] = 'Session {$a}';
-$string['starttime'] = 'Start Time';
-$string['cancellationdate'] = 'Cancellation date';
-$string['cancellationreason'] = 'Cancellation reason';
-
-// content
-$string['currentorg'] = 'The user\'s current organisation';
-$string['currentpos'] = 'The user\'s current position';
-$string['user'] = 'The user';
-$string['thedate'] = 'The session date';
-// filters
-$string['pilot'] = 'Pilot';
-$string['audit'] = 'Audit';
-$string['coursedelivery'] = 'Course Delivery';
-
-// column types for this source, as strings
-$string['type_session'] = 'Session';
-$string['type_status'] = 'Status';
-$string['type_role'] = 'Role';
-$string['type_facetoface'] = 'Face-to-face';
-$string['type_date'] = 'Session Date';
-
-/*
     TOTARA CORE LANG
 */
 
@@ -1259,7 +1207,7 @@ $string['textlabel'] = '{$a->label} {$a->operator} {$a->value}';
 $string['textlabelnovalue'] = '{$a->label} {$a->operator}';
 
 // lang file for mod/scorm/rb_sources_scorm.php
-
+$string['sourcetitle_scorm'] = 'SCORM';
 // columns
 $string['scormtitle'] = 'SCORM Title';
 $string['title'] = 'SCO Title';
@@ -1292,3 +1240,60 @@ $string['failed'] = 'Failed';
 $string['type_scorm'] = 'SCORM';
 $string['type_sco'] = 'SCO';
 
+// lang file for report/reportbuilder/rb_sources/rb_source_site_logs.php
+$string['sourcetitle_site_logs'] = 'Site Logs';
+// columns
+$string['time'] = 'Time';
+$string['ip'] = 'IP address';
+$string['module'] = 'Module';
+$string['cmid'] = 'CMID';
+$string['action'] = 'Action';
+$string['actionlink'] = 'Action (linked to url)';
+$string['url'] = 'URL';
+$string['info'] = 'Info';
+// content
+$string['currentorg'] = 'The user\'s current organisation';
+$string['currentpos'] = 'The user\'s current position';
+$string['user'] = 'The user';
+$string['date'] = 'The date';
+
+// column types for this source, as strings
+$string['type_log'] = 'Log';
+
+// lang file for report/reportbuilder/rb_sources/rb_source_courses.php
+$string['sourcetitle_courses'] = 'Courses';
+// columns
+$string['content'] = 'Content';
+// filters
+$string['coursecontent'] = 'Course Content';
+// content
+$string['startdate'] = 'The start date';
+
+// lang strings for report builder 'user' source
+$string['sourcetitle_user'] = 'User';
+$string['userspicture'] = 'User\'s Picture';
+$string['lastlogin'] = 'Last Login';
+$string['timecreated'] = 'Time created';
+$string['mylearningicons'] = 'User\'s My Learning Icons';
+$string['name'] = 'Name';
+$string['usersachievedcompcount'] = 'User\'s Achieved Competency Count';
+$string['userscoursestartedcount'] = 'User\'s Courses Started Count';
+$string['userscoursescompletedcount'] = 'User\'s Courses Completed Count';
+$string['usernamewithlearninglinks'] = 'User Fullname (with links to learning components)';
+$string['usersname'] = 'User\'s Name';
+$string['user'] = 'User';
+$string['users'] = 'Users';
+$string['picture'] = 'Picture';
+$string['options'] = 'Options';
+$string['coursesstarted'] = 'Courses Started';
+$string['coursescompleted'] = 'Courses Completed';
+$string['competenciesachieved'] = 'Competencies Achieved';
+
+$string['records'] = 'Records';
+$string['required'] = 'Required';
+$string['plans'] = 'Plans';
+$string['profile'] = 'Profile';
+$string['bookings'] = 'Bookings';
+
+// column types for this source, as strings
+$string['type_statistics'] = 'Statistics';

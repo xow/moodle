@@ -739,12 +739,12 @@ abstract class rb_base_source {
         }
 
         $courseid = $row->course_id;
-        if (empty($CFG->audiencevisibility)) {
+        //if (empty($CFG->audiencevisibility)) {
             $attr = (isset($row->course_visible) && $row->course_visible == 0) ? array('class' => 'dimmed') : array();
-        } else {
+        /*} else {
             $attr = (isset($row->course_audiencevisible) && $row->course_audiencevisible == COHORT_VISIBLE_NONE) ?
                     array('class' => 'dimmed') : array();
-        }
+        }*/
         $url = new moodle_url('/course/view.php', array('id' => $courseid));
         return html_writer::link($url, $course, $attr);
     }
@@ -761,12 +761,12 @@ abstract class rb_base_source {
 
         $courseid = $row->course_id;
         $courseicon = !empty($row->course_icon) ? $row->course_icon : 'default';
-        if (empty($CFG->audiencevisibility)) {
+        //if (empty($CFG->audiencevisibility)) {
             $cssclass = (isset($row->course_visible) && $row->course_visible == 0) ? 'dimmed' : '';
-        } else {
+        /*} else {
             $cssclass = (isset($row->course_audiencevisible) && $row->course_audiencevisible == COHORT_VISIBLE_NONE) ?
                     'dimmed' : '';
-        }
+        }*/
         $icon = $OUTPUT->pix_icon('/courseicons/'.$courseicon, $course, 'totara_core', array('class' => 'course_icon'));
         $link = $OUTPUT->action_link(
             new moodle_url('/course/view.php', array('id' => $courseid)),
@@ -1659,8 +1659,8 @@ abstract class rb_base_source {
                 'displayfunc' => 'link_course',
                 'defaultheading' => get_string('coursename', 'report_reportbuilder'),
                 'extrafields' => array('course_id' => "$join.id",
-                                       'course_visible' => "$join.visible",
-                                       'course_audiencevisible' => "$join.audiencevisible")
+                                       'course_visible' => "$join.visible") //,
+                                       //'course_audiencevisible' => "$join.audiencevisible")
             )
         );
         $columnoptions[] = new rb_column_option(
@@ -1675,8 +1675,8 @@ abstract class rb_base_source {
                 'extrafields' => array(
                     'course_id' => "$join.id",
                     'course_icon' => "$join.icon",
-                    'course_visible' => "$join.visible",
-                    'course_audiencevisible' => "$join.audiencevisible"
+                    'course_visible' => "$join.visible" //,
+                    //'course_audiencevisible' => "$join.audiencevisible"
                 )
             )
         );

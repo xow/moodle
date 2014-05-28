@@ -20,7 +20,7 @@ class rb_source_scorm extends rb_base_source {
         $this->defaultcolumns = $this->define_defaultcolumns();
         $this->defaultfilters = $this->define_defaultfilters();
         $this->requiredcolumns = $this->define_requiredcolumns();
-        $this->sourcetitle   = "SCORM";
+        $this->sourcetitle   = get_string('sourcetitle_scorm', 'report_reportbuilder');
 
         parent::__construct();
     }
