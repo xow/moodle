@@ -45,3 +45,14 @@ if (isset($CFG->maxbytes)) {
                                               get_max_upload_sizes($CFG->maxbytes, 0, 0, $maxbytes));
     $settings->add($element);
 }
+
+$settings->add(new admin_setting_configtext('assignsubmission_file/filetypes',
+    get_string('setting_filetypes', 'assignsubmission_file'),
+    get_string('setting_filetypes_desc', 'assignsubmission_file'),
+    implode(';', array(
+        'application/pdf',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'application/zip'
+    ))
+));
