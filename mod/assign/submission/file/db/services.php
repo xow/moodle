@@ -15,15 +15,22 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * This file contains the version information for the file submission plugin
+ * Webservice definitions for the file submissions plugin.
  *
  * @package    assignsubmission_file
- * @copyright 2012 NetSpot {@link http://www.netspot.com.au}
+ * @copyright  2016 Jonathon Fowler <fowlerj@usq.edu.au>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
-
-$plugin->version   = 2017032000;
-$plugin->requires  = 2016112900;
-$plugin->component = 'assignsubmission_file';
+$functions = array(
+    'assignsubmission_file_get_types_and_groups' => array(
+        'classname'     => 'assignsubmission_file\external',
+        'methodname'    => 'get_types_and_groups',
+        'classpath'     => '',
+        'description'   => 'Fetches file types and type groups.',
+        'type'          => 'read',
+        'capabilities'  => '',
+        'ajax'          => true,
+        'loginrequired' => false,
+    ),
+);

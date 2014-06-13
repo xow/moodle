@@ -23,6 +23,7 @@
  */
 
 
+$string['acceptedfiletypes'] = 'Accepted file types';
 $string['configmaxbytes'] = 'Maximum file size';
 $string['countfiles'] = '{$a} files';
 $string['default'] = 'Enabled by default';
@@ -31,6 +32,11 @@ $string['enabled'] = 'File submissions';
 $string['enabled_help'] = 'If enabled, students are able to upload one or more files as their submission.';
 $string['eventassessableuploaded'] = 'A file has been uploaded.';
 $string['file'] = 'File submissions';
+$string['filesofthesetypes'] = 'Files of these types may be added to the submission:';
+$string['filetypewithexts'] = '{$a->name} &mdash; {$a->extlist}';
+$string['formctl_types_choose'] = 'Choose types...';
+$string['formctl_types_noselection'] = 'No file types selected';
+$string['formctl_types_save'] = 'Save choices';
 $string['maxbytes'] = 'Maximum file size';
 $string['maxfiles'] = 'Maximum files per submission';
 $string['maxfiles_help'] = 'If file submissions are enabled, each assignment can be set to accept up to this number of files for their submission.';
@@ -39,6 +45,11 @@ $string['maxfilessubmission_help'] = 'If file submissions are enabled, each stud
 $string['maximumsubmissionsize'] = 'Maximum submission size';
 $string['maximumsubmissionsize_help'] = 'Files uploaded by students may be up to this size.';
 $string['numfilesforlog'] = 'The number of file(s) : {$a} file(s).';
+$string['otherfiles'] = 'Other files';
 $string['pluginname'] = 'File submissions';
+$string['restricttypes'] = 'Restrict file types';
+$string['restricttypes_help'] = 'If \'Yes\', files that students are able to upload for their submission will be restricted to the selected types.';
+$string['setting_filetypes'] = 'Permitted file types';
+$string['setting_filetypes_desc'] = 'File types and groups chosen here become the options selectable for configuration of the submission method.';
 $string['siteuploadlimit'] = 'Site upload limit';
 $string['submissionfilearea'] = 'Uploaded submission files';
