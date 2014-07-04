@@ -59,6 +59,9 @@ if (!isset($CFG)) {
 // it can not be anything else, there is no point in having this in config.php
 $CFG->dirroot = dirname(dirname(__FILE__));
 
+// The loginhttps option is deprecated, so it will be permanently disabled. See MDL-42834.
+$CFG->loginhttps = 0;
+
 // File permissions on created directories in the $CFG->dataroot
 if (!isset($CFG->directorypermissions)) {
     $CFG->directorypermissions = 02777;      // Must be octal (that's why it's here)
@@ -491,7 +494,7 @@ global $OUTPUT;
  * Full script path including all params, slash arguments, scheme and host.
  *
  * Note: Do NOT use for getting of current page URL or detection of https,
- * instead use $PAGE->url or strpos($CFG->httpswwwroot, 'https:') === 0
+ * instead use $PAGE->url or strpos($CFG->wwwroot, 'https:') === 0
  *
  * @global string $FULLME
  * @name $FULLME
@@ -518,10 +521,6 @@ global $FULLSCRIPT;
  * @name $SCRIPT
  */
 global $SCRIPT;
-
-// Set httpswwwroot default value (this variable will replace $CFG->wwwroot
-// inside some URLs used in HTTPSPAGEREQUIRED pages.
-$CFG->httpswwwroot = $CFG->wwwroot;
 
 require_once($CFG->libdir .'/setuplib.php');        // Functions that MUST be loaded first
 

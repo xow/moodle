@@ -558,8 +558,7 @@ function get_exception_info($ex) {
     }
 
     // when printing an error the continue button should never link offsite
-    if (stripos($link, $CFG->wwwroot) === false &&
-        stripos($link, $CFG->httpswwwroot) === false) {
+    if (stripos($link, $CFG->wwwroot) === false) {
         $link = $CFG->wwwroot.'/';
     }
 

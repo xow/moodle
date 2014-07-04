@@ -52,8 +52,6 @@ class core_phpunit_basic_testcase extends basic_testcase {
      */
     public function test_bootstrap() {
         global $CFG;
-        $this->assertTrue(isset($CFG->httpswwwroot));
-        $this->assertEquals($CFG->httpswwwroot, $CFG->wwwroot);
         $this->assertEquals($CFG->prefix, $CFG->phpunit_prefix);
     }
 

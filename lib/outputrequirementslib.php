@@ -169,15 +169,15 @@ class page_requirements_manager {
         $this->yui3loader = new stdClass();
         $this->YUI_config = new YUI_config();
 
-        if (strpos($CFG->httpswwwroot, 'https:') === 0) {
+        if (strpos($CFG->wwwroot, 'https:') === 0) {
             // On HTTPS sites all JS must be loaded from https sites,
             // YUI CDN does not support https yet, sorry.
             $CFG->useexternalyui = 0;
         }
 
         // Set up some loader options.
-        $this->yui3loader->local_base = $CFG->httpswwwroot . '/lib/yuilib/'. $CFG->yui3version . '/';
-        $this->yui3loader->local_comboBase = $CFG->httpswwwroot . '/theme/yui_combo.php'.$sep;
+        $this->yui3loader->local_base = $CFG->wwwroot . '/lib/yuilib/'. $CFG->yui3version . '/';
+        $this->yui3loader->local_comboBase = $CFG->wwwroot . '/theme/yui_combo.php'.$sep;
 
         if (!empty($CFG->useexternalyui)) {
             $this->yui3loader->base = 'http://yui.yahooapis.com/' . $CFG->yui3version . '/';
@@ -209,8 +209,8 @@ class page_requirements_manager {
         $configname = $this->YUI_config->set_config_source('lib/yui/config/yui2.js');
         $this->YUI_config->add_group('yui2', array(
             // Loader configuration for our 2in3, for now ignores $CFG->useexternalyui.
-            'base' => $CFG->httpswwwroot . '/lib/yuilib/2in3/' . $CFG->yui2version . '/build/',
-            'comboBase' => $CFG->httpswwwroot . '/theme/yui_combo.php'.$sep,
+            'base' => $CFG->wwwroot . '/lib/yuilib/2in3/' . $CFG->yui2version . '/build/',
+            'comboBase' => $CFG->wwwroot . '/theme/yui_combo.php'.$sep,
             'combine' => $this->yui3loader->combine,
             'ext' => false,
             'root' => '2in3/' . $CFG->yui2version .'/build/',
@@ -224,9 +224,9 @@ class page_requirements_manager {
         $configname = $this->YUI_config->set_config_source('lib/yui/config/moodle.js');
         $this->YUI_config->add_group('moodle', array(
             'name' => 'moodle',
-            'base' => $CFG->httpswwwroot . '/theme/yui_combo.php' . $sep . 'm/' . $jsrev . '/',
+            'base' => $CFG->wwwroot . '/theme/yui_combo.php' . $sep . 'm/' . $jsrev . '/',
             'combine' => $this->yui3loader->combine,
-            'comboBase' => $CFG->httpswwwroot . '/theme/yui_combo.php'.$sep,
+            'comboBase' => $CFG->wwwroot . '/theme/yui_combo.php'.$sep,
             'ext' => false,
             'root' => 'm/'.$jsrev.'/', // Add the rev to the root path so that we can control caching.
             'patterns' => array(
@@ -239,9 +239,9 @@ class page_requirements_manager {
 
         $this->YUI_config->add_group('gallery', array(
             'name' => 'gallery',
-            'base' => $CFG->httpswwwroot . '/lib/yuilib/gallery/',
+            'base' => $CFG->wwwroot . '/lib/yuilib/gallery/',
             'combine' => $this->yui3loader->combine,
-            'comboBase' => $CFG->httpswwwroot . '/theme/yui_combo.php' . $sep,
+            'comboBase' => $CFG->wwwroot . '/theme/yui_combo.php' . $sep,
             'ext' => false,
             'root' => 'gallery/' . $jsrev . '/',
             'patterns' => array(
@@ -296,12 +296,8 @@ class page_requirements_manager {
     protected function init_requirements_data(moodle_page $page, core_renderer $renderer) {
         global $CFG;
 
-        // JavaScript should always work with $CFG->httpswwwroot rather than $CFG->wwwroot.
-        // Otherwise, in some situations, users will get warnings about insecure content
-        // on secure pages from their web browser.
-
         $this->M_cfg = array(
-            'wwwroot'             => $CFG->httpswwwroot, // Yes, really. See above.
+            'wwwroot'             => $CFG->wwwroot, // Yes, really. See above.
             'sesskey'             => sesskey(),
             'loadingicon'         => $renderer->pix_url('i/loading_small', 'moodle')->out(false),
             'themerev'            => theme_get_revision(),
@@ -516,14 +512,14 @@ class page_requirements_manager {
                 continue;
             }
             if (!empty($CFG->slasharguments)) {
-                $url = new moodle_url("$CFG->httpswwwroot/theme/jquery.php");
+                $url = new moodle_url("$CFG->wwwroot/theme/jquery.php");
                 $url->set_slashargument("/$component/$file");
 
             } else {
                 // This is not really good, we need slasharguments for relative links, this means no caching...
                 $path = realpath("$componentdir/jquery/$file");
                 if (strpos($path, $CFG->dirroot) === 0) {
-                    $url = $CFG->httpswwwroot.preg_replace('/^'.preg_quote($CFG->dirroot, '/').'/', '', $path);
+                    $url = $CFG->wwwroot.preg_replace('/^'.preg_quote($CFG->dirroot, '/').'/', '', $path);
                     $url = new moodle_url($url);
                 } else {
                     // Bad luck, fix your server!
@@ -668,14 +664,14 @@ class page_requirements_manager {
             if (substr($url, -3) === '.js') {
                 $jsrev = $this->get_jsrev();
                 if (empty($CFG->slasharguments)) {
-                    return new moodle_url($CFG->httpswwwroot.'/lib/javascript.php', array('rev'=>$jsrev, 'jsfile'=>$url));
+                    return new moodle_url($CFG->wwwroot.'/lib/javascript.php', array('rev'=>$jsrev, 'jsfile'=>$url));
                 } else {
-                    $returnurl = new moodle_url($CFG->httpswwwroot.'/lib/javascript.php');
+                    $returnurl = new moodle_url($CFG->wwwroot.'/lib/javascript.php');
                     $returnurl->set_slashargument('/'.$jsrev.$url);
                     return $returnurl;
                 }
             } else {
-                return new moodle_url($CFG->httpswwwroot.$url);
+                return new moodle_url($CFG->wwwroot.$url);
             }
         } else {
             throw new coding_exception('Invalid JS url, it has to be shortened url starting with / or moodle_url instance.', $url);
@@ -869,7 +865,7 @@ class page_requirements_manager {
         if ($stylesheet instanceof moodle_url) {
             // ok
         } else if (strpos($stylesheet, '/') === 0) {
-            $stylesheet = new moodle_url($CFG->httpswwwroot.$stylesheet);
+            $stylesheet = new moodle_url($CFG->wwwroot.$stylesheet);
         } else {
             throw new coding_exception('Invalid stylesheet parameter.', $stylesheet);
         }

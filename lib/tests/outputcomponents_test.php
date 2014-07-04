@@ -126,7 +126,6 @@ class core_outputcomponents_testcase extends advanced_testcase {
         $this->assertEquals(1, $CFG->themerev);
         $this->assertEquals(0, $CFG->themedesignermode);
         $this->assertSame('http://www.example.com/moodle', $CFG->wwwroot);
-        $this->assertSame($CFG->wwwroot, $CFG->httpswwwroot);
         $this->assertEquals(0, $CFG->enablegravatar);
         $this->assertSame('mm', $CFG->gravatardefaulturl);
 
@@ -218,20 +217,20 @@ class core_outputcomponents_testcase extends advanced_testcase {
         $this->assertSame($CFG->wwwroot.'/pluginfile.php/'.$context1->id.'/user/icon/clean/f2?rev=11', $up1->get_url($page, $renderer)->out(false));
 
         // Https version.
-        $CFG->httpswwwroot = str_replace('http:', 'https:', $CFG->wwwroot);
+        $CFG->wwwroot = str_replace('http:', 'https:', $CFG->wwwroot);
 
         $up1 = new user_picture($user1);
-        $this->assertSame($CFG->httpswwwroot.'/pluginfile.php/'.$context1->id.'/user/icon/clean/f2?rev=11', $up1->get_url($page, $renderer)->out(false));
+        $this->assertSame($CFG->wwwroot.'/pluginfile.php/'.$context1->id.'/user/icon/clean/f2?rev=11', $up1->get_url($page, $renderer)->out(false));
 
         $up3 = new user_picture($user3);
-        $this->assertSame($CFG->httpswwwroot.'/theme/image.php/clean/core/1/u/f2', $up3->get_url($page, $renderer)->out(false));
+        $this->assertSame($CFG->wwwroot.'/theme/image.php/clean/core/1/u/f2', $up3->get_url($page, $renderer)->out(false));
 
         $up2 = new user_picture($user2);
         $this->assertSame('https://secure.gravatar.com/avatar/ab53a2911ddf9b4817ac01ddcd3d975f?s=35&d=https%3A%2F%2Fwww.example.com%2Fmoodle%2Fpix%2Fu%2Ff2.png', $up2->get_url($page, $renderer)->out(false));
 
         // TODO MDL-44792 Rewrite those tests to use a fixture.
         // Now test gravatar with one theme having own images (afterburner).
-        // $CFG->httpswwwroot = $CFG->wwwroot;
+        // $CFG->wwwroot = str_replace('https:', 'http:', $CFG->wwwroot);
         // $this->assertFileExists("$CFG->dirroot/theme/afterburner/config.php");
         // set_config('theme', 'afterburner');
         // $page = new moodle_page();
@@ -243,7 +242,7 @@ class core_outputcomponents_testcase extends advanced_testcase {
         // $this->assertEquals('http://www.gravatar.com/avatar/ab53a2911ddf9b4817ac01ddcd3d975f?s=35&d=http%3A%2F%2Fwww.example.com%2Fmoodle%2Ftheme%2Fafterburner%2Fpix_core%2Fu%2Ff2.png', $up2->get_url($page, $renderer)->out(false));
 
         // // Https version.
-        // $CFG->httpswwwroot = str_replace('http:', 'https:', $CFG->wwwroot);
+        // $CFG->wwwroot = str_replace('http:', 'https:', $CFG->wwwroot);
 
         // $up2 = new user_picture($user2);
         // $this->assertSame('https://secure.gravatar.com/avatar/ab53a2911ddf9b4817ac01ddcd3d975f?s=35&d=https%3A%2F%2Fwww.example.com%2Fmoodle%2Ftheme%2Fafterburner%2Fpix_core%2Fu%2Ff2.png', $up2->get_url($page, $renderer)->out(false));
@@ -253,7 +252,7 @@ class core_outputcomponents_testcase extends advanced_testcase {
         // set_config('enablegravatar', 0);
         // $this->assertFileExists("$CFG->dirroot/theme/formal_white/config.php"); // Use any other theme.
         // set_config('theme', 'formal_white');
-        // $CFG->httpswwwroot = $CFG->wwwroot;
+        // $CFG->wwwroot = $CFG->wwwroot;
         // $page = new moodle_page();
         // $page->set_url('/user/profile.php');
         // $page->set_context(context_system::instance());
@@ -267,7 +266,7 @@ class core_outputcomponents_testcase extends advanced_testcase {
 
         // Test non-slashargument images.
         set_config('theme', 'clean');
-        $CFG->httpswwwroot = $CFG->wwwroot;
+        $CFG->wwwroot = str_replace('https:', 'http:', $CFG->wwwroot);
         $CFG->slasharguments = 0;
         $page = new moodle_page();
         $page->set_url('/user/profile.php');

@@ -38,12 +38,6 @@
     $strunlock = get_string('unlockaccount', 'admin');
     $strconfirm = get_string('confirm');
 
-    if (empty($CFG->loginhttps)) {
-        $securewwwroot = $CFG->wwwroot;
-    } else {
-        $securewwwroot = str_replace('http:','https:',$CFG->wwwroot);
-    }
-
     $returnurl = new moodle_url('/admin/user.php', array('sort' => $sort, 'dir' => $dir, 'perpage' => $perpage, 'page'=>$page));
 
     if ($confirmuser and confirm_sesskey()) {
@@ -318,7 +312,7 @@
             if (has_capability('moodle/user:update', $sitecontext)) {
                 // prevent editing of admins by non-admins
                 if (is_siteadmin($USER) or !is_siteadmin($user)) {
-                    $buttons[] = html_writer::link(new moodle_url($securewwwroot.'/user/editadvanced.php', array('id'=>$user->id, 'course'=>$site->id)), html_writer::empty_tag('img', array('src'=>$OUTPUT->pix_url('t/edit'), 'alt'=>$stredit, 'class'=>'iconsmall')), array('title'=>$stredit));
+                    $buttons[] = html_writer::link(new moodle_url($CFG->wwwroot.'/user/editadvanced.php', array('id'=>$user->id, 'course'=>$site->id)), html_writer::empty_tag('img', array('src'=>$OUTPUT->pix_url('t/edit'), 'alt'=>$stredit, 'class'=>'iconsmall')), array('title'=>$stredit));
                 }
             }
 
@@ -376,7 +370,7 @@
         echo $OUTPUT->paging_bar($usercount, $page, $perpage, $baseurl);
     }
     if (has_capability('moodle/user:create', $sitecontext)) {
-        $url = new moodle_url($securewwwroot . '/user/editadvanced.php', array('id' => -1));
+        $url = new moodle_url($CFG->wwwroot . '/user/editadvanced.php', array('id' => -1));
         echo $OUTPUT->single_button($url, get_string('addnewuser'), 'get');
     }
 

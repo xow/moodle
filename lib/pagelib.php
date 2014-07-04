@@ -1213,8 +1213,8 @@ class moodle_page {
 
         if (is_string($url) && strpos($url, 'http') !== 0) {
             if (strpos($url, '/') === 0) {
-                // We have to use httpswwwroot here, because of loginhttps pages.
-                $url = $CFG->httpswwwroot . $url;
+                // Replace http with https to simplify logic.
+                $url = $CFG->wwwroot . $url;
             } else {
                 throw new coding_exception('Invalid parameter $url, has to be full url or in shortened form starting with /.');
             }
@@ -1223,10 +1223,10 @@ class moodle_page {
         $this->_url = new moodle_url($url, $params);
 
         $fullurl = $this->_url->out_omit_querystring();
-        if (strpos($fullurl, "$CFG->httpswwwroot/") !== 0) {
-            debugging('Most probably incorrect set_page() url argument, it does not match the httpswwwroot!');
+        if (strpos($fullurl, "$CFG->wwwroot/") !== 0) {
+            debugging('Most probably incorrect set_page() url argument, it does not match the wwwroot!');
         }
-        $shorturl = str_replace("$CFG->httpswwwroot/", '', $fullurl);
+        $shorturl = str_replace("$CFG->wwwroot/", '', $fullurl);
 
         if (is_null($this->_pagetype)) {
             $this->initialise_default_pagetype($shorturl);
@@ -1377,11 +1377,16 @@ class moodle_page {
      * By using this function properly, we can ensure 100% https-ized pages
      * at our entire discretion (login, forgot_password, change_password)
      *
+     * @deprecated since Moodle 2.8 MDL-42834 - please do not use this function any more.
+     * @todo MDL-46267 This will be deleted in Moodle 3.0
+     *
      * @return void
      * @throws coding_exception
      */
     public function https_required() {
         global $CFG;
+
+        debugging('https_required() has been deprecated since Moodle 2.8 MDL-42834. It will not be replaced.', DEBUG_DEVELOPER);
 
         if (!is_null($this->_url)) {
             throw new coding_exception('https_required() must be used before setting page url!');
@@ -1392,20 +1397,23 @@ class moodle_page {
         $this->_https_login_required = true;
 
         if (!empty($CFG->loginhttps)) {
-            $CFG->httpswwwroot = str_replace('http:', 'https:', $CFG->wwwroot);
-        } else {
-            $CFG->httpswwwroot = $CFG->wwwroot;
+            $CFG->wwwroot = str_replace('http:', 'https:', $CFG->wwwroot);
         }
     }
 
     /**
      * Makes sure that page previously marked with https_required() is really using https://, if not it redirects to https://
      *
+     * @deprecated since Moodle 2.8 MDL-42834 - please do not use this function any more.
+     * @todo MDL-46267 This will be deleted in Moodle 3.0
+     *
      * @return void (may redirect to https://self)
      * @throws coding_exception
      */
     public function verify_https_required() {
         global $CFG, $FULLME;
+
+        debugging('verify_https_required() has been deprecated since Moodle 2.8 MDL-42834. It will not be replaced.', DEBUG_DEVELOPER);
 
         if (is_null($this->_url)) {
             throw new coding_exception('verify_https_required() must be called after setting page url!');

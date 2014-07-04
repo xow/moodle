@@ -54,7 +54,7 @@ if ($type === 'editor') {
     css_send_uncached_css($csscontent);
 }
 
-$chunkurl = new moodle_url($CFG->httpswwwroot . '/theme/styles_debug.php', array('theme' => $themename,
+$chunkurl = new moodle_url($CFG->wwwroot . '/theme/styles_debug.php', array('theme' => $themename,
     'type' => $type, 'subtype' => $subtype, 'sheet' => $sheet, 'usesvg' => $usesvg));
 
 // We need some kind of caching here because otherwise the page navigation becomes

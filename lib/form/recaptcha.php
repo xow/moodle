@@ -57,7 +57,7 @@ class MoodleQuickForm_recaptcha extends HTML_QuickForm_input {
         global $CFG;
         parent::HTML_QuickForm_input($elementName, $elementLabel, $attributes);
         $this->_type = 'recaptcha';
-        if (!empty($attributes['https']) or strpos($CFG->httpswwwroot, 'https:') === 0) {
+        if (!empty($attributes['https']) or strpos($CFG->wwwroot, 'https:') === 0) {
             $this->_https = true;
         } else {
             $this->_https = false;

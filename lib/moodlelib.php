@@ -2779,13 +2779,7 @@ function dayofweek($day, $month, $year) {
 function get_login_url() {
     global $CFG;
 
-    $url = "$CFG->wwwroot/login/index.php";
-
-    if (!empty($CFG->loginhttps)) {
-        $url = str_replace('http:', 'https:', $url);
-    }
-
-    return $url;
+    return "$CFG->wwwroot/login/index.php";
 }
 
 /**
@@ -2928,12 +2922,7 @@ function require_login($courseorid = null, $autologinguest = true, $cm = null, $
                 redirect($changeurl);
             } else {
                 // Use moodle internal method.
-                if (empty($CFG->loginhttps)) {
-                    redirect($CFG->wwwroot .'/login/change_password.php');
-                } else {
-                    $wwwroot = str_replace('http:', 'https:', $CFG->wwwroot);
-                    redirect($wwwroot .'/login/change_password.php');
-                }
+                redirect($CFG->wwwroot .'/login/change_password.php');
             }
         } else {
             print_error('nopasswordchangeforced', 'auth');
@@ -4612,7 +4601,7 @@ function complete_user_login($user) {
             if ($changeurl = $userauth->change_password_url()) {
                 redirect($changeurl);
             } else {
-                redirect($CFG->httpswwwroot.'/login/change_password.php');
+                redirect($CFG->wwwroot.'/login/change_password.php');
             }
         } else {
             print_error('nopasswordchangeforced', 'auth');
@@ -6044,7 +6033,7 @@ function reset_password_and_mail($user) {
     $a->sitename    = format_string($site->fullname);
     $a->username    = $user->username;
     $a->newpassword = $newpassword;
-    $a->link        = $CFG->httpswwwroot .'/login/change_password.php';
+    $a->link        = $CFG->wwwroot .'/login/change_password.php';
     $a->signoff     = generate_email_signoff();
 
     $message = get_string('newpasswordtext', '', $a);
@@ -6107,7 +6096,7 @@ function send_password_change_confirmation_email($user, $resetrecord) {
     $data->lastname  = $user->lastname;
     $data->username  = $user->username;
     $data->sitename  = format_string($site->fullname);
-    $data->link      = $CFG->httpswwwroot .'/login/forgot_password.php?token='. $resetrecord->token;
+    $data->link      = $CFG->wwwroot .'/login/forgot_password.php?token='. $resetrecord->token;
     $data->admin     = generate_email_signoff();
     $data->resetminutes = $pwresetmins;
 

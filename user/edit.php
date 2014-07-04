@@ -29,9 +29,6 @@ require_once($CFG->dirroot.'/user/editlib.php');
 require_once($CFG->dirroot.'/user/profile/lib.php');
 require_once($CFG->dirroot.'/user/lib.php');
 
-// HTTPS is required in this page when $CFG->loginhttps enabled.
-$PAGE->https_required();
-
 $userid = optional_param('id', $USER->id, PARAM_INT);    // User id.
 $course = optional_param('course', SITEID, PARAM_INT);   // Course id (defaults to Site).
 $cancelemailchange = optional_param('cancelemailchange', 0, PARAM_INT);   // Course id (defaults to Site).
@@ -46,7 +43,7 @@ if ($course->id != SITEID) {
     require_login($course);
 } else if (!isloggedin()) {
     if (empty($SESSION->wantsurl)) {
-        $SESSION->wantsurl = $CFG->httpswwwroot.'/user/edit.php';
+        $SESSION->wantsurl = $CFG->wwwroot.'/user/edit.php';
     }
     redirect(get_login_url());
 } else {
@@ -292,9 +289,6 @@ if ($usernew = $userform->get_data()) {
         redirect("$CFG->wwwroot/user/view.php?id=$user->id&course=$course->id");
     }
 }
-
-// Make sure we really are on the https page when https login required.
-$PAGE->verify_https_required();
 
 
 // Display page header.

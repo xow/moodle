@@ -40,13 +40,7 @@ class block_login extends block_base {
             return $this->content;
         }
 
-        if (empty($CFG->loginhttps)) {
-            $wwwroot = $CFG->wwwroot;
-        } else {
-            // This actually is not so secure ;-), 'cause we're
-            // in unencrypted connection...
-            $wwwroot = str_replace("http://", "https://", $CFG->wwwroot);
-        }
+        $wwwroot = $CFG->wwwroot;
 
         if (!empty($CFG->registerauth)) {
             $authplugin = get_auth_plugin($CFG->registerauth);

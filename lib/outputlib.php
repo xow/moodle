@@ -610,7 +610,7 @@ class theme_config {
         global $CFG;
         $rev = theme_get_revision();
         if ($rev > -1) {
-            $url = new moodle_url("$CFG->httpswwwroot/theme/styles.php");
+            $url = new moodle_url("$CFG->wwwroot/theme/styles.php");
             if (!empty($CFG->slasharguments)) {
                 $url->set_slashargument('/'.$this->name.'/'.$rev.'/editor', 'noparam', true);
             } else {
@@ -618,7 +618,7 @@ class theme_config {
             }
         } else {
             $params = array('theme'=>$this->name, 'type'=>'editor');
-            $url = new moodle_url($CFG->httpswwwroot.'/theme/styles_debug.php', $params);
+            $url = new moodle_url($CFG->wwwroot.'/theme/styles_debug.php', $params);
         }
         return $url;
     }
@@ -681,7 +681,7 @@ class theme_config {
         $separate = (core_useragent::is_ie() && !core_useragent::check_ie_version('10'));
 
         if ($rev > -1) {
-            $url = new moodle_url("$CFG->httpswwwroot/theme/styles.php");
+            $url = new moodle_url("$CFG->wwwroot/theme/styles.php");
             if (!empty($CFG->slasharguments)) {
                 $slashargs = '';
                 if (!$svg) {
@@ -709,7 +709,7 @@ class theme_config {
             $urls[] = $url;
 
         } else {
-            $baseurl = new moodle_url($CFG->httpswwwroot.'/theme/styles_debug.php');
+            $baseurl = new moodle_url($CFG->wwwroot.'/theme/styles_debug.php');
 
             $css = $this->get_css_files(true);
             if (!$svg) {
@@ -1183,11 +1183,11 @@ class theme_config {
         }
 
         if (!empty($CFG->slasharguments) and $rev > 0) {
-            $url = new moodle_url("$CFG->httpswwwroot/theme/javascript.php");
+            $url = new moodle_url("$CFG->wwwroot/theme/javascript.php");
             $url->set_slashargument('/'.$this->name.'/'.$rev.'/'.$params['type'], 'noparam', true);
             return $url;
         } else {
-            return new moodle_url($CFG->httpswwwroot.'/theme/javascript.php', $params);
+            return new moodle_url($CFG->wwwroot.'/theme/javascript.php', $params);
         }
     }
 
@@ -1365,7 +1365,7 @@ class theme_config {
 
         $params['image'] = $imagename;
 
-        $url = new moodle_url("$CFG->httpswwwroot/theme/image.php");
+        $url = new moodle_url("$CFG->wwwroot/theme/image.php");
         if (!empty($CFG->slasharguments) and $rev > 0) {
             $path = '/'.$params['theme'].'/'.$params['component'].'/'.$params['rev'].'/'.$params['image'];
             if (!$svg) {
@@ -1411,7 +1411,7 @@ class theme_config {
 
         $params['font'] = $font;
 
-        $url = new moodle_url("$CFG->httpswwwroot/theme/font.php");
+        $url = new moodle_url("$CFG->wwwroot/theme/font.php");
         if (!empty($CFG->slasharguments) and $rev > 0) {
             $path = '/'.$params['theme'].'/'.$params['component'].'/'.$params['rev'].'/'.$params['font'];
             $url->set_slashargument($path, 'noparam', true);

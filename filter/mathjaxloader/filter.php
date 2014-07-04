@@ -100,7 +100,7 @@ class filter_mathjaxloader extends moodle_text_filter {
         static $jsinitialised = false;
 
         if (empty($jsinitialised)) {
-            if (strpos($CFG->httpswwwroot, 'https:') === 0) {
+            if (strpos($CFG->wwwroot, 'https:') === 0) {
                 $url = get_config('filter_mathjaxloader', 'httpsurl');
             } else {
                 $url = get_config('filter_mathjaxloader', 'httpurl');

@@ -337,12 +337,9 @@ class moodle_url {
 
             // Normalise shortened form of our url ex.: '/course/view.php'.
             if (strpos($url, '/') === 0) {
-                // We must not use httpswwwroot here, because it might be url of other page,
-                // devs have to use httpswwwroot explicitly when creating new moodle_url.
                 $url = $CFG->wwwroot.$url;
             }
 
-            // Now fix the admin links if needed, no need to mess with httpswwwroot.
             if ($CFG->admin !== 'admin') {
                 if (strpos($url, "$CFG->wwwroot/admin/") === 0) {
                     $url = str_replace("$CFG->wwwroot/admin/", "$CFG->wwwroot/$CFG->admin/", $url);
@@ -722,7 +719,7 @@ class moodle_url {
     public static function make_pluginfile_url($contextid, $component, $area, $itemid, $pathname, $filename,
                                                $forcedownload = false) {
         global $CFG;
-        $urlbase = "$CFG->httpswwwroot/pluginfile.php";
+        $urlbase = "$CFG->wwwroot/pluginfile.php";
         if ($itemid === null) {
             return self::make_file_url($urlbase, "/$contextid/$component/$area".$pathname.$filename, $forcedownload);
         } else {
@@ -741,7 +738,7 @@ class moodle_url {
      */
     public static function make_draftfile_url($draftid, $pathname, $filename, $forcedownload = false) {
         global $CFG, $USER;
-        $urlbase = "$CFG->httpswwwroot/draftfile.php";
+        $urlbase = "$CFG->wwwroot/draftfile.php";
         $context = context_user::instance($USER->id);
 
         return self::make_file_url($urlbase, "/$context->id/user/draft/$draftid".$pathname.$filename, $forcedownload);
@@ -776,14 +773,10 @@ class moodle_url {
         global $CFG;
 
         $url = $this->out($escaped, $overrideparams);
-        $httpswwwroot = str_replace("http://", "https://", $CFG->wwwroot);
 
-        // Url should be equal to wwwroot or httpswwwroot. If not then throw exception.
+        // Url should be equal to wwwroot. If not then throw exception.
         if (($url === $CFG->wwwroot) || (strpos($url, $CFG->wwwroot.'/') === 0)) {
             $localurl = substr($url, strlen($CFG->wwwroot));
-            return !empty($localurl) ? $localurl : '';
-        } else if (($url === $httpswwwroot) || (strpos($url, $httpswwwroot.'/') === 0)) {
-            $localurl = substr($url, strlen($httpswwwroot));
             return !empty($localurl) ? $localurl : '';
         } else {
             throw new coding_exception('out_as_local_url called on a non-local URL');
@@ -1218,7 +1211,7 @@ function format_text($text, $format = FORMAT_MOODLE, $options = null, $courseidd
         // this happens when developers forget to post process the text.
         // The only potential problem is that somebody might try to format
         // the text before storing into database which would be itself big bug..
-        $text = str_replace("\"$CFG->httpswwwroot/draftfile.php", "\"$CFG->httpswwwroot/brokenfile.php#", $text);
+        $text = str_replace("\"$CFG->wwwroot/draftfile.php", "\"$CFG->wwwroot/brokenfile.php#", $text);
 
         if ($CFG->debugdeveloper) {
             if (strpos($text, '@@PLUGINFILE@@/') !== false) {
