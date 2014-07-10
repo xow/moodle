@@ -59,9 +59,6 @@ if (!isset($CFG)) {
 // it can not be anything else, there is no point in having this in config.php
 $CFG->dirroot = dirname(dirname(__FILE__));
 
-// The loginhttps option is deprecated, so it will be permanently disabled. See MDL-42834.
-$CFG->loginhttps = 0;
-
 // File permissions on created directories in the $CFG->dataroot
 if (!isset($CFG->directorypermissions)) {
     $CFG->directorypermissions = 02777;      // Must be octal (that's why it's here)
@@ -521,6 +518,13 @@ global $FULLSCRIPT;
  * @name $SCRIPT
  */
 global $SCRIPT;
+
+// Set httpswwwroot to $CFG->wwwroot for backwards compatibility
+// The loginhttps option is deprecated, so httpswwwroot is no longer necessary. See MDL-42834.
+$CFG->httpswwwroot = $CFG->wwwroot;
+
+// The loginhttps option is deprecated, so it will be permanently disabled. See MDL-42834.
+$CFG->loginhttps = false;
 
 require_once($CFG->libdir .'/setuplib.php');        // Functions that MUST be loaded first
 

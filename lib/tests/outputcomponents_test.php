@@ -126,6 +126,8 @@ class core_outputcomponents_testcase extends advanced_testcase {
         $this->assertEquals(1, $CFG->themerev);
         $this->assertEquals(0, $CFG->themedesignermode);
         $this->assertSame('http://www.example.com/moodle', $CFG->wwwroot);
+        $this->assertFalse($CFG->loginhttps);
+        $this->assertSame($CFG->wwwroot, $CFG->httpswwwroot);
         $this->assertEquals(0, $CFG->enablegravatar);
         $this->assertSame('mm', $CFG->gravatardefaulturl);
 
@@ -218,6 +220,7 @@ class core_outputcomponents_testcase extends advanced_testcase {
 
         // Https version.
         $CFG->wwwroot = str_replace('http:', 'https:', $CFG->wwwroot);
+        $CFG->httpswwwroot = $CFG->wwwroot;
 
         $up1 = new user_picture($user1);
         $this->assertSame($CFG->wwwroot.'/pluginfile.php/'.$context1->id.'/user/icon/clean/f2?rev=11', $up1->get_url($page, $renderer)->out(false));

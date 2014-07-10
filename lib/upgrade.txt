@@ -7,7 +7,12 @@ information provided here is intended especially for developers.
 * renderers: We now remove the suffix _renderable when looking for a render method for a renderable.
   If you have a renderable class named like "blah_renderable" and have a method on a renderer named "render_blah_renderable"
   you will need to change the name of your render method to "render_blah" instead, as renderable at the end is no longer accepted.
-* Remove the option for Login HTTPS (authentication-only SSL)
+
+DEPRECATIONS:
+* $PAGE->https_required and $PAGE->verify_https_required() are now deprecated. They are no longer used and will throw a coding_exception.
+  $CFG->httpswwwroot is now deprecated and will always result in the same value as wwwroot.
+  $CFG->loginhttps is now deprecated and will always be false.
+  See MDL-42834. These functions and config will be removed in Moodle 3.0.
 
 DEPRECATIONS:
 * completion_info->get_incomplete_criteria() is deprecated and will be removed in Moodle 3.0.
