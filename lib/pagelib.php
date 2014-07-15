@@ -1213,7 +1213,7 @@ class moodle_page {
 
         if (is_string($url) && strpos($url, 'http') !== 0) {
             if (strpos($url, '/') === 0) {
-                // Replace http with https to simplify logic.
+                // Add the wwwroot to the relative url.
                 $url = $CFG->wwwroot . $url;
             } else {
                 throw new coding_exception('Invalid parameter $url, has to be full url or in shortened form starting with /.');
@@ -1381,7 +1381,7 @@ class moodle_page {
      * @throws coding_exception
      */
     public function https_required() {
-        throw new coding_exception('https_required() has been deprecated since Moodle 2.8 MDL-42834. It will not be replaced.', DEBUG_DEVELOPER);
+        debugging('https_required() has been deprecated since Moodle 2.8 MDL-42834. It will not be replaced.', DEBUG_DEVELOPER);
     }
 
     /**
@@ -1394,7 +1394,7 @@ class moodle_page {
      * @throws coding_exception
      */
     public function verify_https_required() {
-        throw new coding_exception('verify_https_required() has been deprecated since Moodle 2.8 MDL-42834. It will not be replaced.', DEBUG_DEVELOPER);
+        debugging('verify_https_required() has been deprecated since Moodle 2.8 MDL-42834. It will not be replaced.', DEBUG_DEVELOPER);
     }
 
     // Initialisation methods =====================================================

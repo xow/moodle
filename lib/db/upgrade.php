@@ -3711,6 +3711,7 @@ function xmldb_main_upgrade($oldversion) {
 
     if ($oldversion < 2014071501.00) {
         $DB->delete_records('config', array('name' => 'loginhttps'));
+        upgrade_main_savepoint(true, 2014071501.00);
     }
 
     return true;
