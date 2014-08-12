@@ -32,12 +32,14 @@ var SELECTORS = {
         GRADECELL: 'td.grade',
         GRADERTABLE: '.gradeparent table',
         GRADEPARENT: '.gradeparent',
+        GRADEVALUE : 'span.gradevalue',
         HEADERCELL: '.gradebook-header-cell',
         STUDENTHEADER: '#studentheader',
         SPINNER: '.gradebook-loading-screen',
         USERCELL: '#user-grades .user.cell'
     },
     CSS = {
+        GRADEEDITOR : 'gradeeditor',
         OVERRIDDEN: 'overridden',
         STICKYFOOTER: 'gradebook-footer-row-sticky',
         TOOLTIPACTIVE: 'tooltipactive'

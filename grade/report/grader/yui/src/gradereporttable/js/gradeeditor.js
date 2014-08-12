@@ -27,14 +27,6 @@
  * @class GradeEditor
  */
 
-var CSS = {
-        GRADEEDITOR : 'gradeeditor'
-    },
-    SELECTOR = {
-        GRADEVALUE : 'span.gradevalue'
-    },
-    BODY = Y.one(document.body);
-
 function GradeEditor() {}
 
 GradeEditor.ATTRS= {
@@ -45,27 +37,46 @@ GradeEditor.ATTRS= {
 
 GradeEditor.prototype = {
     setupAjaxEdit: function() {
-        //BODY.delegate('key', this.handle_data_action, 'down:enter', SELECTOR.ACTIVITYACTION, this);
-        Y.delegate('click', this.handle_data_action, BODY, SELECTOR.GRADEVALUE, this);
+        this._eventHandles.push(
+            this.graderTable.delegate('key', this._finishEdit, 'down:enter', SELECTORS.ACTIVITYACTION, this),
+            this.graderTable.delegate('click', this.handle_data_action, SELECTORS.GRADEVALUE, this)
+        );
     },
 
     handle_data_action: function(ev) {
         var node = ev.target;
-        if (!node.test(SELECTOR.GRADEVALUE) && 1===2) {
-            node = node.ancestor(SELECTOR.GRADEVALUE);
+        if (!node.test(SELECTORS.GRADEVALUE)) {
+            node = node.ancestor(SELECTORS.GRADEVALUE);
         }
         this.edit_entry(ev, node);
     },
 
     edit_entry: function(ev, node) {
-        var editor = Y.Node.create('<input name="title" type="text" class="'+CSS.TITLEEDITOR+'" />').setAttrs({
-                'value': 'test',
+        var cell = node.ancestor();
+
+        var gradeeditor = Y.Node.create('<input name="title" type="text" class="'+CSS.GRADEEDITOR+'" />').setAttrs({
+                'value': node.getContent(),
                 'autocomplete': 'off',
                 'aria-describedby': 'id_editinstructions',
                 'maxLength': '255'
             });
-        node.ancestor().appendChild(editor);
+
+        gradeeditor.setStyle('maxWidth', cell.get('offsetWidth') + 'px');
+
+        cell.insertBefore(gradeeditor, node);
+        gradeeditor.focus();
+        this.blurListener = gradeeditor.on('blur', this._finishEdit, this);
         node.setStyle('display', 'none');
+
+        return this;
+    },
+
+    _finishEdit: function(ev) {
+        this.blurListener.detach();
+        var gradedisplay = ev.target.ancestor().one(SELECTORS.GRADEVALUE);
+        gradedisplay.setStyle('display', 'inline-block');
+        gradedisplay.setContent(ev.target.get('value'));
+        ev.target.remove();
     }
 };
 
