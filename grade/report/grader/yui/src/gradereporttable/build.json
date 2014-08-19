@@ -6,7 +6,8 @@
                 "gradereporttable.js",
                 "highlighter.js",
                 "floatingheaders.js",
-                "tooltip.js"
+                "tooltip.js",
+                "gradeeditor.js"
             ]
         }
     }

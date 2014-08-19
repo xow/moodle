@@ -243,6 +243,7 @@ M.gradereport_grader.classes.ajax.prototype.keypress_enter = function(e) {
  */
 M.gradereport_grader.classes.ajax.prototype.keypress_tab = function(e, ignoreshift) {
     var next = null;
+    alert(ignoreshift);
     if (e.shiftKey) {
         if (ignoreshift) {
             return;

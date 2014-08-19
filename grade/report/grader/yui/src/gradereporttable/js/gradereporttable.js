@@ -88,6 +88,9 @@ Y.extend(ReportTable, Y.Base, {
         // Setup the mouse tooltips.
         this.setupTooltips();
 
+        // Set up the ajax editing of grades.
+        this.setupAjaxEdit();
+
         // Hide the loading spinner - we've finished for the moment.
         this._hideSpinner();
     },
