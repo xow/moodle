@@ -2778,6 +2778,10 @@ function dayofweek($day, $month, $year) {
 function get_login_url() {
     global $CFG;
 
+    if ($CFG->alternateloginurl) {
+        return $CFG->alternateloginurl;
+    }
+
     $url = "$CFG->wwwroot/login/index.php";
 
     if (!empty($CFG->loginhttps)) {
