@@ -36,22 +36,26 @@ GradeEditor.ATTRS= {
 };
 
 GradeEditor.prototype = {
+
+    currentCell: null,
+
     setupAjaxEdit: function() {
         this._eventHandles.push(
-            this.graderTable.delegate('key', this._finishEdit, 'down:enter', SELECTORS.ACTIVITYACTION, this),
-            this.graderTable.delegate('click', this.handle_data_action, SELECTORS.GRADEVALUE, this)
+            this.graderTable.delegate('key', this._discardEdit, 'down:esc', SELECTORS.ACTIVITYACTION, this),
+            this.graderTable.delegate('key', this._saveEdit, 'down:enter', SELECTORS.ACTIVITYACTION, this),
+            this.graderTable.delegate('click', this._handleDataAction, SELECTORS.GRADEVALUE, this)
         );
     },
 
-    handle_data_action: function(ev) {
+    _handleDataAction: function(ev) {
         var node = ev.target;
         if (!node.test(SELECTORS.GRADEVALUE)) {
             node = node.ancestor(SELECTORS.GRADEVALUE);
         }
-        this.edit_entry(ev, node);
+        this._editEntry(ev, node);
     },
 
-    edit_entry: function(ev, node) {
+    _editEntry: function(ev, node) {
         var cell = node.ancestor();
 
         var gradeeditor = Y.Node.create('<input name="title" type="text" class="'+CSS.GRADEEDITOR+'" />').setAttrs({
@@ -65,18 +69,57 @@ GradeEditor.prototype = {
 
         cell.insertBefore(gradeeditor, node);
         gradeeditor.focus();
-        this.blurListener = gradeeditor.on('blur', this._finishEdit, this);
+        this.blurListener = gradeeditor.on('blur', this._saveEdit, this);
         node.setStyle('display', 'none');
 
         return this;
     },
 
+    _saveEntry: function(properties, values) {
+        Y.io.queue.stop();
+        if (values.grade !== values.oldgrade) {
+            // TODO: this.pendingsubmissions.push({transaction:this.graderTable.Y.io.queue(M.cfg.wwwroot+'/grade/report/grader/ajax_callbacks.php', {
+            Y.io.queue(M.cfg.wwwroot+'/grade/report/grader/ajax_callbacks.php', {
+                method : 'POST',
+                data : 'id='+this.courseid+'&userid='+properties.userid+'&itemid='+properties.itemid+'&action=update&newvalue='+
+                       values.grade+'&type='+properties.itemtype+'&sesskey='+M.cfg.sesskey,
+                on : {
+                    complete : this.submission_outcome
+                },
+                context : this,
+                arguments : {
+                    properties : properties,
+                    values : values,
+                    type : 'grade'
+                }
+            });
+            //}),complete:false,outcome:null});
+        }
+        Y.io.queue.start();
+    },
+
     _finishEdit: function(ev) {
         this.blurListener.detach();
-        var gradedisplay = ev.target.ancestor().one(SELECTORS.GRADEVALUE);
-        gradedisplay.setStyle('display', 'inline-block');
-        gradedisplay.setContent(ev.target.get('value'));
+        var gradeentry = ev.target.ancestor().one(SELECTORS.GRADEVALUE);
+        gradeentry.setStyle('display', 'inline-block');
         ev.target.remove();
+    },
+
+    _saveEdit: function(ev) {
+        var entry = ev.target.ancestor().one(SELECTORS.GRADEVALUE);
+
+        var itemid = entry.ancestor('[data-itemid]').getData('itemid');
+        var uid = entry.ancestor('[data-uid]').getData('uid');
+        var newvalue = ev.target.get('value');
+        var oldvalue = entry.getContent();
+        this._saveEntry({itemid: itemid, userid: uid, itemtype: 'value'}, {grade: newvalue, oldgrade: oldvalue}); // TODO: don't hardcode value
+
+        entry.setContent(ev.target.get('value'));
+        return this._finishEdit(ev);
+    },
+
+    _discardEdit: function(ev) {
+        return this._finishEdit(ev);
     }
 };
 
