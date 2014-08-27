@@ -659,7 +659,7 @@ $string['submittedon'] = 'Submitted: {$a}';
 $string['sumofgradesonly'] = 'Natural weights setting controlling aggregation and weight override behavior';
 $string['sumofgradesonly_help'] = 'When "Natural Weights forced" special (quicker) processing will be done and no aggregation drop down will appear on the Categories and items page.<br />
                When "Natural Weights" is left optional then special (quicker) processing will be done and no aggregation drop down will appear on the Categories and items page only if<br />
-               all aggregation methods for the course are Sum of grades. Otherwise normal (legacy) behavior will occur' . '<br />';
+               all aggregation methods for the course are Natural Weights. Otherwise normal (legacy) behavior will occur' . '<br />';
 $string['switchtofullview'] = 'Switch to full view';
 $string['switchtosimpleview'] = 'Switch to simple view';
 $string['tabs'] = 'Tabs';
