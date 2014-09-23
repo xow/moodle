@@ -364,6 +364,11 @@ class grade_edit_tree {
 
         $parent_category = $item->get_parent_category();
         $parent_category->apply_forced_settings();
+
+        if ($item->is_category_item()) {
+            $parent_category = $parent_category->get_parent_category();
+        }
+
         $aggcoef = $item->get_coefstring();
 
         if ((($aggcoef == 'aggregationcoefweight' || $aggcoef == 'aggregationcoef') && $type == 'weight') ||
