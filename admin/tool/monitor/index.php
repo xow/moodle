@@ -90,6 +90,8 @@ if (!empty($totalsubs)) {
     echo $renderer->render($subs);
 }
 
+$checkcontext = isset($coursecontext) ? $coursecontext : $context;
+
 // Render the potential rules list.
 $totalrules = \tool_monitor\rule_manager::count_rules_by_courseid($courseid);
 echo $OUTPUT->heading(get_string('rulescansubscribe', 'tool_monitor'));
@@ -99,7 +101,7 @@ if (empty($totalrules)) {
     // No rules present. Show a link to manage rules page if permissions permit.
     echo html_writer::start_div();
     echo html_writer::tag('span', get_string('norules', 'tool_monitor'));
-    if (has_capability('tool/monitor:managerules', $context)) {
+    if (has_capability('tool/monitor:managerules', $checkcontext)) {
         $manageurl = new moodle_url("/admin/tool/monitor/managerules.php", array('courseid' => $courseid));
         $a = html_writer::link($manageurl, get_string('managerules', 'tool_monitor'));
         $link = "&nbsp;";
@@ -107,7 +109,7 @@ if (empty($totalrules)) {
         echo $link;
     }
     echo html_writer::end_div();
-} else if (has_capability('tool/monitor:managerules', $context)) {
+} else if (has_capability('tool/monitor:managerules', $checkcontext)) {
     $manageurl = new moodle_url("/admin/tool/monitor/managerules.php", array('courseid' => $courseid));
     echo $renderer->render_rules_link($manageurl);
 }
