@@ -8580,8 +8580,14 @@ function cleanremoteaddr($addr, $compress=false) {
 
     // TODO: maybe add a separate function is_addr_public() or something like this.
 
-    if (strpos($addr, ':') !== false) {
+    if (substr_count($addr, ":") > 1) {
         // Can be only IPv6.
+
+        // Remove the port number if present.
+        if (preg_match("/\[(.*)\]:/", $addr, $results)) {
+            $addr = $results[1];
+        }
+
         $parts = explode(':', $addr);
         $count = count($parts);
 
@@ -8653,6 +8659,13 @@ function cleanremoteaddr($addr, $compress=false) {
         }
 
         return $result;
+    }
+
+    // Can be only IPv4.
+
+    // Remove the port number if present.
+    if (substr_count($addr, ":") <= 1) {
+        $addr = explode(":", $addr)[0];
     }
 
     // First get all things that look like IPv4 addresses.

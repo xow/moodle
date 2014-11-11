@@ -54,6 +54,8 @@ class core_moodlelib_testcase extends advanced_testcase {
         // IPv4.
         $this->assertNull(cleanremoteaddr('1023.121.234.1'));
         $this->assertSame('123.121.234.1', cleanremoteaddr('123.121.234.01 '));
+        $this->assertSame('123.121.234.1', cleanremoteaddr('123.121.234.01:65535'));
+        $this->assertSame('123.121.234.1', cleanremoteaddr('123.121.234.01:65535 '));
 
         // IPv6.
         $this->assertNull(cleanremoteaddr('0:0:0:0:0:0:0:0:0'));
@@ -67,6 +69,8 @@ class core_moodlelib_testcase extends advanced_testcase {
         $this->assertSame('1:1:0:0:0:0:0:0', cleanremoteaddr('01:1::', false));
         $this->assertSame('10:0:0:0:0:0:0:10', cleanremoteaddr('10::10', false));
         $this->assertSame('::ffff:c0a8:11', cleanremoteaddr('::ffff:192.168.1.1', true));
+        $this->assertSame('::ffff:c0a8:11', cleanremoteaddr('[::ffff:192.168.1.1]:65535', true));
+        $this->assertSame('::ffff:c0a8:11', cleanremoteaddr('[::ffff:192.168.1.1]:65535 ', true));
     }
 
     public function test_address_in_subnet() {
@@ -2758,5 +2762,35 @@ class core_moodlelib_testcase extends advanced_testcase {
         $expectedarray->picture = 23;
         $expectedarray->imagealt = 'Michael Jordan draining another basket.';
         $this->assertEquals($user, $expectedarray);
+    }
+
+    /**
+     * Tests the getremoteaddr() function.
+     */
+    public function test_getremoteaddr() {
+        $_SERVER['HTTP_X_FORWARDED_FOR'] = '';
+        $noip = getremoteaddr('1.1.1.1');
+        $this->assertEquals('1.1.1.1', $noip);
+
+        $_SERVER['HTTP_X_FORWARDED_FOR'] = '';
+        $noip = getremoteaddr();
+        $this->assertEquals('0.0.0.0', $noip);
+
+        $_SERVER['HTTP_X_FORWARDED_FOR'] = '127.0.0.1';
+        $singleip = getremoteaddr();
+        $this->assertEquals('127.0.0.1', $singleip);
+
+        $_SERVER['HTTP_X_FORWARDED_FOR'] = '127.0.0.1:65535';
+        $portip = getremoteaddr();
+        $this->assertEquals('127.0.0.1', $portip);
+
+        $_SERVER['HTTP_X_FORWARDED_FOR'] = '0:0:0:0:0:0:0:1';
+        $portip = getremoteaddr();
+        $this->assertEquals('0:0:0:0:0:0:0:1', $portip);
+
+        $_SERVER['HTTP_X_FORWARDED_FOR'] = '[0:0:0:0:0:0:0:1]:65535';
+        $portip = getremoteaddr();
+        $this->assertEquals('0:0:0:0:0:0:0:1', $portip);
+
     }
 }
