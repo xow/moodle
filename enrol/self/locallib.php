@@ -53,23 +53,13 @@ class enrol_self_enrol_form extends moodleform {
             // Change the id of self enrolment key input as there can be multiple self enrolment methods.
             $mform->addElement('passwordunmask', 'enrolpassword', get_string('password', 'enrol_self'),
                     array('id' => 'enrolpassword_'.$instance->id));
-            global $OUTPUT;
-            $context = get_context_instance(CONTEXT_COURSE, $this->instance->courseid);
-            $contextsys = get_context_instance(CONTEXT_SYSTEM);
-            $keyholders = get_users_by_capability($context, 'enrol/self:holdkey', 'u.id, u.firstname, u.lastname, u.email');
-            if (count($keyholders) == 0) {
-                $keyholders = get_users_by_capability($context, 'enrol/self:manage', 'u.id, u.firstname, u.lastname, u.email');
+            $context = context_course::instance($this->instance->courseid);
+            $keyholders = get_users_by_capability($context, 'enrol/self:holdkey', 'u.id, ' . get_all_user_name_fields(true, 'U') .
+                                                  ', u.email');
+            if (count($keyholders) >= 1) {
+                $mform->addElement('static', 'keyholder', '', get_string('keyholder', 'enrol_self'));
             }
-            $keyholdercount = 0;
             foreach ($keyholders as $keyholder) {
-                if (has_capability('moodle/course:delete', $context, $keyholder)) {
-                    // we don't want managers or admins to appear here!
-                    continue;
-                }
-                $keyholdercount++;
-                if ($keyholdercount === 1) {
-                    $mform->addElement('static', 'keyholder', '', get_string('keyholder', 'enrol_self'));
-                }
                 $mform->addElement('static', 'keyholder'.$keyholdercount, '', fullname($keyholder).' ('.$keyholder->email.')');
             }
 
