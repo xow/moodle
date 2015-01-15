@@ -379,7 +379,7 @@
                 echo $OUTPUT->notification(get_string('recorddeleted','data'), 'notifysuccess');
             }
         } else {   // Print a confirmation page
-            $allnamefields = get_all_user_name_fields(true, 'u');
+            $allnamefields = user_picture::fields('u');
             $dbparams = array($delete);
             if ($deleterecord = $DB->get_record_sql("SELECT dr.*, $allnamefields
                                                        FROM {data_records} dr
