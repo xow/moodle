@@ -548,6 +548,20 @@ function scorm_insert_track($userid, $scormid, $scoid, $attempt, $element, $valu
         $scorm = $DB->get_record('scorm', array('id' => $scormid));
         include_once($CFG->dirroot.'/mod/scorm/lib.php');
         scorm_update_grades($scorm, $userid);
+
+        // Trigger attempt_scored event
+        $cm = get_coursemodule_from_instance('scorm', $scormid);
+        $track->id = $id;
+        $event = \mod_scorm\event\attempt_scored::create(array(
+             'other' => array('attemptid' => $id),
+             'context' => context_module::instance($cm->id),
+             'relateduserid' => $userid
+        ));
+        $event->add_record_snapshot('scorm_scoes_track', $track);
+        $event->add_record_snapshot('course_modules', $cm);
+        $event->add_record_snapshot('scorm', $scorm);
+        $event->trigger();
+
     }
 
     return $id;

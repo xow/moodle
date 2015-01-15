@@ -121,6 +121,7 @@ $string['eventreportviewed'] = 'Report viewed';
 $string['eventscolaunched'] = 'Sco launched';
 $string['eventtracksviewed'] = 'Tracks viewed';
 $string['eventuserreportviewed'] = 'User report viewed';
+$string['eventattemptscored'] = 'Attempt scored, completed, or passed';
 $string['everyday'] = 'Every day';
 $string['everytime'] = 'Every time it\'s used';
 $string['exceededmaxattempts'] = 'You have reached the maximum number of attempts.';
