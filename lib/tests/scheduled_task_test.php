@@ -369,4 +369,26 @@ class core_scheduled_task_testcase extends advanced_testcase {
         // There should only be two items in the array, '.' and '..'.
         $this->assertEquals(2, count($filesarray));
     }
+
+    public function test_all_timezones() {
+        global $CFG;
+
+        $this->resetAfterTest(true);
+
+        $timezones = get_list_of_timezones();
+
+        foreach (array_keys($timezones) as $timezone) {
+            $CFG->timezone = $timezone;
+
+            $testclass = new \core\task\scheduled_test_task();
+            $testclass->set_hour('1');
+            $testclass->set_minute('0');
+
+            try {
+                $testclass->get_next_scheduled_time();
+            } catch (Exception $e) {
+                echo "Invalid timezone: $CFG->timezone with error: {$e->getMessage()}\n";
+            }
+        }
+    }
 }
