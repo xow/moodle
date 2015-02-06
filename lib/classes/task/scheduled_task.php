@@ -326,7 +326,7 @@ abstract class scheduled_task extends task_base {
      * @return int $nextruntime.
      */
     public function get_next_scheduled_time() {
-        global $CFG;
+        global $CFG, $DB;
 
         $validminutes = $this->eval_cron_field($this->minute, self::MINUTEMIN, self::MINUTEMAX);
         $validhours = $this->eval_cron_field($this->hour, self::HOURMIN, self::HOURMAX);
@@ -334,7 +334,24 @@ abstract class scheduled_task extends task_base {
         // We need to change to the server timezone before using php date() functions.
         $origtz = date_default_timezone_get();
         if (!empty($CFG->timezone) && $CFG->timezone != 99) {
-            date_default_timezone_set($CFG->timezone);
+            if (is_numeric($CFG->timezone)) {
+                $timezonerow = $DB->get_record('timezone', array('gmtoff' => $CFG->timezone * 60), '*', IGNORE_MULTIPLE);
+
+                // Some of the timezones with a .5 do not map to anything.  For those that do not
+                // map to anything, try rounding down and re-fetching the timezone record.
+                $rounded = round($CFG->timezone, 0, PHP_ROUND_HALF_DOWN);
+                if (empty($timezonerow) && $rounded != $CFG->timezone) {
+                    $timezonerow = $DB->get_record('timezone', array('gmtoff' => $rounded * 60), '*', IGNORE_MULTIPLE);
+                }
+                if (!empty($timezonerow)) {
+                    date_default_timezone_set($timezonerow->name);
+                } else {
+                    debugging("Failed map the site's timezone ($CFG->timezone) to a PHP timezone ID. ".
+                        'Scheduled task next run time might be off from your timezone preference.');
+                }
+            } else {
+                date_default_timezone_set($CFG->timezone);
+            }
         }
 
         $daysinmonth = date("t");
