@@ -267,6 +267,8 @@ abstract class core_filetypes {
             'xlsb' => array('type' => 'application/vnd.ms-excel.sheet.binary.macroEnabled.12', 'icon' => 'spreadsheet'),
             'xlam' => array('type' => 'application/vnd.ms-excel.addin.macroEnabled.12', 'icon' => 'spreadsheet'),
 
+            'xmcd' => array('type' => 'application/x-mathcad', 'icon' => 'unknown'),
+
             'xml' => array('type' => 'application/xml', 'icon' => 'markup'),
             'xsl' => array('type' => 'text/xml', 'icon' => 'markup'),
 
