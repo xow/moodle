@@ -606,8 +606,6 @@ class core_calendar_renderer extends plugin_renderer_base {
             get_string('colpoll', 'calendar'),
             get_string('colactions', 'calendar')
         );
-        $table->align = array('left', 'left', 'left', 'center');
-        $table->width = '100%';
         $table->data  = array();
 
         if (empty($subscriptions)) {
@@ -627,22 +625,26 @@ class core_calendar_renderer extends plugin_renderer_base {
                 $lastupdated = userdate($sub->lastupdated, get_string('strftimedatetimeshort', 'langconfig'));
             }
 
-            $cell = new html_table_cell($this->subscription_action_form($sub, $courseid));
-            $cell->colspan = 2;
+            $edit = $this->subscription_action_form($sub);
             $type = $sub->eventtype . 'events';
 
             $table->data[] = new html_table_row(array(
                 new html_table_cell($label),
                 new html_table_cell($lastupdated),
                 new html_table_cell(get_string($type, 'calendar')),
-                $cell
+                $edit[0],
+                $edit[1]
             ));
         }
 
         $out  = $this->output->box_start('generalbox calendarsubs');
 
         $out .= $importresults;
+        $out .= html_writer::start_tag('form', array('action' => new moodle_url('/calendar/managesubscriptions.php'), 'method' => 'post'));
         $out .= html_writer::table($table);
+        $out .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'sesskey', 'value' => sesskey()));
+        $out .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'course', 'value' => $courseid));
+        $out .= html_writer::end_tag('form');
         $out .= $this->output->box_end();
         return $out;
     }
@@ -651,42 +653,37 @@ class core_calendar_renderer extends plugin_renderer_base {
      * Creates a form to perform actions on a given subscription.
      *
      * @param stdClass $subscription
-     * @param int $courseid
-     * @return string
+     * @return array(html_table_cell update_cell, html_table_cell action_cell)
      */
-    protected function subscription_action_form($subscription, $courseid) {
+    protected function subscription_action_form($subscription) {
         // Assemble form for the subscription row.
-        $html = html_writer::start_tag('form', array('action' => new moodle_url('/calendar/managesubscriptions.php'), 'method' => 'post'));
+        $updatecontent = '';
+        $pollformname = 'pollinterval['.$subscription->id.']';
         if (empty($subscription->url)) {
             // Don't update an iCal file, which has no URL.
-            $html .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'pollinterval', 'value' => '0'));
+            $updatecontent .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => $pollformname, 'value' => '0'));
         } else {
             // Assemble pollinterval control.
-            $html .= html_writer::start_tag('div', array('style' => 'float:left;'));
-            $html .= html_writer::start_tag('select', array('name' => 'pollinterval'));
+            $updatecontent .= html_writer::start_tag('select', array('name' => $pollformname));
             foreach (calendar_get_pollinterval_choices() as $k => $v) {
                 $attributes = array();
                 if ($k == $subscription->pollinterval) {
                     $attributes['selected'] = 'selected';
                 }
                 $attributes['value'] = $k;
-                $html .= html_writer::tag('option', $v, $attributes);
+                $updatecontent .= html_writer::tag('option', $v, $attributes);
             }
-            $html .= html_writer::end_tag('select');
-            $html .= html_writer::end_tag('div');
+            $updatecontent .= html_writer::end_tag('select');
         }
-        $html .= html_writer::start_tag('div', array('style' => 'float:right;'));
-        $html .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'sesskey', 'value' => sesskey()));
-        $html .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'course', 'value' => $courseid));
-        $html .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'id', 'value' => $subscription->id));
+        $updatecell = new html_table_cell($updatecontent);
+        $actioncontent = '';
         if (!empty($subscription->url)) {
-            $html .= html_writer::tag('button', get_string('update'), array('type'  => 'submit', 'name' => 'action',
-                                                                            'value' => CALENDAR_SUBSCRIPTION_UPDATE));
+            $actioncontent .= html_writer::tag('button', get_string('update'), array('type'  => 'submit', 'name' => 'action_id',
+                                                                            'value' => CALENDAR_SUBSCRIPTION_UPDATE.'_'.$subscription->id));
         }
-        $html .= html_writer::tag('button', get_string('remove'), array('type'  => 'submit', 'name' => 'action',
-                                                                        'value' => CALENDAR_SUBSCRIPTION_REMOVE));
-        $html .= html_writer::end_tag('div');
-        $html .= html_writer::end_tag('form');
-        return $html;
+        $actioncontent .= html_writer::tag('button', get_string('remove'), array('type'  => 'submit', 'name' => 'action_id',
+                                                                        'value' => CALENDAR_SUBSCRIPTION_REMOVE.'_'.$subscription->id));
+        $actioncell = new html_table_cell($actioncontent);
+        return array($updatecell, $actioncell);
     }
 }
