@@ -4281,8 +4281,7 @@ class settings_navigation extends navigation_node {
             $dashboard->add_node($usersetting);
         } else {
             $usersetting = $this->add(get_string('preferences', 'moodle'), $prefurl, self::TYPE_CONTAINER, null, $key);
-            // Set to false when a link to preferences has been added to the my profile page. MDL-45900.
-            $usersetting->display = true;
+            $usersetting->display = false;
         }
         $usersetting->id = 'usersettings';
 
