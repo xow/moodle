@@ -121,6 +121,24 @@ function core_myprofile_navigation(core_user\output\myprofile\tree $tree, $user,
         $identityfields = array();
     }
 
+    if (is_mnet_remote_user($user)) {
+        $sql = "SELECT h.id, h.name, h.wwwroot,
+                       a.name as application, a.display_name
+                  FROM {mnet_host} h, {mnet_application} a
+                 WHERE h.id = ? AND h.applicationid = a.id";
+
+        $remotehost = $DB->get_record_sql($sql, array($user->mnethostid));
+        $remoteuser = new stdclass();
+        $remoteuser->remotetype = $remotehost->display_name;
+        $hostinfo = new stdclass();
+        $hostinfo->remotename = $remotehost->name;
+        $hostinfo->remoteurl  = $remotehost->wwwroot;
+
+        $node = new core_user\output\myprofile\node('contact', 'mnet', get_string('remoteuser', 'mnet', $remoteuser), null, null,
+            get_string('remoteuserinfo', 'mnet', $hostinfo), null, 'remoteuserinfo');
+        $tree->add_node($node);
+    }
+
     if (!isset($hiddenfields['country']) && $user->country) {
         $node = new core_user\output\myprofile\node('contact', 'country', get_string('country'), null, null,
                 get_string($user->country, 'countries'));

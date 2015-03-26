@@ -220,21 +220,6 @@ echo '<div class="userprofile">';
 
 // Print the standard content of this page, the basic profile info.
 
-if (is_mnet_remote_user($user)) {
-    $sql = "SELECT h.id, h.name, h.wwwroot,
-                   a.name as application, a.display_name
-              FROM {mnet_host} h, {mnet_application} a
-             WHERE h.id = ? AND h.applicationid = a.id";
-
-    $remotehost = $DB->get_record_sql($sql, array($user->mnethostid));
-    $a = new stdclass();
-    $a->remotetype = $remotehost->display_name;
-    $a->remotename = $remotehost->name;
-    $a->remoteurl  = $remotehost->wwwroot;
-
-    echo $OUTPUT->box(get_string('remoteuserinfo', 'mnet', $a), 'remoteuserinfo');
-}
-
 echo '<div class="userprofilebox clearfix">';
 
 echo '<div class="descriptionbox"><div class="description">';
