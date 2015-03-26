@@ -100,18 +100,60 @@ class category implements \renderable {
      */
     public function sort_nodes() {
         $tempnodes = array();
+        $this->validate_after_order();
+
+        // First content noes.
         foreach ($this->nodes as $node) {
             $after = $node->after;
-            if ($after == null) {
-                // Can go anywhere in the cat.
+            $content = $node->content;
+            if ($after == null && !empty($content)) {
+                // Can go anywhere in the cat. Also show content nodes first.
                 $tempnodes = array_merge($tempnodes, array($node->name => $node), $this->find_nodes_after($node));
             }
         }
+
+        // Now nodes with no content.
+        foreach ($this->nodes as $node) {
+            $after = $node->after;
+            $content = $node->content;
+            if ($after == null && empty($content)) {
+                // Can go anywhere in the cat. Also show content nodes first.
+                $tempnodes = array_merge($tempnodes, array($node->name => $node), $this->find_nodes_after($node));
+            }
+        }
+
         if (count($tempnodes) !== count($this->nodes)) {
             // Orphan nodes found.
             throw new \coding_exception('Some of the nodes specified contains invalid \'after\' property');
         }
         $this->nodes = $tempnodes;
+    }
+
+    /**
+     * Verifies that node with content can come after node with content only . Also verifies the same thing for nodes without
+     * content.
+     * @throws \coding_exception
+     */
+    protected function validate_after_order() {
+        $nodearray = $this->nodes;
+        foreach ($this->nodes as $node) {
+            $after = $node->after;
+            if (!empty($after)) {
+                if (empty($nodearray[$after])) {
+                    throw new \coding_exception('node {$node->name} specified contains invalid \'after\' property');
+                } else {
+                    // Valid node found.
+                    $afternode = $nodearray[$after];
+                    $beforecontent = $node->content;
+                    $aftercontent = $afternode->content;
+
+                    if ((empty($beforecontent) && !empty($aftercontent)) || (!empty($beforecontent) && empty($aftercontent))) {
+                        // Only node with content are allowed after content nodes. Same goes for no content nodes.
+                        throw new \coding_exception('node {$node->name} specified contains invalid \'after\' property');
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -127,7 +169,7 @@ class category implements \renderable {
         foreach ($nodearray as $nodeelement) {
             if ($nodeelement->after === $node->name) {
                 // Find all nodes that comes after this node as well.
-                $return = array_merge($return, array($nodeelement), $this->find_nodes_after($nodeelement));
+                $return = array_merge($return, array($nodeelement->name => $nodeelement), $this->find_nodes_after($nodeelement));
             }
         }
         return $return;
