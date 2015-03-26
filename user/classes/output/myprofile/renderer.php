@@ -57,7 +57,12 @@ class renderer extends \plugin_renderer_base {
      * @return string
      */
     public function render_category(category $category) {
-        $return = \html_writer::start_tag('section', array('class' => 'span4 node_category'));
+        $classes = $category->classes;
+        if (empty($classes)) {
+            $return = \html_writer::start_tag('section', array('class' => 'span4 node_category'));
+        } else {
+            $return = \html_writer::start_tag('section', array('class' => 'span4 node_category ' . $classes));
+        }
         $return .= \html_writer::tag('h3', $category->title);
         $nodes = $category->nodes;
         if (empty($nodes)) {
@@ -92,16 +97,21 @@ class renderer extends \plugin_renderer_base {
             $header .= $this->render($icon);
         }
         $content = $node->content;
+        $classes = $node->classes;
         if (!empty($content)) {
             // There is some content to display below this make this a header.
             $return = \html_writer::tag('dt', $header);
             $return .= \html_writer::tag('dd', $content);
 
             $return = \html_writer::tag('dl', $return);
-            $return = \html_writer::tag('li', $return, array('class' => 'contentnode'));
+            if ($classes) {
+                $return = \html_writer::tag('li', $return, array('class' => 'contentnode ' . $classes));
+            } else {
+                $return = \html_writer::tag('li', $return, array('class' => 'contentnode'));
+            }
         } else {
             $return = \html_writer::span($header);
-            $return = \html_writer::tag('li', $return);
+            $return = \html_writer::tag('li', $return, array('class' => $classes));
         }
 
         return $return;

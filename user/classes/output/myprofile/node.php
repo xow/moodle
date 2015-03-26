@@ -70,9 +70,14 @@ class node implements \renderable {
     private $icon;
 
     /**
+     * @var string HTML class attribute for this node. Classes should be seperated by a space, e.g. 'class1 class2'
+     */
+    private $classes;
+
+    /**
      * @var array list of properties accessible via __get.
      */
-    private $properties = array('parentcat', 'after', 'name', 'title', 'url', 'content', 'icon');
+    private $properties = array('parentcat', 'after', 'name', 'title', 'url', 'content', 'icon', 'classes');
 
     /**
      * Constructor for the node.
@@ -85,7 +90,8 @@ class node implements \renderable {
      * @param null|string $content Content to display under this node.
      * @param null|string|\pix_icon $icon Icon for this node.
      */
-    public function __construct($parentcat, $name, $title, $after = null, $url = null, $content = null, $icon = null) {
+    public function __construct($parentcat, $name, $title, $after = null, $url = null, $content = null, $icon = null,
+                                $classes = null) {
         $this->parentcat = $parentcat;
         $this->after = $after;
         $this->name = $name;
@@ -93,6 +99,7 @@ class node implements \renderable {
         $this->url = is_null($url) ? null : new \moodle_url($url);
         $this->content = $content;
         $this->icon = $icon;
+        $this->classes = $classes;
     }
 
     /**

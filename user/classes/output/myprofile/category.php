@@ -56,9 +56,14 @@ class category implements \renderable {
     private $nodes = array();
 
     /**
+     * @var string HTML class attribute for this category. Classes should be seperated by a space, e.g. 'class1 class2'
+     */
+    private $classes;
+
+    /**
      * @var array list of properties publicly accessible via __get.
      */
-    private $properties = array('after', 'name', 'title', 'nodes');
+    private $properties = array('after', 'name', 'title', 'nodes', 'classes');
 
     /**
      * Constructor for category class.
@@ -67,10 +72,11 @@ class category implements \renderable {
      * @param string $title category title.
      * @param null|string $after Name of category after which this category should appear.
      */
-    public function __construct($name, $title, $after = null) {
+    public function __construct($name, $title, $after = null, $classes = null) {
         $this->after = $after;
         $this->name = $name;
         $this->title = $title;
+        $this->classes = $classes;
     }
 
     /**
