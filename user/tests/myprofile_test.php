@@ -41,14 +41,15 @@ class core_user_myprofile_testcase extends advanced_testcase {
      */
     public function test_node__construct() {
         $node = new \core_user\output\myprofile\node('parentcat', 'nodename',
-                'nodetitle', 'after', 'www.google.com', 'description');
+                'nodetitle', 'after', 'www.google.com', 'description', new pix_icon('i/course', ''), 'class1 class2');
         $this->assertSame('parentcat', $node->parentcat);
         $this->assertSame('nodename', $node->name);
         $this->assertSame('nodetitle', $node->title);
         $this->assertSame('after', $node->after);
         $url = new moodle_url('www.google.com');
         $this->assertEquals($url, $node->url);
-        $this->assertSame('description', $node->content);
+        $this->assertEquals(new pix_icon('i/course', ''), $node->icon);
+        $this->assertSame('class1 class2', $node->classes);
     }
 
     /**
@@ -80,10 +81,11 @@ class core_user_myprofile_testcase extends advanced_testcase {
      * Test category::__construct().
      */
     public function test_category__construct() {
-        $category = new \core_user\output\myprofile\category('categoryname', 'title', 'after');
+        $category = new \core_user\output\myprofile\category('categoryname', 'title', 'after', 'class1 class2');
         $this->assertSame('categoryname', $category->name);
         $this->assertSame('title', $category->title);
         $this->assertSame('after', $category->after);
+        $this->assertSame('class1 class2', $category->classes);
     }
 
     public function test_validate_after_order1() {
