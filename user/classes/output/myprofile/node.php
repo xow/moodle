@@ -70,7 +70,7 @@ class node implements \renderable {
     private $icon;
 
     /**
-     * @var string HTML class attribute for this node. Classes should be seperated by a space, e.g. 'class1 class2'
+     * @var string HTML class attribute for this node. Classes should be separated by a space, e.g. 'class1 class2'
      */
     private $classes;
 
@@ -89,6 +89,7 @@ class node implements \renderable {
      * @param null|string|\moodle_url $url Url that this node should link to.
      * @param null|string $content Content to display under this node.
      * @param null|string|\pix_icon $icon Icon for this node.
+     * @param null|string $classes a list of css classes.
      */
     public function __construct($parentcat, $name, $title, $after = null, $url = null, $content = null, $icon = null,
                                 $classes = null) {

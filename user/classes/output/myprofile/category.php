@@ -56,7 +56,7 @@ class category implements \renderable {
     private $nodes = array();
 
     /**
-     * @var string HTML class attribute for this category. Classes should be seperated by a space, e.g. 'class1 class2'
+     * @var string HTML class attribute for this category. Classes should be separated by a space, e.g. 'class1 class2'
      */
     private $classes;
 
@@ -71,6 +71,7 @@ class category implements \renderable {
      * @param string $name Category name.
      * @param string $title category title.
      * @param null|string $after Name of category after which this category should appear.
+     * @param null|string $classes a list of css classes.
      */
     public function __construct($name, $title, $after = null, $classes = null) {
         $this->after = $after;
@@ -87,7 +88,7 @@ class category implements \renderable {
      *
      * @throws \coding_exception
      */
-    public function add_node(\core_user\output\myprofile\node $node) {
+    public function add_node(node $node) {
         $name = $node->name;
         if (isset($this->nodes[$name])) {
             throw new \coding_exception("Node with name $name already exists");

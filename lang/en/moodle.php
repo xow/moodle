@@ -1927,6 +1927,7 @@ $string['usernameoremail'] = 'Enter either username or email address';
 $string['usernotconfirmed'] = 'Could not confirm {$a}';
 $string['userpic'] = 'User picture';
 $string['users'] = 'Users';
+$string['userspreferences'] = 'User {$a}\'s preferences';
 $string['userselectorautoselectunique'] = 'If only one user matches the search, select them automatically';
 $string['userselectorpreserveselected'] = 'Keep selected users, even if they no longer match the search';
 $string['userselectorsearchanywhere'] = 'Match the search text anywhere in the displayed fields';

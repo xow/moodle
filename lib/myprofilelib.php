@@ -94,7 +94,7 @@ function core_myprofile_navigation(core_user\output\myprofile\tree $tree, $user,
     // Preference page.
     if ($iscurrentuser || is_siteadmin()) {
         $url = new moodle_url('/user/preferences.php', array('userid' => $user->id));
-        $title = $iscurrentuser ? get_string('usercurrentsettings') : get_string('userviewingsettings', 'moodle', fullname($user));
+        $title = $iscurrentuser ? get_string('mypreferences') : get_string('userspreferences', 'moodle', fullname($user));
         $node = new core_user\output\myprofile\node('administration', 'preferences', $title, null, $url);
         $tree->add_node($node);
     }
@@ -137,6 +137,36 @@ function core_myprofile_navigation(core_user\output\myprofile\tree $tree, $user,
         $node = new core_user\output\myprofile\node('contact', 'mnet', get_string('remoteuser', 'mnet', $remoteuser), null, null,
             get_string('remoteuserinfo', 'mnet', $hostinfo), null, 'remoteuserinfo');
         $tree->add_node($node);
+    }
+
+    // User description.
+    if (!isset($hiddenfields['description']) && $user->description) {
+        if (!empty($CFG->profilesforenrolledusersonly) && !$iscurrentuser &&
+            !$DB->record_exists('role_assignments', array('userid' => $user->id))) {
+            $content = get_string('profilenotshown', 'moodle');
+        } else {
+            if ($courseid == SITEID) {
+                $user->description = file_rewrite_pluginfile_urls($user->description,
+                        'pluginfile.php', $usercontext->id, 'user', 'profile', null);
+            } else {
+                // We have to make a little detour thought the course context to verify the access control for course profile.
+                $user->description = file_rewrite_pluginfile_urls($user->description,
+                        'pluginfile.php', $context->id, 'user', 'profile', $user->id);
+            }
+            $options = array('overflowdiv' => true);
+            $content = format_text($user->description, $user->descriptionformat, $options);
+        }
+        $node = new core_user\output\myprofile\node('contact', 'description', get_string('description'), null, null, $content,
+                null, 'description');
+        $tree->add_node($node);
+    }
+
+    // Printing tagged interests. We want this only for full profile.
+    if (!empty($CFG->usetags) && empty($course)) {
+        if ($interests = tag_get_tags_csv('user', $user->id) ) {
+            $node = new core_user\output\myprofile\node('contact', 'interests', get_string('interests'), null, null, $interests);
+            $tree->add_node($node);
+        }
     }
 
     if (!isset($hiddenfields['country']) && $user->country) {

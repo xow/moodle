@@ -114,18 +114,6 @@ if (isguestuser()) {     // Guests can never edit their profile.
     }
 }
 
-if (has_capability('moodle/user:viewhiddendetails', $context)) {
-    $hiddenfields = array();
-} else {
-    $hiddenfields = array_flip(explode(',', $CFG->hiddenuserfields));
-}
-
-if (has_capability('moodle/site:viewuseridentity', $context)) {
-    $identityfields = array_flip(explode(',', $CFG->showuseridentity));
-} else {
-    $identityfields = array();
-}
-
 // Start setting up the page.
 $strpublicprofile = get_string('publicprofile');
 
@@ -217,44 +205,13 @@ $event->trigger();
 // TODO WORK OUT WHERE THE NAV BAR IS!
 echo $OUTPUT->header();
 echo '<div class="userprofile">';
-
-// Print the standard content of this page, the basic profile info.
-
-echo '<div class="userprofilebox clearfix">';
-
-echo '<div class="descriptionbox"><div class="description">';
-// Print the description.
-if ($user->description && !isset($hiddenfields['description'])) {
-    if (!empty($CFG->profilesforenrolledusersonly) && !$currentuser &&
-        !$DB->record_exists('role_assignments', array('userid' => $user->id))) {
-        echo get_string('profilenotshown', 'moodle');
-    } else {
-        $user->description = file_rewrite_pluginfile_urls($user->description, 'pluginfile.php', $usercontext->id, 'user',
-                                                          'profile', null);
-        $options = array('overflowdiv' => true);
-        echo format_text($user->description, $user->descriptionformat, $options);
-    }
-}
-echo '</div>';
-
-// Printing tagged interests.
-if (!empty($CFG->usetags)) {
-    if ($interests = tag_get_tags_csv('user', $user->id) ) {
-        echo html_writer::tag('dt', get_string('interests'));
-        echo html_writer::tag('dd', $interests);
-    }
-}
-
-echo html_writer::end_tag('dl');
-echo "</div></div>"; // Closing desriptionbox and userprofilebox.
-
 echo $OUTPUT->custom_block_region('content');
-
-echo '</div>';  // Userprofile class.
 
 // Render custom blocks.
 $renderer = $PAGE->get_renderer('core_user', 'myprofile');
 $tree = core_user\output\myprofile\manager::build_tree($user, $currentuser);
 echo $renderer->render($tree);
+
+echo '</div>';  // Userprofile class.
 
 echo $OUTPUT->footer();

@@ -217,45 +217,11 @@ $event = \core\event\user_profile_viewed::create(array(
 $event->add_record_snapshot('user', $user);
 $event->trigger();
 
-// Get the hidden field list.
-if (has_capability('moodle/user:viewhiddendetails', $coursecontext)) {
-    $hiddenfields = array();
-} else {
-    $hiddenfields = array_flip(explode(',', $CFG->hiddenuserfields));
-}
-
-echo '<div class="userprofilebox clearfix">';
-
-// Print the description.
-echo '<div class="descriptionbox"><div class="description">';
-if ($user->description && !isset($hiddenfields['description'])) {
-    if (!empty($CFG->profilesforenrolledusersonly) && !$DB->record_exists('role_assignments', array('userid' => $id))) {
-        echo get_string('profilenotshown', 'moodle');
-    } else {
-        if ($courseid == SITEID) {
-            $user->description = file_rewrite_pluginfile_urls($user->description, 'pluginfile.php', $usercontext->id, 'user', 'profile', null);
-        } else {
-            // We have to make a little detour thought the course context to verify the access control for course profile.
-            $user->description = file_rewrite_pluginfile_urls($user->description, 'pluginfile.php', $coursecontext->id, 'user', 'profile', $user->id);
-        }
-        $options = array('overflowdiv' => true);
-        echo format_text($user->description, $user->descriptionformat, $options);
-    }
-}
-echo '</div>';
-
-echo "</div></div>"; // Closing desriptionbox and userprofilebox.
-
-// TODO Add more useful overview info for teachers here, see below.
-// Show links to notes made about this student (must click to display, for privacy).
-// Recent comments made in this course.
-// Recent blogs associated with this course and items in it.
-
-echo '</div>';  // Userprofile class.
-
 // Render custom blocks.
 $renderer = $PAGE->get_renderer('core_user', 'myprofile');
 $tree = core_user\output\myprofile\manager::build_tree($user, $currentuser, $course);
 echo $renderer->render($tree);
+
+echo '</div>';  // Userprofile class.
 
 echo $OUTPUT->footer();
