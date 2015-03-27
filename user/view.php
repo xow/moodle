@@ -217,6 +217,22 @@ $event = \core\event\user_profile_viewed::create(array(
 $event->add_record_snapshot('user', $user);
 $event->trigger();
 
+echo '<div class="description">';
+if ($user->description && !isset($hiddenfields['description'])) {
+    if (!empty($CFG->profilesforenrolledusersonly) && !$DB->record_exists('role_assignments', array('userid' => $id))) {
+        echo get_string('profilenotshown', 'moodle');
+    } else {
+        if ($courseid == SITEID) {
+            $user->description = file_rewrite_pluginfile_urls($user->description, 'pluginfile.php', $usercontext->id, 'user', 'profile', null);
+        } else {
+            // We have to make a little detour thought the course context to verify the access control for course profile.
+            $user->description = file_rewrite_pluginfile_urls($user->description, 'pluginfile.php', $coursecontext->id, 'user', 'profile', $user->id);
+        }
+        $options = array('overflowdiv' => true);
+        echo format_text($user->description, $user->descriptionformat, $options);
+    }
+}
+
 // Render custom blocks.
 $renderer = $PAGE->get_renderer('core_user', 'myprofile');
 $tree = core_user\output\myprofile\manager::build_tree($user, $currentuser, $course);
