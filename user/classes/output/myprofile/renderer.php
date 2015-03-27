@@ -41,11 +41,12 @@ class renderer extends \plugin_renderer_base {
      * @return string
      */
     public function render_tree(tree $tree) {
+        $return = \html_writer::start_tag('div');
         $categories = $tree->categories;
-        $return = '';
         foreach ($categories as $category) {
             $return .= $this->render($category);
         }
+        $return .= \html_writer::end_tag('div');
         return $return;
     }
 
@@ -59,9 +60,9 @@ class renderer extends \plugin_renderer_base {
     public function render_category(category $category) {
         $classes = $category->classes;
         if (empty($classes)) {
-            $return = \html_writer::start_tag('section', array('class' => 'span4 node_category'));
+            $return = \html_writer::start_tag('section', array('class' => 'span6 node_category'));
         } else {
-            $return = \html_writer::start_tag('section', array('class' => 'span4 node_category ' . $classes));
+            $return = \html_writer::start_tag('section', array('class' => 'span6 node_category ' . $classes));
         }
         $return .= \html_writer::tag('h3', $category->title);
         $nodes = $category->nodes;
