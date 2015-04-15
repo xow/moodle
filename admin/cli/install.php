@@ -250,6 +250,7 @@ list($options, $unrecognized) = cli_get_params(
         'prefix'            => 'mdl_',
         'fullname'          => '',
         'shortname'         => '',
+        'summary'           => '',
         'adminuser'         => 'admin',
         'adminpass'         => '',
         'non-interactive'   => false,
