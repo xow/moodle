@@ -77,3 +77,14 @@
 #page-mod-data-edit .req {
     cursor: help;
 }
+#page-mod-data-edit .inline-req .req {
+    position: absolute;
+    margin-left: -10px;
+}
+#page-mod-data-edit .inline-req {
+    text-align: left;
+}
+
+#page-mod-data-edit .template-token {
+    padding-left: 16px;
+}
