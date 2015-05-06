@@ -56,18 +56,30 @@ class data_field_url extends data_field_base {
                 $text = $content->content1;
             }
         }
+
+        $autolinkable = !empty($this->field->param1) and empty($this->field->param2);
+
         $str = '<div title="' . s($this->field->description) . '">';
 
         $label = '<label for="' . $fieldid . '"><span class="accesshide">' . $this->field->name . '</span>';
         if ($this->field->required) {
-            $label .= html_writer::img($OUTPUT->pix_url('req'), get_string('requiredelement', 'form'),
+            $image = html_writer::img($OUTPUT->pix_url('req'), get_string('requiredelement', 'form'),
                                       array('class' => 'req', 'title' => get_string('requiredelement', 'form')));
+            if ($autolinkable) {
+                $label .= html_writer::div(get_string('requiredelement', 'form'), 'accesshide');
+            } else {
+                $label .= html_writer::div($image, 'inline-req');
+            }
         }
         $label .= '</label>';
 
-        if (!empty($this->field->param1) and empty($this->field->param2)) {
+        if ($autolinkable) {
             $str .= '<table><tr><td align="right">';
-            $str .= get_string('url','data').':</td><td>';
+            $str .= get_string('url', 'data') . ':';
+            if (!empty($image)) {
+                $str .= $image;
+            }
+            $str .= '</td><td>';
             $str .= $label;
             $str .= '<input type="text" name="field_'.$this->field->id.'_0" id="'.$fieldid.'" value="'.$url.'" size="60" />';
             $str .= '<button id="filepicker-button-'.$options->client_id.'" style="display:none">'.$straddlink.'</button></td></tr>';
