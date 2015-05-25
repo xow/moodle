@@ -153,7 +153,7 @@ class auth_plugin_db extends auth_plugin_base {
             ob_start(); //Start output buffer to allow later use of the page headers.
         }
         $authdb->Connect($this->config->host, $this->config->user, $this->config->pass, $this->config->name, true);
-        $authdb->SetFetchMode(ADODB_FETCH_ASSOC);
+        $authdb->SetFetchMode(ADODB_FETCH_NUM);
         if (!empty($this->config->setupsql)) {
             $authdb->Execute($this->config->setupsql);
         }
