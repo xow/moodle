@@ -16,6 +16,8 @@ information provided here is intended especially for theme designer.
   #user-grades table, visible at [Course administration -> Grades] is not recommended. Please use overflow: auto or
   overflow: scroll instead, as this will handle medium to large courses with multiple activities better (more information available at https://docs.moodle.org/dev/Theme_upgrade_notes ).
 * The new user menu can be added to themes by calling $OUTPUT->user_menu(); we recommend doing so in a backwards-compatible way (see https://docs.moodle.org/dev/Theme_upgrade_notes for more information).
+* frontpage.php layout has been added to clean and bootstrapbase themes, based off columns3.php This differentiates the front
+  page from other pages. As a general rule any changes to columns3.php should be reflected in front page but not vice versa
 
 === 2.7 ===
 
