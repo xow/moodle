@@ -63,6 +63,8 @@ echo '<form action="upgradesettings.php" method="post" id="adminsettings">';
 echo '<div>';
 echo '<input type="hidden" name="sesskey" value="'.sesskey().'" />';
 echo '<input type="hidden" name="return" value="'.$return.'" />';
+// HACK to prevent browsers from automatically inserting the user's password into the wrong fields.
+echo '<div class="hide"><input type="password" /></div>';
 echo '<fieldset>';
 echo '<div class="clearer"><!-- --></div>';
 echo $newsettingshtml;
