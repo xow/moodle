@@ -2403,8 +2403,9 @@ if (is_ie) {
 }
 //]]>
 </script>';
+        $deterautofill = '<input style="display:none" type="text" /><input style="display:none" type="password" />';
         return format_admin_setting($this, $this->visiblename,
-        '<div class="form-password"><input type="password" size="'.$this->size.'" id="'.$id.'" name="'.$this->get_full_name().'" value="'.s($data).'" /><div class="unmask" id="'.$id.'unmaskdiv"></div>'.$unmaskjs.'</div>',
+        '<div class="form-password">'.$deterautofill.'<input type="password" size="'.$this->size.'" id="'.$id.'" name="'.$this->get_full_name().'" value="'.s($data).'" /><div class="unmask" id="'.$id.'unmaskdiv"></div>'.$unmaskjs.'</div>',
         $this->description, true, '', NULL, $query);
     }
 }

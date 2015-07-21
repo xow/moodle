@@ -83,9 +83,10 @@ class MoodleQuickForm_passwordunmask extends MoodleQuickForm_password {
             $attributes = array('formid' => $this->getAttribute('id'),
                 'checkboxlabel' => $unmask,
                 'checkboxname' => $this->getAttribute('name'));
+            $deterautofill = '<input style="display:none" type="text" /><input style="display:none" type="password" />';
             $PAGE->requires->yui_module('moodle-form-passwordunmask', 'M.form.passwordunmask',
                     array($attributes));
-            return $this->_getTabs() . '<input' . $this->_getAttrString($this->_attributes) . ' />';
+            return $deterautofill . $this->_getTabs() . '<input' . $this->_getAttrString($this->_attributes) . ' />';
         }
     }
 
