@@ -77,6 +77,7 @@ if (empty($SITE->fullname)) {
     echo html_writer::input_hidden_params($PAGE->url);
     echo '<input type="hidden" name="sesskey" value="'.sesskey().'" />';
     echo '<input type="hidden" name="return" value="'.$return.'" />';
+    echo '<input type="password" style="display:none" />';
 
     echo $settingspage->output_html();
 
@@ -119,6 +120,7 @@ if (empty($SITE->fullname)) {
     echo html_writer::input_hidden_params($PAGE->url);
     echo '<input type="hidden" name="sesskey" value="'.sesskey().'" />';
     echo '<input type="hidden" name="return" value="'.$return.'" />';
+    echo '<input type="password" style="display:none" />';
     echo $OUTPUT->heading($settingspage->visiblename);
 
     echo $settingspage->output_html();
