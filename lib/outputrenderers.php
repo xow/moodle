@@ -4061,6 +4061,15 @@ EOD;
         $html .= html_writer::end_tag('header');
         return $html;
     }
+
+    /**
+     * Renders a hidden password field so that browsers won't incorrectly autofill password fields with the user's password.
+     *
+     * @return string HTML to prevent password autofill
+     */
+     public function autofill_preventer() {
+         return '<div class="hide"><input type="password" /></div>';
+     }
 }
 
 /**
