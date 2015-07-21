@@ -46,6 +46,7 @@ $resultshtml = admin_search_settings_html($query); // case insensitive search on
 echo '<form action="' . $PAGE->url->out(true) . '" method="post" id="adminsettings">';
 echo '<div>';
 echo '<input type="hidden" name="sesskey" value="'.sesskey().'" />';
+echo '<div class="hide"><input type="password" /></div>';
 echo '</div>';
 echo '<fieldset>';
 echo '<div class="clearer"><!-- --></div>';

@@ -188,6 +188,9 @@ abstract class moodleform {
             $this->_form->hardFreeze();
         }
 
+        $element = $this->_form->addElement('hidden');
+        $element->setType('password');
+
         $this->definition();
 
         $this->_form->addElement('hidden', 'sesskey', null); // automatic sesskey protection
