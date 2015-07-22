@@ -632,15 +632,16 @@ class core_calendar_renderer extends plugin_renderer_base {
                 new html_table_cell($label),
                 new html_table_cell($lastupdated),
                 new html_table_cell(get_string($type, 'calendar')),
-                $edit[0],
-                $edit[1]
+                new html_table_cell($edit[0]),
+                new html_table_cell($edit[1])
             ));
         }
 
         $out  = $this->output->box_start('generalbox calendarsubs');
 
         $out .= $importresults;
-        $out .= html_writer::start_tag('form', array('action' => new moodle_url('/calendar/managesubscriptions.php'), 'method' => 'post'));
+        $out .= html_writer::start_tag('form', array('action' => new moodle_url('/calendar/managesubscriptions.php'),
+                                       'method' => 'post'));
         $out .= html_writer::table($table);
         $out .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'sesskey', 'value' => sesskey()));
         $out .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'course', 'value' => $courseid));
@@ -653,12 +654,12 @@ class core_calendar_renderer extends plugin_renderer_base {
      * Creates a form to perform actions on a given subscription.
      *
      * @param stdClass $subscription
-     * @return array(html_table_cell update_cell, html_table_cell action_cell)
+     * @return array(string updatecontent, string actioncontent)
      */
     protected function subscription_action_form($subscription) {
         // Assemble form for the subscription row.
         $updatecontent = '';
-        $pollformname = 'pollinterval['.$subscription->id.']';
+        $pollformname = 'pollintervals['.$subscription->id.']';
         if (empty($subscription->url)) {
             // Don't update an iCal file, which has no URL.
             $updatecontent .= html_writer::empty_tag('input', array('type' => 'hidden', 'name' => $pollformname, 'value' => '0'));
@@ -675,15 +676,13 @@ class core_calendar_renderer extends plugin_renderer_base {
             }
             $updatecontent .= html_writer::end_tag('select');
         }
-        $updatecell = new html_table_cell($updatecontent);
         $actioncontent = '';
         if (!empty($subscription->url)) {
             $actioncontent .= html_writer::tag('button', get_string('update'), array('type'  => 'submit', 'name' => 'action_id',
-                                                                            'value' => CALENDAR_SUBSCRIPTION_UPDATE.'_'.$subscription->id));
+                                               'value' => CALENDAR_SUBSCRIPTION_UPDATE.'_'.$subscription->id));
         }
         $actioncontent .= html_writer::tag('button', get_string('remove'), array('type'  => 'submit', 'name' => 'action_id',
-                                                                        'value' => CALENDAR_SUBSCRIPTION_REMOVE.'_'.$subscription->id));
-        $actioncell = new html_table_cell($actioncontent);
-        return array($updatecell, $actioncell);
+                                           'value' => CALENDAR_SUBSCRIPTION_REMOVE.'_'.$subscription->id));
+        return array($updatecontent, $actioncontent);
     }
 }

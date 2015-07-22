@@ -36,7 +36,9 @@ $actionid = explode('_', optional_param('action_id', '_0', PARAM_RAW_TRIMMED));
 // Used for processing subscription actions.
 $subscriptionid = clean_param($actionid[1], PARAM_INT);
 // Getting poll interval of all subs.
-$pollinterval  = optional_param_array('pollinterval', 0, PARAM_INT);
+$pollintervals = optional_param_array('pollintervals', 0, PARAM_INT);
+// Get poll interval of new sub (if any).
+$pollinterval  = optional_param('pollinterval', 0, PARAM_INT);
 $action = clean_param($actionid[0], PARAM_INT);
 
 $url = new moodle_url('/calendar/managesubscriptions.php');
@@ -94,7 +96,7 @@ if (!empty($formdata)) {
     require_sesskey(); // Must have sesskey for all actions.
     if (calendar_can_edit_subscription($subscriptionid)) {
         try {
-            $importresults = calendar_process_subscription_row($subscriptionid, $pollinterval[$subscriptionid], $action);
+            $importresults = calendar_process_subscription_row($subscriptionid, $pollintervals[$subscriptionid], $action);
         } catch (moodle_exception $e) {
             // If exception caught, then user should be redirected to page where he/she came from.
             print_error($e->errorcode, $e->module, $PAGE->url);
