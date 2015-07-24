@@ -105,7 +105,7 @@ class auth_plugin_db extends auth_plugin_base {
 
             $authdb = $this->db_init();
 
-            $rs = $authdb->Execute("SELECT {$this->config->fieldpass} AS userpass
+            $rs = $authdb->Execute("SELECT {$this->config->fieldpass}
                                       FROM {$this->config->table}
                                      WHERE {$this->config->fielduser} = '".$this->ext_addslashes($extusername)."'");
             if (!$rs) {
@@ -119,8 +119,7 @@ class auth_plugin_db extends auth_plugin_base {
                 return false;
             }
 
-            $fields = array_change_key_case($rs->fields, CASE_LOWER);
-            $fromdb = $fields['userpass'];
+            $fromdb = $rs->fields[0];
             $rs->Close();
             $authdb->Close();
 
@@ -477,15 +476,14 @@ class auth_plugin_db extends auth_plugin_base {
         $authdb = $this->db_init();
 
         // Fetch userlist.
-        $rs = $authdb->Execute("SELECT {$this->config->fielduser} AS username
+        $rs = $authdb->Execute("SELECT {$this->config->fielduser}
                                   FROM {$this->config->table} ");
 
         if (!$rs) {
             print_error('auth_dbcantconnect','auth_db');
         } else if (!$rs->EOF) {
             while ($rec = $rs->FetchRow()) {
-                $rec = (object)array_change_key_case((array)$rec , CASE_LOWER);
-                array_push($result, $rec->username);
+                array_push($result, $rec[0]);
             }
         }
 
