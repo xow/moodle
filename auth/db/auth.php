@@ -105,7 +105,7 @@ class auth_plugin_db extends auth_plugin_base {
 
             $authdb = $this->db_init();
 
-            $rs = $authdb->Execute("SELECT {$this->config->fieldpass} AS userpass
+            $rs = $authdb->Execute("SELECT {$this->config->fieldpass}
                                       FROM {$this->config->table}
                                      WHERE {$this->config->fielduser} = '".$this->ext_addslashes($extusername)."'");
             if (!$rs) {
@@ -120,7 +120,7 @@ class auth_plugin_db extends auth_plugin_base {
             }
 
             $fields = array_change_key_case($rs->fields, CASE_LOWER);
-            $fromdb = $fields['userpass'];
+            $fromdb = $fields[strtolower($this->config->fieldpass)];
             $rs->Close();
             $authdb->Close();
 
@@ -207,7 +207,7 @@ class auth_plugin_db extends auth_plugin_base {
         if ($selectfields) {
             $select = array();
             foreach ($selectfields as $localname=>$externalname) {
-                $select[] = "$externalname AS $localname";
+                $select[] = "$externalname";
             }
             $select = implode(', ', $select);
             $sql = "SELECT $select
@@ -218,7 +218,8 @@ class auth_plugin_db extends auth_plugin_base {
                     $fields_obj = $rs->FetchObj();
                     $fields_obj = (object)array_change_key_case((array)$fields_obj , CASE_LOWER);
                     foreach ($selectfields as $localname=>$externalname) {
-                        $result[$localname] = core_text::convert($fields_obj->{strtolower($localname)}, $this->config->extencoding, 'utf-8');
+                        $value = $fields_obj->{strtolower($externalname)};
+                        $result[$localname] = core_text::convert($value, $this->config->extencoding, 'utf-8');
                      }
                  }
                  $rs->Close();
@@ -477,15 +478,15 @@ class auth_plugin_db extends auth_plugin_base {
         $authdb = $this->db_init();
 
         // Fetch userlist.
-        $rs = $authdb->Execute("SELECT {$this->config->fielduser} AS username
+        $rs = $authdb->Execute("SELECT {$this->config->fielduser}
                                   FROM {$this->config->table} ");
 
         if (!$rs) {
             print_error('auth_dbcantconnect','auth_db');
         } else if (!$rs->EOF) {
             while ($rec = $rs->FetchRow()) {
-                $rec = (object)array_change_key_case((array)$rec , CASE_LOWER);
-                array_push($result, $rec->username);
+                $rec = array_change_key_case((array)$rec, CASE_LOWER);
+                array_push($result, $rec[strtolower($this->config->fielduser)]);
             }
         }
 
