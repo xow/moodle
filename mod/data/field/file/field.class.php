@@ -93,7 +93,9 @@ class data_field_file extends data_field_base {
         // Print out file manager.
 
         $output = $PAGE->get_renderer('core', 'files');
+        $html .= '<div class="mod-data-input">';
         $html .= $output->render($fm);
+        $html .= '</div>';
         $html .= '</fieldset>';
         $html .= '</div>';
 

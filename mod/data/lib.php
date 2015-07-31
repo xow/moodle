@@ -294,7 +294,7 @@ class data_field_base {     // Base class for Database Field Types (see field/*/
                                      array('class' => 'req', 'title' => get_string('requiredelement', 'form')));
             $str .= html_writer::div($image, 'inline-req');
         }
-        $str .= '</label><input class="basefieldinput" type="text" name="field_'.$this->field->id.'" id="field_'.$this->field->id;
+        $str .= '</label><input class="basefieldinput mod-data-input" type="text" name="field_'.$this->field->id.'" id="field_'.$this->field->id;
         $str .= '" value="'.s($content).'" />';
         $str .= '</div>';
 

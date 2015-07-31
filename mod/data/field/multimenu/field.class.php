@@ -55,7 +55,7 @@ class data_field_multimenu extends data_field_base {
             $str .= '</div>';
         }
         $str .= '</label>';
-        $str .= '<select name="field_' . $this->field->id . '[]" id="field_' . $this->field->id . '" multiple="multiple">';
+        $str .= '<select name="field_' . $this->field->id . '[]" id="field_' . $this->field->id . '" multiple="multiple" class="mod-data-input">';
 
         foreach (explode("\n", $this->field->param1) as $option) {
             $option = trim($option);

@@ -75,7 +75,7 @@ class data_field_url extends data_field_base {
 
         if ($autolinkable) {
             $str .= '<table><tr><td align="right">';
-            $str .= get_string('url', 'data') . ':';
+            $str .= '<span class="mod-data-input">' . get_string('url', 'data') . ':</span>';
             if (!empty($image)) {
                 $str .= $image;
             }
@@ -83,12 +83,13 @@ class data_field_url extends data_field_base {
             $str .= $label;
             $str .= '<input type="text" name="field_'.$this->field->id.'_0" id="'.$fieldid.'" value="'.$url.'" size="60" />';
             $str .= '<button id="filepicker-button-'.$options->client_id.'" style="display:none">'.$straddlink.'</button></td></tr>';
-            $str .= '<tr><td align="right">'.get_string('text','data').':</td><td><input type="text" name="field_'.$this->field->id.'_1" id="field_'.$this->field->id.'_1" value="'.s($text).'" size="60" /></td></tr>';
+            $str .= '<tr><td align="right"><span class="mod-data-input">'.get_string('text','data').':</span></td><td>';
+            $str .= '<input type="text" name="field_'.$this->field->id.'_1" id="field_'.$this->field->id.'_1" value="'.s($text).'" size="60" /></td></tr>';
             $str .= '</table>';
         } else {
             // Just the URL field
             $str .= $label;
-            $str .= '<input type="text" name="field_'.$this->field->id.'_0" id="'.$fieldid.'" value="'.s($url).'" size="60" />';
+            $str .= '<input type="text" name="field_'.$this->field->id.'_0" id="'.$fieldid.'" value="'.s($url).'" size="60" class="mod-data-input" />';
             if (count($options->repositories) > 0) {
                 $str .= '<button id="filepicker-button-'.$options->client_id.'" class="visibleifjs">'.$straddlink.'</button>';
             }
