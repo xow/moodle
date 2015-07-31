@@ -146,6 +146,7 @@ class data_field_textarea extends data_field_base {
         }
         $editor->use_editor($field, $options, $fpoptions);
         $str .= '<input type="hidden" name="'.$field.'_itemid" value="'.$draftitemid.'" />';
+        $str .= '<div class="mod-data-input">';
         $str .= '<div><textarea id="'.$field.'" name="'.$field.'" rows="'.$this->field->param3.'" cols="'.$this->field->param2.'" spellcheck="true">'.s($text).'</textarea></div>';
         $str .= '<div><label class="accesshide" for="' . $field . '_content1">' . get_string('format') . '</label>';
         $str .= '<select id="' . $field . '_content1" name="'.$field.'_content1">';
@@ -155,6 +156,7 @@ class data_field_textarea extends data_field_base {
         }
         $str .= '</select>';
 
+        $str .= '</div>';
         $str .= '</div>';
         $str .= '</div>';
         return $str;
