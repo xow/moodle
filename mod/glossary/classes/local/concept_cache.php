@@ -122,7 +122,7 @@ class concept_cache {
         $concepts = array();
         $rs = $DB->get_recordset_sql($sql);
         foreach ($rs as $concept) {
-            $currentconcept = trim(strip_tags($concept->concept));
+            $currentconcept = trim($concept->concept);
 
             // Concept must be HTML-escaped, so do the same as format_string to turn ampersands into &amp;.
             $currentconcept = replace_ampersands_not_followed_by_entity($currentconcept);
@@ -253,7 +253,7 @@ class concept_cache {
                 return $data;
             }
             foreach ($glossaries as $id => $name) {
-                $name = str_replace(':', '-', $name);
+                $name = str_replace(':', '-', filter_multilang_impl(array($name)));
                 $glossaries[$id] = replace_ampersands_not_followed_by_entity(strip_tags($name));
             }
             $allconcepts = self::fetch_concepts(array_keys($glossaries));

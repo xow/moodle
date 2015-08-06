@@ -65,6 +65,7 @@ if ($entries) {
             'objectid' => $entry->id,
             'context' => $modinfo->cms[$entry->cmid]->context
         ));
+        $entries[$key]->concept = filter_multilang_impl(array($entries[$key]->concept)); // TRREE: Filter concept for multilang installations
         $event->add_record_snapshot('glossary_entries', $entry);
         $event->trigger();
     }

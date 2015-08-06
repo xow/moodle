@@ -52,7 +52,9 @@ class filter_glossary extends moodle_text_filter {
 
     public function filter($text, array $options = array()) {
         global $CFG, $USER, $GLOSSARY_EXCLUDEENTRY;
-
+        if (strpos($_SERVER['REQUEST_URI'],"glossary")) {
+            return $text;   // TRREE: By-pass filtering of glossary entries
+        }
         // Try to get current course.
         $coursectx = $this->context->get_course_context(false);
         if (!$coursectx) {
@@ -90,6 +92,7 @@ class filter_glossary extends moodle_text_filter {
 
         foreach ($allconcepts as $concepts) {
             foreach ($concepts as $concept) {
+                $concept->concept = filter_multilang_impl(array($concept->concept)); // TRREE: Filter text for multilang instances
                 if (!empty($GLOSSARY_EXCLUDEENTRY) and $concept->id == $GLOSSARY_EXCLUDEENTRY) {
                     $excluded = true;
                     continue;
@@ -104,7 +107,7 @@ class filter_glossary extends moodle_text_filter {
                         'class' => 'glossary autolink category glossaryid' . $concept->glossaryid);
 
                 } else { // Link to entry or alias
-                    $title = $glossaries[$concept->glossaryid] . ': ' . $concept->concept;
+                    $title = $glossaries[$concept->glossaryid] . ' => ' . ucfirst($concept->concept);
                     // Hardcoding dictionary format in the URL rather than defaulting
                     // to the current glossary format which may not work in a popup.
                     // for example "entry list" means the popup would only contain

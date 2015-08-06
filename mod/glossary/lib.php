@@ -1111,7 +1111,7 @@ function glossary_print_entry_default ($entry, $glossary, $cm) {
 function  glossary_print_entry_concept($entry, $return=false) {
     global $OUTPUT;
 
-    $text = $OUTPUT->heading(format_string($entry->concept), 4);
+    $text = $OUTPUT->heading(filter_multilang_impl(array($entry->concept)), 4);
     if (!empty($entry->highlight)) {
         $text = highlight($entry->highlight, $text);
     }
@@ -1133,8 +1133,7 @@ function  glossary_print_entry_concept($entry, $return=false) {
 function glossary_print_entry_definition($entry, $glossary, $cm) {
     global $GLOSSARY_EXCLUDEENTRY;
 
-    $definition = $entry->definition;
-
+    $definition = filter_multilang_impl(array($entry->definition));
     // Do not link self.
     $GLOSSARY_EXCLUDEENTRY = $entry->id;
 

@@ -84,6 +84,8 @@ if ($entries) {
             'objectid' => $entry->id,
             'context' => $modinfo->cms[$entry->cmid]->context
         ));
+        // Filter text for multilang installations
+        $entries[$key]->concept = filter_multilang_impl(array($entries[$key]->concept));
         $event->add_record_snapshot('glossary_entries', $entry);
         $event->trigger();
     }

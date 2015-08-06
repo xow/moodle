@@ -1589,7 +1589,7 @@ function clean_text($text, $format = FORMAT_HTML, $options = array()) {
     }
 
     if (is_purify_html_necessary($text)) {
-        $text = purify_html($text, $options);
+        //$text = purify_html($text, $options); // TRREE prevent cleaning as all inputs are trusted
     }
 
     // Originally we tried to neutralise some script events here, it was a wrong approach because

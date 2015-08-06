@@ -45,6 +45,21 @@ $userid = '';
 if ( isloggedin() ) {
     $userid = "OR ge.userid = :myid";
 }
+
+$languages = get_string_manager()->get_list_of_translations(); // Check for multilang glossaries
+if (count($languages) < 2) {
+    $concept = 'concept';
+}
+else {
+    $current_lang = current_language();
+    $concept = "SUBSTRING_INDEX(
+                        SUBSTRING(concept,
+                                IF(LOCATE('<span lang=\"$current_lang\" class=\"multilang\">',concept)>0,
+                                LOCATE('<span lang=\"$current_lang\" class=\"multilang\">',concept)+34,
+                                LOCATE('<span class=\"multilang\" lang=\"$current_lang\">',concept)+34
+                                )),'</span>',1)";
+}
+
 switch ($tab) {
     case GLOSSARY_CATEGORY_VIEW:
         if ($hook == GLOSSARY_SHOW_ALL_CATEGORIES  ) {
@@ -62,14 +77,14 @@ switch ($tab) {
         } elseif ($hook == GLOSSARY_SHOW_NOT_CATEGORISED ) {
 
             $printpivot = 0;
-            $sqlselect = "SELECT ge.*, concept AS glossarypivot";
+            $sqlselect = "SELECT ge.*, $concept AS glossarypivot";
             $sqlfrom   = "FROM {glossary_entries} ge LEFT JOIN {glossary_entries_categories} gec
                                ON ge.id = gec.entryid";
             $sqlwhere  = "WHERE (glossaryid = :gid1 OR sourceglossaryid = :gid2) AND
                           (ge.approved <> 0 $userid) AND gec.entryid IS NULL";
 
 
-            $sqlorderby = ' ORDER BY concept';
+            $sqlorderby = ' ORDER BY glossarypivot';
 
         } else {
 
@@ -99,13 +114,13 @@ switch ($tab) {
             $where = "AND " . $DB->sql_substr("upper($usernamefield)", 1, core_text::strlen($hook)) . " = :hookup";
         }
 
-        $sqlselect  = "SELECT ge.*, $usernamefield AS glossarypivot, 1 AS userispivot ";
+        $sqlselect  = "SELECT ge.*, $concept as filtered_concept, $usernamefield AS glossarypivot, 1 AS userispivot ";
         $sqlfrom    = "FROM {glossary_entries} ge, {user} u";
         $sqlwhere   = "WHERE ge.userid = u.id  AND
                              (ge.approved <> 0 $userid)
                              $where AND
                              (ge.glossaryid = :gid1 OR ge.sourceglossaryid = :gid2)";
-        $sqlorderby = "ORDER BY $usernamefield $sqlsortorder, ge.concept";
+        $sqlorderby = "ORDER BY $usernamefield $sqlsortorder, filtered_concept";
         break;
     case GLOSSARY_APPROVAL_VIEW:
         $fullpivot = 0;
@@ -133,7 +148,7 @@ switch ($tab) {
         $printpivot = 0;
     case GLOSSARY_STANDARD_VIEW:
     default:
-        $sqlselect  = "SELECT ge.*, ge.concept AS glossarypivot";
+        $sqlselect  = "SELECT ge.*, $concept AS glossarypivot";
         $sqlfrom    = "FROM {glossary_entries} ge";
 
         $where = '';
@@ -162,10 +177,10 @@ switch ($tab) {
 
                     if (empty($fullsearch)) {
                         // With fullsearch disabled, look only within concepts and aliases.
-                        $concat = $DB->sql_concat('ge.concept', "' '", "COALESCE(al.alias, :emptychar".$i.")");
+                        $concat = $DB->sql_concat($concept, "' '", "COALESCE(al.alias, :emptychar".$i.")");
                     } else {
                         // With fullsearch enabled, look also within definitions.
-                        $concat = $DB->sql_concat('ge.concept', "' '", 'ge.definition', "' '", "COALESCE(al.alias, :emptychar".$i.")");
+                        $concat = $DB->sql_concat($concept, "' '", 'ge.definition', "' '", "COALESCE(al.alias, :emptychar".$i.")");
                     }
                     $params['emptychar'.$i] = '';
 
@@ -212,9 +227,9 @@ switch ($tab) {
                     $searchcond = implode(" AND ", $searchcond);
 
                     // Need one inner view here to avoid distinct + text
-                    $sqlwrapheader = 'SELECT ge.*, ge.concept AS glossarypivot
+                    $sqlwrapheader = "SELECT ge.*, $concept AS glossarypivot
                                         FROM {glossary_entries} ge
-                                        JOIN ( ';
+                                        JOIN ( ";
                     $sqlwrapfooter = ' ) gei ON (ge.id = gei.id)';
 
                     $sqlselect  = "SELECT DISTINCT ge.id";
@@ -240,7 +255,7 @@ switch ($tab) {
             case 'letter':
                 if ($hook != 'ALL' and $hook != 'SPECIAL' and ($hookstrlen = core_text::strlen($hook))) {
                     $params['hookup'] = core_text::strtoupper($hook);
-                    $where = "AND " . $DB->sql_substr("upper(concept)", 1, $hookstrlen) . " = :hookup";
+                    $where = "AND " . $DB->sql_substr($concept, 1, $hookstrlen) . " = :hookup";
                 }
                 if ($hook == 'SPECIAL') {
                     //Create appropiate IN contents
@@ -261,7 +276,7 @@ switch ($tab) {
                 break;
 
             case GLOSSARY_STANDARD_VIEW:
-                $sqlorderby = "ORDER BY ge.concept";
+                $sqlorderby = "ORDER BY glossarypivot ASC";
             default:
                 break;
         }
