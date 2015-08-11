@@ -337,11 +337,22 @@ abstract class scheduled_task extends task_base {
             if (is_numeric($CFG->timezone)) {
                 $timezonerow = $DB->get_record('timezone', array('gmtoff' => $CFG->timezone * 60), '*', IGNORE_MULTIPLE);
 
-                // Some of the timezones with a .5 do not map to anything.  For those that do not
-                // map to anything, try rounding down and re-fetching the timezone record.
-                $rounded = round($CFG->timezone, 0, PHP_ROUND_HALF_DOWN);
-                if (empty($timezonerow) && $rounded != $CFG->timezone) {
-                    $timezonerow = $DB->get_record('timezone', array('gmtoff' => $rounded * 60), '*', IGNORE_MULTIPLE);
+                if (empty($timezonerow)) {
+                    $timezonerows = $DB->get_records('timezone', null, '', 'id, name, gmtoff');
+
+                    $search = $CFG->timezone * 60;
+                    $closest = null;
+                    foreach ($timezonerows as $row) {
+                        $item = $row->gmtoff;
+                        if ($closest === null || abs($search - $closest) > abs($item - $search)) {
+                            $timezonerow = $row;
+                            $closest = $row->gmtoff;
+                        }
+                    }
+                    print_object(($CFG->timezone) . ' becomes ' . ( $timezonerow->gmtoff / 60 ) . ' (' . $timezonerow->name . ')');
+
+                    $timezonerow = new \stdClass();
+                    $timezonerow->name = $origtz;
                 }
                 if (!empty($timezonerow)) {
                     date_default_timezone_set($timezonerow->name);
