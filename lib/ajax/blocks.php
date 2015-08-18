@@ -64,12 +64,7 @@ switch ($pagetype[0]) {
         break;
     case 'user':
         if ($pagelayout == 'mydashboard') {
-            // If it's not the current user's profile, we need a different capability.
-            if ($PAGE->context->contextlevel == CONTEXT_USER && $PAGE->context->instanceid != $USER->id) {
-                $PAGE->set_blocks_editing_capability('moodle/user:manageblocks');
-            } else {
-                $PAGE->set_blocks_editing_capability('moodle/user:manageownblocks');
-            }
+            $PAGE->set_blocks_editing_capability('moodle/user:manageblocks');
         }
         break;
 }

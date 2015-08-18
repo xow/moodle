@@ -112,11 +112,7 @@ if (isguestuser()) {     // Guests can never edit their profile.
     $USER->editing = $edit = 0;  // Just in case.
     $PAGE->set_blocks_editing_capability('moodle/my:configsyspages');  // unlikely :).
 } else {
-    if ($currentuser) {
-        $PAGE->set_blocks_editing_capability('moodle/user:manageownblocks');
-    } else {
-        $PAGE->set_blocks_editing_capability('moodle/user:manageblocks');
-    }
+    $PAGE->set_blocks_editing_capability('moodle/user:manageblocks');
 }
 
 if (has_capability('moodle/user:viewhiddendetails', $context)) {

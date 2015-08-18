@@ -560,16 +560,15 @@ $capabilities = array(
         'contextlevel' => CONTEXT_USER
     ),
 
-    // can the user manage their own profile page?
+    // Deprecated since Moodle 2.8.8 MDL-51067 - please do not use this capability any more.
+    // TODO MDL-XXXXX This will be deleted in Moodle 3.2.
     'moodle/user:manageownblocks' => array(
 
         'riskbitmap' => RISK_SPAM | RISK_PERSONAL,
 
         'captype' => 'write',
         'contextlevel' => CONTEXT_SYSTEM,
-        'archetypes' => array(
-            'user' => CAP_ALLOW
-        )
+        'archetypes' => array()
     ),
 
     // can the user manage their own files?
