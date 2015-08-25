@@ -233,6 +233,13 @@ class moodle_page {
     protected $_requires = null;
 
     /**
+     * @since Moodle 2.9.2
+     * @var string The capability required by the user in order to add blocks
+     * to this page. Null means default to the editing capability
+     */
+    protected $_blocksaddingcap = null;
+
+    /**
      * @var string The capability required by the user in order to edit blocks
      * and block settings on this page.
      */
@@ -836,6 +843,19 @@ class moodle_page {
     }
 
     /**
+     * Does the user have permission to add blocks to this page.
+     * @return bool
+     * @since Moodle 2.9.2
+     */
+    public function user_can_add_blocks() {
+        $addcapability = $this->_blocksaddingcap;
+        if (empty($addcapability)) {
+            $addcapability = $this->_blockseditingcap;
+        }
+        return has_capability($addcapability, $this->_context);
+    }
+
+    /**
      * Does the user have permission to edit blocks on this page.
      * @return bool
      */
@@ -1287,6 +1307,21 @@ class moodle_page {
      */
     public function set_button($html) {
         $this->_button = $html;
+    }
+
+    /**
+     * Set the capability that allows users to add blocks on this page.
+     *
+     * Normally the default of 'moodle/site:manageblocks' is used, but a few
+     * pages like the My Moodle page need to use a different capability
+     * like 'moodle/my:manageblocks'. Set to null to always use the editing
+     * capability.
+     *
+     * @param string $capability a capability.
+     * @since Moodle 2.9.2
+     */
+    public function set_blocks_adding_capability($capability) {
+        $this->_blocksaddingcap = $capability;
     }
 
     /**
