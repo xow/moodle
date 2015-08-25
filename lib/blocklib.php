@@ -1922,7 +1922,7 @@ function mod_page_type_list($pagetype, $parentcontext = null, $currentcontext = 
  */
 function block_add_block_ui($page, $output) {
     global $CFG, $OUTPUT;
-    if (!$page->user_is_editing() || !$page->user_can_edit_blocks()) {
+    if (!$page->user_is_editing() || !$page->user_can_add_blocks()) {
         return null;
     }
 
