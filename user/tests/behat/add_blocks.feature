@@ -2,7 +2,7 @@
 Feature: Add blocks to my profile page
   In order to add more functionality to my profile page
   As a user
-  I need to add blocks to my profile page
+  I need to add blocks to my profile page only if I have the capability
 
   Background:
     Given the following "users" exist:
@@ -16,10 +16,16 @@ Feature: Add blocks to my profile page
       | user | course | role |
       | student1 | C1 | student |
       | student2 | C1 | student |
-    And I log in as "admin"
-    And I follow "View profile"
-
   Scenario: Add blocks to page
-    When I press "Customise this page"
+    When I log in as "admin"
+    And I follow "View profile"
+    And I press "Customise this page"
     And I add the "Latest announcements" block
     Then I should see "Latest announcements"
+
+
+  Scenario: Add blocks to page
+    When I log in as "student1"
+    And I follow "View profile"
+    And I press "Customise this page"
+    Then I should not see "Add a block"
