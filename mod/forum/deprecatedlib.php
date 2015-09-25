@@ -708,3 +708,86 @@ function forum_get_potential_subscribers($forumcontext, $groupid, $fields, $sort
 
     \mod_forum\subscriptions::get_potential_subscribers($forumcontext, $groupid, $fields, $sort);
 }
+
+/**
+ * Builds and returns the body of the email notification in plain text.
+ *
+ * @global object
+ * @global object
+ * @uses CONTEXT_MODULE
+ * @param object $course
+ * @param object $cm
+ * @param object $forum
+ * @param object $discussion
+ * @param object $post
+ * @param object $userfrom
+ * @param object $userto
+ * @param boolean $bare
+ * @param string $replyaddress The inbound address that a user can reply to the generated e-mail with. [Since 2.8].
+ * @return string The email body in plain text format.
+ * @deprecated since Moodle 3.0 use \mod_forum\output\forum_post instead
+ */
+function forum_make_mail_text($course, $cm, $forum, $discussion, $post, $userfrom, $userto, $bare = false, $replyaddress = null) {
+    $renderable = new \mod_forum\output\forum_post($course, $cm, $forum, $discussion, $post, $userfrom);
+    $renderable->userto = $userto;
+    $renderable->canreply = $reply;
+
+    if ($bare) {
+        $renderer = $PAGE->get_renderer('mod_forum', 'emaildigest', 'textemail');
+    } else {
+        $renderer = $PAGE->get_renderer('mod_forum', 'email', 'textemail');
+    }
+
+    return $renderer->render($renderable);
+}
+
+/**
+ * Builds and returns the body of the email notification in html format.
+ *
+ * @global object
+ * @param object $course
+ * @param object $cm
+ * @param object $forum
+ * @param object $discussion
+ * @param object $post
+ * @param object $userfrom
+ * @param object $userto
+ * @param string $replyaddress The inbound address that a user can reply to the generated e-mail with. [Since 2.8].
+ * @return string The email text in HTML format
+ * @deprecated since Moodle 3.0 use \mod_forum\output\forum_post instead
+ */
+function forum_make_mail_html($course, $cm, $forum, $discussion, $post, $userfrom, $userto, $replyaddress = null) {
+    $renderable = new \mod_forum\output\forum_post($course, $cm, $forum, $discussion, $post, $userfrom);
+    $renderable->userto = $userto;
+    $renderable->canreply = $reply;
+
+    // Assume that this is being used as a standard forum email.
+    $renderer = $PAGE->get_renderer('mod_forum', 'email', 'htmlemail');
+
+    return $renderer->render($renderable);
+}
+
+/**
+ * Given the data about a posting, builds up the HTML to display it and
+ * returns the HTML in a string.  This is designed for sending via HTML email.
+ *
+ * @global object
+ * @param object $course
+ * @param object $cm
+ * @param object $forum
+ * @param object $discussion
+ * @param object $post
+ * @param object $userform
+ * @param object $userto
+ * @param bool $ownpost
+ * @param bool $reply
+ * @param bool $link
+ * @param bool $rate
+ * @param string $footer
+ * @return string
+ * @deprecated since Moodle 3.0 use \mod_forum\output\forum_post instead
+ */
+function forum_make_mail_post($course, $cm, $forum, $discussion, $post, $userfrom, $userto,
+                              $ownpost=false, $reply=false, $link=false, $rate=false, $footer="") {
+    return forum_make_mail_html($course, $cm, $forum, $discussion, $post, $userfrom);
+}
