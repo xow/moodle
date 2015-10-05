@@ -1111,7 +1111,7 @@ function forum_cron() {
                             );
 
                         if ($maildigest == 2) {
-                            // Subjects and link only
+                            // Subjects and link only.
                             $posttext .= $textdigestbasicout->render($data);
                             $posthtml .= $htmldigestbasicout->render($data);
                         } else {

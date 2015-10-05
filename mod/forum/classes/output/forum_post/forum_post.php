@@ -78,6 +78,7 @@ class forum_post implements \renderable {
 
     /**
      * Whether to override forum display when displaying usernames.
+     * @var boolean $viewfullnames
      */
     private $viewfullnames = false;
 
@@ -95,10 +96,27 @@ class forum_post implements \renderable {
      */
     private $author = null;
 
-    private $writableKeys = array(
+    /**
+     * An associative array indicating which keys on this object should be writeable.
+     *
+     * @var array $writablekeys
+     */
+    private $writablekeys = array(
         'viewfullnames'    => true,
     );
 
+    /**
+     * Builds a renderable forum post
+     *
+     * @param object $course Course of the forum
+     * @param object $cm Course Module of the forum
+     * @param object $forum The forum of the post
+     * @param object $discussion Discussion thread in which the post appears
+     * @param object $post The post
+     * @param object $author Author of the post
+     * @param object $recipient Recipient of the email
+     * @param bool $canreply True if the user can reply to the post
+     */
     public function __construct($course, $cm, $forum, $discussion, $post, $author, $recipient, $canreply) {
         $this->course = $course;
         $this->cm = $cm;
@@ -113,7 +131,8 @@ class forum_post implements \renderable {
     /**
      * Export this data so it can be used as the context for a mustache template.
      *
-     * @return stdClass
+     * @param \mod_forum_renderer $renderer The render to be used for formatting the message and attachments
+     * @return stdClass Data ready for use in a mustache template
      */
     public function export_for_template(\mod_forum_renderer $renderer) {
         return array(
@@ -150,6 +169,12 @@ class forum_post implements \renderable {
         );
     }
 
+    /**
+     * Magically sets a property against this object.
+     *
+     * @param string $key
+     * @param mixed $value
+     */
     public function __set($key, $value) {
         // First attempt to use the setter function.
         $methodname = 'set_' . $key;
@@ -158,7 +183,7 @@ class forum_post implements \renderable {
         }
 
         // Fall back to the writable keys list.
-        if (isset($this->writableKeys[$key]) && $this->writableKeys[$key]) {
+        if (isset($this->writablekeys[$key]) && $this->writablekeys[$key]) {
             $this->{$key} = $value;
         }
     }

@@ -26,6 +26,14 @@ namespace mod_forum\output\email;
 
 defined('MOODLE_INTERNAL') || die();
 
+/**
+ * Renderer class for manage subscriptions page.
+ *
+ * @since      Moodle 3.0
+ * @package    mod_forum
+ * @copyright  2015 Andrew Nicols <andrew@nicols.co.uk>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class renderer extends \mod_forum_renderer {
 
     /**

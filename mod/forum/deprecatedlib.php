@@ -712,8 +712,6 @@ function forum_get_potential_subscribers($forumcontext, $groupid, $fields, $sort
 /**
  * Builds and returns the body of the email notification in plain text.
  *
- * @global object
- * @global object
  * @uses CONTEXT_MODULE
  * @param object $course
  * @param object $cm
@@ -744,7 +742,6 @@ function forum_make_mail_text($course, $cm, $forum, $discussion, $post, $userfro
 /**
  * Builds and returns the body of the email notification in html format.
  *
- * @global object
  * @param object $course
  * @param object $cm
  * @param object $forum
@@ -771,13 +768,12 @@ function forum_make_mail_html($course, $cm, $forum, $discussion, $post, $userfro
  * Given the data about a posting, builds up the HTML to display it and
  * returns the HTML in a string.  This is designed for sending via HTML email.
  *
- * @global object
  * @param object $course
  * @param object $cm
  * @param object $forum
  * @param object $discussion
  * @param object $post
- * @param object $userform
+ * @param object $userfrom
  * @param object $userto
  * @param bool $ownpost
  * @param bool $reply
