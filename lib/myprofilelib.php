@@ -121,7 +121,8 @@ function core_myprofile_navigation(core_user\output\myprofile\tree $tree, $user,
     }
 
     // Contact details.
-    if (has_capability('moodle/user:viewhiddendetails', $courseorusercontext)) {
+    if (has_capability('moodle/user:viewhiddendetails', $courseorusercontext) ||
+                has_capability('moodle/course:viewhiddenuserfields', $courseorusercontext)) {
         $hiddenfields = array();
     } else {
         $hiddenfields = array_flip(explode(',', $CFG->hiddenuserfields));
