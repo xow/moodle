@@ -97,6 +97,16 @@ class MoodleQuickForm_text extends HTML_QuickForm_text{
      * @return string
      */
     function toHtml(){
+        global $PAGE;
+        $renderer = new renderer_base($PAGE, '');
+        return $renderer->render_from_template(
+            'form/text',
+            array(
+                'name' => $this->getAttribute('name'),
+                'id' => $this->getAttribute('id'),
+                'form' => 'mod_formtest_mod_form'
+            )
+        );
         if ($this->_hiddenLabel){
             $this->_generateId();
             return '<label class="accesshide" for="'.$this->getAttribute('id').'" >'.
