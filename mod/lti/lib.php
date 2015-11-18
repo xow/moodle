@@ -539,6 +539,33 @@ function lti_view($lti, $course, $cm, $context) {
     $completion->set_module_viewed($cm);
 }
 
+function lti_check_type_for_cartridge($type) {
+    if (preg_match('/\.xml$/', $type->lti_toolurl)) {
+        lti_load_cartridge($type->lti_toolurl, $type);
+    }
+}
+
+/**
+ * Allows you to load settings for an external tool type from an IMS cartridge.
+ *
+ * @param  string   $url     The URL to the cartridge
+ * @param  stdClass $type    The tool type object to be filled in
+ * @since Moodle 3.1
+ */
+function lti_load_cartridge($url, $type) {
+    $cartridge = new DOMDocument();
+    $cartridge->load($url);
+
+    $errors = libxml_get_errors();
+    foreach ($errors as $error) {
+        print_error(sprintf("%s at line %d. ", trim($error->message, "\n\r\t ."), $error->line));
+    }
+
+    $type->lti_typename = getTag("title", $cartridge) ?: $type->lti_typename;
+    $type->lti_toolurl = getTag("launch_url", $cartridge) ?: $type->lti_toolurl;
+    $type->lti_icon = getTag("icon", $cartridge) ?: $type->lti_icon;
+}
+
 function lti_check_for_cartridge($lti) {
     if (preg_match('/\.xml$/', $lti->toolurl)) {
         lti_tool_from_cartridge($lti->toolurl, $lti);
