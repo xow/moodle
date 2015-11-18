@@ -97,6 +97,8 @@ function lti_add_instance($lti, $mform) {
         $lti->toolurl = '';
     }
 
+    lti_check_for_cartridge($lti);
+
     $lti->timecreated = time();
     $lti->timemodified = $lti->timecreated;
     $lti->servicesalt = uniqid('', true);
@@ -136,6 +138,8 @@ function lti_add_instance($lti, $mform) {
 function lti_update_instance($lti, $mform) {
     global $DB, $CFG;
     require_once($CFG->dirroot.'/mod/lti/locallib.php');
+
+    lti_check_for_cartridge($lti);
 
     $lti->timemodified = time();
     $lti->id = $lti->instance;
@@ -533,4 +537,45 @@ function lti_view($lti, $course, $cm, $context) {
     // Completion.
     $completion = new completion_info($course);
     $completion->set_module_viewed($cm);
+}
+
+function lti_check_for_cartridge($lti) {
+    if (preg_match('/\.xml$/', $lti->toolurl)) {
+        lti_tool_from_cartridge($lti->toolurl, $lti);
+    }
+}
+
+/**
+ * Allows you to load in the configuration for an external tool from an IMS cartridge.
+ *
+ * @param  string   $url    The URL to the cartridge
+ * @param  stdClass $lti    LTI object
+ * @since Moodle 3.1
+ */
+function lti_tool_from_cartridge($url, $lti) {
+    $cartridge = new DOMDocument();
+    $cartridge->load($url);
+
+    $errors = libxml_get_errors();
+    foreach ($errors as $error) {
+        print_error(sprintf("%s at line %d. ", trim($error->message, "\n\r\t ."), $error->line));
+    }
+
+    $lti->toolurl = getTag("launch_url", $cartridge) ?: $lti->toolurl;
+    $lti->icon = getTag("icon", $cartridge) ?: $lti->icon;
+}
+
+/**
+ * Search for a tag within an XML DOMDocument
+ *
+ * @param  stdClass    $tagName The name of the tag to search for
+ * @param  DOMDocument $xml     The XML to find the tag in
+ * @since Moodle 3.1
+ */
+function getTag($tagName, $xml) {
+    $tags = $xml->getElementsByTagName($tagName);
+    if ($tags->length > 0) {
+        return $tags->item(0)->nodeValue;
+    }
+    return null;
 }
