@@ -257,6 +257,7 @@ Tool types listed on this page are separated into three categories:
         Teachers may still use tools from these providers if they have a consumer key and shared secret, or if none is required.
 * **Rejected** - These tools providers are flagged as ones which an administrator has no intention of making available to the entire
         Moodle instance. Teachers may still use tools from these providers if they have a consumer key and shared secret, or if none is required.';
+$string['manage_external_tools'] = 'Manage external tools';
 $string['manage_tools'] = 'Manage external tool types';
 $string['manage_tool_proxies'] = 'Manage external tool registrations';
 $string['miscellaneous'] = 'Miscellaneous';
