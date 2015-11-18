@@ -38,14 +38,30 @@
 <div class="fluid-container">
     <div id="registration-form-container">
         <h3>Add new external tool</h3>
-        <form id="registration-form" class="form-inline">
-            <input name="tool-url" class="input-xxlarge" type="text" placeholder="URL for XML cartridge or tool registration page..."></input>
-            <button class="btn btn-success">Automatically configure</button>
-            or <a href="{{configuremanualurl}}">Configure manually</a>
-            <label>
-                Tool name
-                <input name="tool-name" type="text">
-            </label>
+        <form id="registration-form" class="form-horizontal">
+            <div class="control-group">
+                <label class="control-label" for="registration-url">URL</label>
+                <div class="controls">
+                    <input name="tool-url"
+                        class="input-xxlarge"
+                        type="url"
+                        id="registration-url"
+                        placeholder="URL for XML cartridge or tool registration page..."
+                        required>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="tool-name">Name</label>
+                <div class="controls">
+                    <input name="tool-name" type="text" id="registration-name" disabled>
+                </div>
+            </div>
+            <div class="control-group">
+                <div class="controls">
+                    <button id="registration-submit" class="btn btn-success">Add automatically</button>
+                    or <a href="{{configuremanualurl}}">Add manually</a>
+                </div>
+            </div>
         </form>
     </div>
 
@@ -54,5 +70,7 @@
     </div>
 </div>
 {{#js}}
-
+    require(['mod_lti/tool_configure'], function(toolConfigure) {
+        toolConfigure.enhancePage();
+    });
 {{/js}}
