@@ -563,7 +563,7 @@ function lti_load_cartridge($url, $type) {
 
     $type->lti_typename = getTag("title", $cartridge) ?: $type->lti_typename;
     $type->lti_toolurl = getTag("launch_url", $cartridge) ?: $type->lti_toolurl;
-    $type->lti_icon = getTag("icon", $cartridge) ?: $type->lti_icon;
+    $type->lti_icon = getTag("property", $cartridge, "icon_url") ?: $type->lti_icon;
 }
 
 function lti_check_for_cartridge($lti) {
@@ -599,10 +599,15 @@ function lti_tool_from_cartridge($url, $lti) {
  * @param  DOMDocument $xml     The XML to find the tag in
  * @since Moodle 3.1
  */
-function getTag($tagName, $xml) {
-    $tags = $xml->getElementsByTagName($tagName);
-    if ($tags->length > 0) {
-        return $tags->item(0)->nodeValue;
+function getTag($tagName, $xml, $attribute = null) {
+    if ($attribute) {
+        $xpath = new DomXpath($xml);
+        $result = $xpath->query('//*[local-name() = \'' . $tagName . '\'][@name="' . $attribute . '"]');
+    } else {
+        $result = $xml->getElementsByTagName($tagName);
+    }
+    if ($result->length > 0) {
+        return $result->item(0)->nodeValue;
     }
     return null;
 }
