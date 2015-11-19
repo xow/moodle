@@ -23,8 +23,6 @@
  */
 namespace mod_lti\output;
 
-#require_once(__DIR__.'/../../../../config.php');
-
 use moodle_url;
 use renderable;
 use templatable;
@@ -40,6 +38,20 @@ use core_plugin_manager;
  */
 class tool_configure_page implements renderable, templatable {
 
+    private function deserialise_tool_type(stdClass $type) {
+        return array(
+            'name' => $type->name,
+            'description' => isset($type->description) ? $type->description : "Default tool description placeholder until we can code this in.",
+            'iconurl' => isset($type->icon) ? $type->icon : ''
+        );
+    }
+
+    private function get_tool_types() {
+        $types = lti_get_lti_types();
+
+        return array_map(array($this, "deserialise_tool_type"), array_values($types));
+    }
+
     /**
      * Export this data so it can be used as the context for a mustache template.
      *
@@ -50,6 +62,10 @@ class tool_configure_page implements renderable, templatable {
 
         $url = new moodle_url('/mod/lti/typessettings.php', array('sesskey' => sesskey()));
         $data->configuremanualurl = $url->out();
+
+        $data->tools = $this->get_tool_types();
+
+        #print_r($data);
 
         return $data;
     }

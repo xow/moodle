@@ -26,6 +26,7 @@
 
 require_once('../../config.php');
 require_once($CFG->libdir.'/adminlib.php');
+require_once($CFG->dirroot.'/mod/lti/lib.php');
 require_once($CFG->dirroot.'/mod/lti/locallib.php');
 # TODO: Shouldn't these be auto loaded????
 require_once($CFG->dirroot.'/mod/lti/classes/output/tool_configure_page.php');
@@ -36,6 +37,15 @@ $cartridgeurl = optional_param('cartridgeurl', '', PARAM_URL);
 // No guest autologin.
 require_login(0, false);
 admin_externalpage_setup('ltitoolconfigure');
+
+if ($cartridgeurl) {
+    $type = new stdClass();
+    $data = new stdClass();
+    $type->state = LTI_TOOL_STATE_CONFIGURED;
+    $data->lti_coursevisible = 1;
+    lti_load_cartridge($cartridgeurl, $data);
+    lti_add_type($type, $data);
+}
 
 $pageurl = new moodle_url('/mod/lti/toolconfigure.php');
 $PAGE->set_url($pageurl);

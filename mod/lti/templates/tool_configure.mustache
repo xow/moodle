@@ -61,6 +61,23 @@
 
     <div>
         <h3>Configured tools</h3>
+        <div id="tool-card-container" class="container-fluid">
+            {{#tools}}
+                <div class="tool-card">
+                    <div class="tool-card-header">
+                        <img src="{{iconurl}}" alt="{{name}}"></img>
+                    </div>
+                    <div class="tool-card-body">
+                        <h4>{{name}}</h4>
+                        <p>{{description}}</p>
+                    </div>
+                    <div class="tool-card-footer">
+                        <a href="#" class="btn btn-primary">Edit</a>
+                        <a href="#" class="btn btn-danger">Delete</a>
+                    </div>
+                </div>
+            {{/tools}}
+        </div>
     </div>
 </div>
 {{#js}}

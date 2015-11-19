@@ -45,6 +45,33 @@
     display: block;
 }
 
+.tool-card {
+    display: inline-block;
+    width: 300px;
+    height: 300px;
+    border: 1px solid #e5e5e5;
+    border-radius: 10px;
+}
+
+.tool-card-header {
+    height: 125px;
+    text-align: center;
+}
+
+.tool-card-header img {
+    vertical-align: middle;
+}
+
+.tool-card-body {
+    border-top: 1px solid #e5e5e5;
+    height: 125px;
+    padding: 5px;
+}
+
+.tool-card-footer a {
+    margin-left: 10px;
+}
+
 .spinner {
     text-align: center;
 }

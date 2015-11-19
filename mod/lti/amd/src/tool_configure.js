@@ -27,6 +27,7 @@
  */
 define(['jquery'], function($) {
     var SELECTORS = {
+        REGISTRATION_FORM: '#registration-form',
         REGISTRATION_URL: '#registration-url',
         REGISTRATION_SUBMIT_BUTTON: '#registration-submit',
     };
