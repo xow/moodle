@@ -28,45 +28,87 @@
 define(['jquery'], function($) {
     var SELECTORS = {
         REGISTRATION_URL: '#registration-url',
-        REGISTRATION_NAME: '#registration-name',
-        REGISTRATION_SUBMIT_BUTTON: '#registration-submit'
+        REGISTRATION_SUBMIT_BUTTON: '#registration-submit',
+    };
+
+    var KEYS = {
+        ENTER: 13,
+        SPACE: 13
     };
 
     var getRegistrationURL = function() {
         return $(SELECTORS.REGISTRATION_URL);
     };
 
-    var getRegistrationName = function() {
-        return $(SELECTORS.REGISTRATION_NAME);
-    };
-
     var getRegistrationSubmitButton = function() {
         return $(SELECTORS.REGISTRATION_SUBMIT_BUTTON);
     };
 
-    var enableRegistrationName = function() {
-        getRegistrationName().removeAttr('disabled');
+    var getRegistrationSubmitLoadingButton = function() {
+        return $(SELECTORS.REGISTRATION_SUBMIT_LOADING_BUTTON);
     };
 
-    var disableRegistrationName = function() {
-        getRegistrationName().attr('disabled', true);
-    }
-
-    var isURLCartridge = function() {
+    var isCartridgeURL = function() {
         var value = getRegistrationURL().val();
         return /\.xml$/.test(value);
     };
 
-    var handleRegistrationURLChange = function(e) {
-        if (isURLCartridge()) {
-            disableRegistrationName();
-        } else {
-            enableRegistrationName();
+    var startLoading = function() {
+        getRegistrationSubmitButton().addClass('loading');
+    };
+
+    var stopLoading = function() {
+        getRegistrationSubmitButton().removeClass('loading');
+    };
+
+    var isLoading = function() {
+        return getRegistrationSubmitButton().hasClass('loading');
+    }
+
+    var submitCartridgeURL = function() {
+        var cartridgeURL = getRegistrationURL().val();
+        window.location.search = 'cartridgeurl='+cartridgeURL;
+
+        return $.Deferred();
+    };
+
+    var submitRegistrationURL = function() {
+
+    };
+
+    var processURL = function() {
+        if (isLoading()) {
+            return;
         }
+
+        startLoading();
+
+        var promise = null;
+        if (isCartridgeURL()) {
+            promise = submitCartridgeURL();
+        } else {
+            promise = submitRegistrationURL();
+        }
+
+        promise.done(function() {
+            stopLoading();
+        });
     };
 
     var registerEventListeners = function() {
-        getRegistrationURL().on('change input', handleRegistrationURLChange);
+        var submitButton = getRegistrationSubmitButton();
+        submitButton.click(function(e) {
+            e.preventDefault();
+            processURL();
+        });
+        submitButton.keypress(function(e) {
+            if (!e.metaKey && !e.shiftKey && !e.altKey && !e.ctrlKey) {
+                if (e.keyCode == KEYS.ENTER || e.keyCode == KEYS.SPACE) {
+                    e.preventDefault();
+                    processURL();
+                }
+            }
+        });
     };
 
     return {
