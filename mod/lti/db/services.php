@@ -50,4 +50,13 @@ $functions = array(
         'type'          => 'write',
         'capabilities'  => 'mod/lti:view'
     ),
+
+    'mod_lti_create_tool_proxy' => array(
+        'classname'     => 'mod_lti_external',
+        'methodname'    => 'create_tool_proxy',
+        'description'   => 'Create a tool proxy',
+        'type'          => 'write',
+        'capabilities'  => 'mod/lti:manage',
+        'ajax'          => true
+    ),
 );

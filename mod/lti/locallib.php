@@ -1576,9 +1576,15 @@ function lti_add_tool_proxy($config) {
     }
     if (isset($config->lti_capabilities)) {
         $toolproxy->capabilityoffered = implode("\n", $config->lti_capabilities);
+    } else {
+        $toolproxy->capabilityoffered = implode("\n", array_keys(lti_get_capabilities()));
     }
     if (isset($config->lti_services)) {
         $toolproxy->serviceoffered = implode("\n", $config->lti_services);
+    } else {
+        $func = function($s) { return $s->get_name(); };
+        $servicenames = array_map($func, lti_get_services());
+        $toolproxy->serviceoffered = implode("\n", $servicenames);
     }
     if (isset($config->toolproxyid) && !empty($config->toolproxyid)) {
         $toolproxy->id = $config->toolproxyid;

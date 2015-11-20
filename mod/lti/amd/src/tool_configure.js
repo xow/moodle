@@ -25,7 +25,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @since      3.1
  */
-define(['jquery'], function($) {
+define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notification) {
     var SELECTORS = {
         REGISTRATION_FORM: '#registration-form',
         REGISTRATION_URL: '#registration-url',
@@ -74,7 +74,21 @@ define(['jquery'], function($) {
     };
 
     var submitRegistrationURL = function() {
+        var url = getRegistrationURL().val();
+        var request = {
+            methodname: 'mod_lti_create_tool_proxy',
+            args: {
+                regurl: url
+            }
+        };
 
+        var promise = ajax.call([request])[0];
+
+        promise.done(function(result) {
+            stopLoading();
+        });
+
+        return promise;
     };
 
     var processURL = function() {
@@ -93,7 +107,7 @@ define(['jquery'], function($) {
 
         promise.done(function() {
             stopLoading();
-        });
+        }).fail(function() { stopLoading(); }, notification.exception);
     };
 
     var registerEventListeners = function() {

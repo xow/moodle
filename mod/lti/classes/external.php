@@ -334,4 +334,93 @@ class mod_lti_external extends external_api {
             )
         );
     }
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     * @since Moodle 3.0
+     */
+    public static function create_tool_proxy_parameters() {
+        return new external_function_parameters(
+            array(
+                'name' => new external_value(PARAM_ALPHANUM, 'Tool proxy name', VALUE_DEFAULT, ''),
+                'regurl' => new external_value(PARAM_URL, 'Tool proxy registration URL'),
+                'capabilityoffered' => new external_multiple_structure(
+                    new external_value(PARAM_ALPHANUM, 'Tool proxy capabilities offered'),
+                    'Array of capabilities', VALUE_DEFAULT, array()
+                ),
+                'serviceoffered' => new external_multiple_structure(
+                    new external_value(PARAM_ALPHANUM, 'Tool proxy services offered'),
+                    'Array of services', VALUE_DEFAULT, array()
+                )
+            )
+        );
+    }
+
+    /**
+     * Trigger the course module viewed event and update the module completion status.
+     *
+     * @param int $ltiid the lti instance id
+     * @return array of warnings and status result
+     * @since Moodle 3.0
+     * @throws moodle_exception
+     */
+    public static function create_tool_proxy($name, $registrationurl, $capabilityoffered, $serviceoffered) {
+        $params = self::validate_parameters(self::create_tool_proxy_parameters(),
+                                            array(
+                                                'name' => $name,
+                                                'regurl' => $registrationurl,
+                                                'capabilityoffered' => $capabilityoffered,
+                                                'serviceoffered' => $serviceoffered
+                                            ));
+        $warnings = array();
+
+        $context = context_system::instance();
+        self::validate_context($context);
+        require_capability('mod/lti:manage', $context);
+
+        $config = new stdClass();
+        $config->lti_registrationurl = $registrationurl;
+
+        if (!empty($name)) {
+            $config->lti_registrationname = $name;
+        }
+
+        if (!empty($capabilityoffered)) {
+            $config->lti_capabilities = $capabilitiesoffered;
+        }
+
+        if (!empty($serviceoffered)) {
+            $config->lti_services = $serviceoffered;
+        }
+
+        $id = lti_add_tool_proxy($config);
+        return lti_get_tool_proxy($id);
+    }
+
+    /**
+     * Returns description of method result value
+     *
+     * @return external_description
+     * @since Moodle 3.0
+     */
+    public static function create_tool_proxy_returns() {
+        return new external_function_parameters(
+            array(
+                'id' => new external_value(PARAM_INT, 'Tool proxy id'),
+                'name' => new external_value(PARAM_ALPHANUM, 'Tool proxy name'),
+                'regurl' => new external_value(PARAM_URL, 'Tool proxy registration URL'),
+                'state' => new external_value(PARAM_INT, 'Tool proxy state'),
+                'guid' => new external_value(PARAM_ALPHANUM, 'Tool proxy globally unique identifier'),
+                'secret' => new external_value(PARAM_ALPHANUM, 'Tool proxy shared secret'),
+                'vendorcode' => new external_value(PARAM_ALPHANUM, 'Tool proxy consumer code'),
+                'capabilityoffered' => new external_value(PARAM_TEXT, 'Tool proxy capabilities offered'),
+                'serviceoffered' => new external_value(PARAM_TEXT, 'Tool proxy services offered'),
+                'toolproxy' => new external_value(PARAM_TEXT, 'Tool proxy'),
+                'timecreated' => new external_value(PARAM_INT, 'Tool proxy time created'),
+                'timemodified' => new external_value(PARAM_INT, 'Tool proxy modified'),
+            )
+        );
+    }
 }
