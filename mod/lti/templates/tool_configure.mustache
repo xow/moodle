@@ -38,6 +38,7 @@
 <div class="fluid-container">
     <div id="registration-form-container">
         <h3>Add new external tool</h3>
+        <!--
         <form id="registration-form" class="form-inline">
             <input name="tool-url"
                 class="input-xxlarge"
@@ -57,23 +58,77 @@
             </button>
             or <a href="{{configuremanualurl}}">Add manually</a>
         </form>
+        -->
+        <form id="registration-form" class="form-horizontal">
+            <div class="control-group">
+                <label class="control-label" for="registration-url">URL</label>
+                <div class="controls">
+                    <input name="tool-url"
+                        class="input-xxlarge"
+                        type="url"
+                        id="registration-url"
+                        placeholder="XML cartridge or tool registration page..."
+                        required>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="registration-key">Consumer Key</label>
+                <div class="controls">
+                    <input name="tool-key"
+                        type="text"
+                        id="registration-key">
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="registration-secret">Shared Secret</label>
+                <div class="controls">
+                    <input name="tool-secret"
+                        type="text"
+                        id="registration-secret">
+                </div>
+            </div>
+            <div class="control-group">
+                <div class="controls">
+                    <button id="registration-submit" type="button" class="btn btn-success">
+                        <span class="btn-text">Add automatically</span>
+                        <div class="btn-loader">
+                            <div class="spinner">
+                                <div class="bounce1"></div>
+                                <div class="bounce2"></div>
+                                <div class="bounce3"></div>
+                            </div>
+                        </div>
+                    </button>
+                    or <a href="{{configuremanualurl}}">Add manually</a>
+                </div>
+            </div>
+        </form>
     </div>
 
     <div>
-        <h3>Configured tools</h3>
+        <h3>Tools</h3>
         <div id="tool-card-container" class="container-fluid">
             {{#tools}}
                 <div class="tool-card">
                     <div class="tool-card-header">
-                        <img src="{{iconurl}}" alt="{{name}}"></img>
+                        <div class="tool-card-actions">
+                            <a href="{{{urls.edit}}}">{{#pix}} t/edit, core, Edit{{/pix}}</a>
+                            <a href="{{{urls.reject}}}">{{#pix}} t/delete, core, Reject{{/pix}}</a>
+                        </div>
+                        <img class="tool-card-icon" src="{{urls.icon}}" alt="{{name}}"></img>
+                        <h4>{{name}}</h4>
                     </div>
                     <div class="tool-card-body">
-                        <h4>{{name}}</h4>
-                        <p>{{description}}</p>
+                        <span class="label
+                                    {{#state.pending}}label-info{{/state.pending}}
+                                    {{#state.configured}}label-success{{/state.configured}}
+                                    {{#state.rejected}}label-important{{/state.rejected}}
+                                    {{#state.unknown}}label-warning{{/state.unknown}}">
+                            {{state.text}}
+                        </span>
+                        <p class="description">{{description}}</p>
                     </div>
                     <div class="tool-card-footer">
-                        <a href="#">{{#pix}} t/edit, core, Edit{{/pix}}</a>
-                        <a href="#">{{#pix}} t/delete, core, Delete{{/pix}}</a>
                     </div>
                 </div>
             {{/tools}}

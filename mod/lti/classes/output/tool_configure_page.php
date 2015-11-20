@@ -23,6 +23,8 @@
  */
 namespace mod_lti\output;
 
+require_once($CFG->dirroot.'/mod/lti/locallib.php');
+
 use moodle_url;
 use renderable;
 use templatable;
@@ -38,18 +40,93 @@ use core_plugin_manager;
  */
 class tool_configure_page implements renderable, templatable {
 
-    private function deserialise_tool_type(stdClass $type) {
+    private function get_tool_icon_url(stdClass $type) {
+        global $OUTPUT;
+
+        $iconurl = $type->secureicon;
+
+        if (empty($iconurl)) {
+            $iconurl = $type->icon;
+        }
+
+        if (empty($iconurl)) {
+            $iconurl = $OUTPUT->pix_url('icon', 'lti');
+        }
+
+        return $iconurl;
+    }
+
+    private function get_tool_edit_url(stdClass $type) {
+        $url = new moodle_url('/mod/lti/typessettings.php', array('action' => 'update', 'id' => $type->id, 'sesskey' => sesskey()));
+        return $url->out();
+    }
+
+    private function get_tool_reject_url(stdClass $type) {
+        $url = new moodle_url('/mod/lti/typessettings.php', array('action' => 'reject', 'id' => $type->id, 'sesskey' => sesskey()));
+        return $url->out();
+    }
+
+    private function get_tool_urls(stdClass $type) {
+        return array(
+            'icon' => $this->get_tool_icon_url($type),
+            'edit' => $this->get_tool_edit_url($type),
+            'reject' => $this->get_tool_reject_url($type)
+        );
+    }
+
+    private function get_tool_state_info(stdClass $type) {
+        $state = '';
+        $isconfigured = false;
+        $ispending = false;
+        $isany = false;
+        $isrejected = false;
+        $isunknown = false;
+        switch ($type->state) {
+            case LTI_TOOL_STATE_ANY:
+                $state = 'any';
+                $isany = true;
+                break;
+            case LTI_TOOL_STATE_CONFIGURED:
+                $state = 'configured';
+                $isconfigured = true;
+                break;
+            case LTI_TOOL_STATE_PENDING:
+                $state = 'pending';
+                $ispending = true;
+                break;
+            case LTI_TOOL_STATE_REJECTED:
+                $state = 'rejected';
+                $isrejected = true;
+                break;
+            default:
+                $state = 'unknown state';
+                $isunknown = true;
+                break;
+        }
+
+        return array(
+            'text' => $state,
+            'pending' => $ispending,
+            'configured' => $isconfigured,
+            'rejected' => $isrejected,
+            'any' => $isany,
+            'unknown' => $isunknown
+        );
+    }
+
+    private function serialise_tool_type(stdClass $type) {
         return array(
             'name' => $type->name,
             'description' => isset($type->description) ? $type->description : "Default tool description placeholder until we can code this in.",
-            'iconurl' => isset($type->icon) ? $type->icon : ''
+            'urls' => $this->get_tool_urls($type),
+            'state' => $this->get_tool_state_info($type)
         );
     }
 
     private function get_tool_types() {
         $types = lti_get_lti_types();
 
-        return array_map(array($this, "deserialise_tool_type"), array_values($types));
+        return array_map(array($this, "serialise_tool_type"), array_values($types));
     }
 
     /**
@@ -64,8 +141,6 @@ class tool_configure_page implements renderable, templatable {
         $data->configuremanualurl = $url->out();
 
         $data->tools = $this->get_tool_types();
-
-        #print_r($data);
 
         return $data;
     }
