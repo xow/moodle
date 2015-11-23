@@ -220,10 +220,15 @@ class profile_field_base {
      * @param moodleform $mform instance of the moodleform class
      */
     public function edit_field_set_locked($mform) {
+        global $USER;
         if (!$mform->elementExists($this->inputname)) {
             return;
         }
-        if ($this->is_locked() and !has_capability('moodle/user:update', context_system::instance())) {
+        $authplugin = get_auth_plugin($USER->auth);
+        if ($this->is_locked() and !has_capability('moodle/user:update', context_system::instance()) or
+            isset($authplugin->config->{"field_lock_" . $this->inputname}) and (
+            $authplugin->config->{"field_lock_" . $this->inputname} === 'locked' or
+            $authplugin->config->{"field_lock_" . $this->inputname} === 'unlockedifempty' and $this->data != '')) {
             $mform->hardFreeze($this->inputname);
             $mform->setConstant($this->inputname, $this->data);
         }
