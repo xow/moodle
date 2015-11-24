@@ -396,7 +396,14 @@ class mod_lti_external extends external_api {
         }
 
         $id = lti_add_tool_proxy($config);
-        return lti_get_tool_proxy($id);
+        $toolproxy = lti_get_tool_proxy($id);
+
+        // Pending makes more sense than configured as the first state, since
+        // the next step is to register, which requires the state be pending.
+        $toolproxy->state = LTI_TOOL_PROXY_STATE_PENDING;
+        lti_update_tool_proxy($toolproxy);
+
+        return $toolproxy;
     }
 
     /**
@@ -420,6 +427,62 @@ class mod_lti_external extends external_api {
                 'toolproxy' => new external_value(PARAM_TEXT, 'Tool proxy'),
                 'timecreated' => new external_value(PARAM_INT, 'Tool proxy time created'),
                 'timemodified' => new external_value(PARAM_INT, 'Tool proxy modified'),
+            )
+        );
+    }
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     * @since Moodle 3.0
+     */
+    public static function get_tool_proxy_registration_request_parameters() {
+        return new external_function_parameters(
+            array(
+                'id' => new external_value(PARAM_INT, 'Tool proxy id'),
+            )
+        );
+    }
+
+    /**
+     * Returns the registration request for a tool proxy.
+     *
+     * @param int $id the lti instance id
+     * @return array of warnings and status result
+     * @since Moodle 3.0
+     * @throws moodle_exception
+     */
+    public static function get_tool_proxy_registration_request($id) {
+        $params = self::validate_parameters(self::get_tool_proxy_registration_request_parameters(),
+                                            array(
+                                                'id' => $id,
+                                            ));
+        $warnings = array();
+
+        $context = context_system::instance();
+        self::validate_context($context);
+        require_capability('mod/lti:manage', $context);
+
+        $toolproxy = lti_get_tool_proxy($id);
+        return lti_get_register_parameters($toolproxy);
+    }
+
+    /**
+     * Returns description of method result value
+     *
+     * @return external_description
+     * @since Moodle 3.0
+     */
+    public static function get_tool_proxy_registration_request_returns() {
+        return new external_function_parameters(
+            array(
+                'lti_message_type' => new external_value(PARAM_ALPHANUM, 'LTI message type'),
+                'lti_version' => new external_value(PARAM_ALPHANUM, 'LTI version'),
+                'reg_key' => new external_value(PARAM_ALPHANUM, 'Tool proxy registration key'),
+                'reg_password' => new external_value(PARAM_ALPHANUM, 'Tool proxy registration password'),
+                'tc_profile_url' => new external_value(PARAM_URL, 'Tool consumers profile URL'),
+                'launch_presentation_return_url' => new external_value(PARAM_URL, 'URL to redirect on registration completion'),
             )
         );
     }

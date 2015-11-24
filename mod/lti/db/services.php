@@ -59,4 +59,13 @@ $functions = array(
         'capabilities'  => 'mod/lti:manage',
         'ajax'          => true
     ),
+
+    'mod_lti_get_tool_proxy_registration_request' => array(
+        'classname'     => 'mod_lti_external',
+        'methodname'    => 'get_tool_proxy_registration_request',
+        'description'   => 'Get a registration request for a tool proxy',
+        'type'          => 'read',
+        'capabilities'  => 'mod/lti:manage',
+        'ajax'          => true
+    ),
 );

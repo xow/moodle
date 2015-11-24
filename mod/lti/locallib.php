@@ -272,21 +272,28 @@ function lti_launch_tool($instance) {
  * $param object $instance       Tool Proxy instance object
  */
 function lti_register($toolproxy) {
-    global $PAGE, $CFG;
+    $endpoint = $toolproxy->regurl;
 
+    // Change the status to pending.
+    $toolproxy->state = LTI_TOOL_PROXY_STATE_PENDING;
+    lti_update_tool_proxy($toolproxy);
+
+    $requestparams = lti_get_register_parameters($toolproxy);
+
+    $content = lti_post_launch_html($requestparams, $endpoint, false);
+
+    echo $content;
+}
+
+function lti_get_register_parameters($toolproxy) {
     $key = $toolproxy->guid;
     $secret = $toolproxy->secret;
-    $endpoint = $toolproxy->regurl;
 
     $requestparams = array();
     $requestparams['lti_message_type'] = 'ToolProxyRegistrationRequest';
     $requestparams['lti_version'] = 'LTI-2p0';
     $requestparams['reg_key'] = $key;
     $requestparams['reg_password'] = $secret;
-
-    // Change the status to pending.
-    $toolproxy->state = LTI_TOOL_PROXY_STATE_PENDING;
-    lti_update_tool_proxy($toolproxy);
 
     // Add the profile URL.
     $profileservice = lti_get_service_by_name('profile');
@@ -299,9 +306,8 @@ function lti_register($toolproxy) {
     $returnurl = $url->out(false);
 
     $requestparams['launch_presentation_return_url'] = $returnurl;
-    $content = lti_post_launch_html($requestparams, $endpoint, false);
 
-    echo $content;
+    return $requestparams;
 }
 
 /**

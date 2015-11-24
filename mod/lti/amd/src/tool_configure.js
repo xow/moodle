@@ -25,7 +25,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @since      3.1
  */
-define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notification) {
+define(['jquery', 'core/ajax', 'core/notification', 'core/templates'], function($, ajax, notification, templates) {
     var SELECTORS = {
         REGISTRATION_FORM: '#registration-form',
         REGISTRATION_URL: '#registration-url',
@@ -43,10 +43,6 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
 
     var getRegistrationSubmitButton = function() {
         return $(SELECTORS.REGISTRATION_SUBMIT_BUTTON);
-    };
-
-    var getRegistrationSubmitLoadingButton = function() {
-        return $(SELECTORS.REGISTRATION_SUBMIT_LOADING_BUTTON);
     };
 
     var isCartridgeURL = function() {
@@ -73,7 +69,7 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
         return $.Deferred();
     };
 
-    var submitRegistrationURL = function() {
+    var createToolProxy = function() {
         var url = getRegistrationURL().val();
         var request = {
             methodname: 'mod_lti_create_tool_proxy',
@@ -82,11 +78,58 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
             }
         };
 
-        var promise = ajax.call([request])[0];
+        return ajax.call([request])[0];
+    };
 
-        promise.done(function(result) {
-            stopLoading();
+    var getRegistrationRequest = function(id) {
+        var request = {
+            methodname: 'mod_lti_get_tool_proxy_registration_request',
+            args: {
+                id: id
+            }
+        };
+
+        return ajax.call([request])[0];
+    };
+
+    var renderRegistrationWindow = function(newWindow, registrationRequest) {
+        var promise = templates.render('mod_lti/tool_proxy_registration_form', registrationRequest);
+
+        promise.done(function(html, js) {
+            js.trim();
+
+            var div = $('<div></div>');
+            var form = $(html);
+            var script = $('<script>').attr('type','text/javascript').html(js);
+
+            div.append(form);
+            div.append(script);
+
+            $(newWindow.document.body).html(div);
         });
+
+        return promise;
+    };
+
+    var submitRegistrationURL = function(newWindow) {
+        var promise = $.Deferred();
+
+        createToolProxy().done(function(result) {
+            var id = result.id;
+            var regURL = result.regurl;
+
+            getRegistrationRequest(id).done(function(registrationRequest) {
+
+                registrationRequest.reg_url = regURL;
+                renderRegistrationWindow(newWindow, registrationRequest).done(function() {
+
+                    promise.resolve();
+
+                }).fail(promise.fail);
+
+            }).fail(promise.fail);
+
+        }).fail(promise.fail);
 
         return promise;
     };
@@ -102,7 +145,8 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, ajax, notificat
         if (isCartridgeURL()) {
             promise = submitCartridgeURL();
         } else {
-            promise = submitRegistrationURL();
+            var newWindow = window.open('', "_blank");
+            promise = submitRegistrationURL(newWindow);
         }
 
         promise.done(function() {
