@@ -1068,7 +1068,7 @@ function lti_filter_tool_types(array $tools, $state) {
     return $return;
 }
 
-function lti_get_types_for_add_instance() {
+function lti_get_lti_types_by_course() {
     global $DB, $SITE, $COURSE;
 
     $query = "SELECT *
@@ -1077,8 +1077,12 @@ function lti_get_types_for_add_instance() {
                  AND (course = :siteid OR course = :courseid)
                  AND state = :active";
 
-    $admintypes = $DB->get_records_sql($query,
+    return $DB->get_records_sql($query,
         array('siteid' => $SITE->id, 'courseid' => $COURSE->id, 'active' => LTI_TOOL_STATE_CONFIGURED));
+}
+
+function lti_get_types_for_add_instance() {
+    $admintypes = lti_get_lti_types_by_course();
 
     $types = array();
     $types[0] = (object)array('name' => get_string('automatic', 'lti'), 'course' => 0, 'toolproxyid' => null);
@@ -1087,6 +1091,21 @@ function lti_get_types_for_add_instance() {
         $types[$type->id] = $type;
     }
 
+    return $types;
+}
+
+function lti_get_configured_types() {
+    $types = array();
+    $admintypes = lti_get_lti_types_by_course();
+
+    foreach ($admintypes as $lti_type) {
+        $type           = new stdClass();
+        $type->modclass = MOD_CLASS_ACTIVITY;
+        $type->type     = 'lti_type' . $lti_type->id;
+        $type->typestr  = $lti_type->name;
+        $type->help     = $lti_type->baseurl;
+        $types[] = $type;
+    }
     return $types;
 }
 
