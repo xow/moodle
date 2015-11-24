@@ -44,8 +44,12 @@
 </form>
 {{#js}}
     require(['jquery'], function($) {
+    console.log('Foo');
         $(document).ready(function() {
-            $('#ltiLaunchForm').submit();
+        debugger;
+            var form = $('#ltiLaunchForm');
+            form.submit();
+            alert(form);
         });
     });
 {{/js}}

@@ -92,21 +92,26 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates'], function(
         return ajax.call([request])[0];
     };
 
-    var renderRegistrationWindow = function(newWindow, registrationRequest) {
+    var renderRegistrationWindow = function(newWindow, url, registrationRequest) {
+        var promise = $.Deferred();
+
+        $(newWindow).load(url, registrationRequest, function() {
+            promise.resolve();
+        });
+
+        /*
         var promise = templates.render('mod_lti/tool_proxy_registration_form', registrationRequest);
 
         promise.done(function(html, js) {
             js.trim();
 
-            var div = $('<div></div>');
             var form = $(html);
             var script = $('<script>').attr('type','text/javascript').html(js);
 
-            div.append(form);
-            div.append(script);
-
-            $(newWindow.document.body).html(div);
+            $(newWindow.document.body).append(form);
+            $(newWindow.document.body).append(script);
         });
+        */
 
         return promise;
     };
@@ -120,12 +125,13 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates'], function(
 
             getRegistrationRequest(id).done(function(registrationRequest) {
 
-                registrationRequest.reg_url = regURL;
-                renderRegistrationWindow(newWindow, registrationRequest).done(function() {
+                renderRegistrationWindow(newWindow, regURL, registrationRequest);
+                promise.resolve();
+                /*.done(function() {
 
                     promise.resolve();
 
-                }).fail(promise.fail);
+                }).fail(promise.fail);*/
 
             }).fail(promise.fail);
 
