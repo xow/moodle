@@ -42,14 +42,3 @@
     <input type="hidden" name="tc_profile_url" value="{{{tc_profile_url}}}" />
     <input type="hidden" name="launch_presentation_return_url" value="{{{launch_presentation_return_url}}}" />
 </form>
-{{#js}}
-    require(['jquery'], function($) {
-    console.log('Foo');
-        $(document).ready(function() {
-        debugger;
-            var form = $('#ltiLaunchForm');
-            form.submit();
-            alert(form);
-        });
-    });
-{{/js}}
