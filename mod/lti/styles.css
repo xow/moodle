@@ -25,6 +25,31 @@
 /* Styles for instructor_edit_tool_type.php */
 #page-mod-lti-instructor_edit_tool_type .mform .fitem .fitemtitle { min-width:18em;padding-right:1em } /* Prevent setting titles from wrapping */
 
+/* Styling for tool_configure page */
+#external-registration-container iframe {
+    border: 1px solid #e5e5e5;
+    border-radius: 10px;
+    width: 100%;
+    min-height: 15em;
+    max-height: 30em;
+}
+
+#external-registration-container .registration-loading-container {
+    text-align: center;
+    font-size: 2em;
+    padding: 3em;
+}
+
+#external-registration-container .registration-loading-container .spinner {
+    margin-bottom: 1em;
+}
+
+#external-registration-container .registration-loading-container .spinner > div {
+    background-color: #000;
+    height: 1em;
+    width: 1em;
+}
+
 #registration-submit {
     min-width: 140px;
 }

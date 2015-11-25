@@ -34,7 +34,18 @@
     }
 
 }}
-<form action="{{{reg_url}}}" name="ltiLaunchForm" id="ltiLaunchForm" method="post" encType="application/x-www-form-urlencoded">
+<button class="btn btn-danger">Cancel</button>
+<div class="registration-loading-container">
+    <div class="spinner">
+        <div class="bounce1"></div>
+        <div class="bounce2"></div>
+        <div class="bounce3"></div>
+    </div>
+    <p>Loading...</p>
+</div>
+<iframe id="registration-page-iframe" name="registration-page-iframe" class="hidden">
+</iframe>
+<form action="{{{reg_url}}}" name="ltiLaunchForm" id="ltiLaunchForm" method="post" encType="application/x-www-form-urlencoded" target="registration-page-iframe">
     <input type="hidden" name="lti_message_type" value="{{lti_message_type}}" />
     <input type="hidden" name="lti_version" value="{{lti_version}}" />
     <input type="hidden" name="reg_key" value="{{reg_key}}" />
@@ -42,3 +53,17 @@
     <input type="hidden" name="tc_profile_url" value="{{{tc_profile_url}}}" />
     <input type="hidden" name="launch_presentation_return_url" value="{{{launch_presentation_return_url}}}" />
 </form>
+{{#js}}
+    require(['jquery'], function($) {
+        var loadingContainer = $('.registration-loading-container');
+        var iframe = $('#registration-page-iframe');
+
+        iframe.load(function() {
+            //var contentHeight = iframe.contents().find('body').height();
+            //iframe.height(contentHeight);
+
+            loadingContainer.addClass('hidden');
+            iframe.removeClass('hidden');
+        });
+    });
+{{/js}}

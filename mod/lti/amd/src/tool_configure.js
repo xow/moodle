@@ -30,6 +30,8 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates'], function(
         REGISTRATION_FORM: '#registration-form',
         REGISTRATION_URL: '#registration-url',
         REGISTRATION_SUBMIT_BUTTON: '#registration-submit',
+        MAIN_CONTENT_CONTAINER: '#main-content-container',
+        EXTERNAL_REGISTRATION_CONTAINER: '#external-registration-container',
     };
 
     var KEYS = {
@@ -61,6 +63,16 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates'], function(
     var isLoading = function() {
         return getRegistrationSubmitButton().hasClass('loading');
     }
+
+    var hideMainContent = function() {
+        var container = $(SELECTORS.MAIN_CONTENT_CONTAINER);
+        container.addClass('hidden');
+    };
+
+    var showMainContent = function() {
+        var container = $(SELECTORS.MAIN_CONTENT_CONTAINER);
+        container.removeClass('hidden');
+    };
 
     var submitCartridgeURL = function() {
         var cartridgeURL = getRegistrationURL().val();
@@ -96,12 +108,22 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates'], function(
         var promise = templates.render('mod_lti/tool_proxy_registration_form', registrationRequest);
 
         promise.done(function(html, js) {
+            templates.runTemplateJS(js);
+
+            var container = $(SELECTORS.EXTERNAL_REGISTRATION_CONTAINER);
+            container.append(html);
+            container.removeClass('hidden');
+            container.find('form').submit();
+
+            hideMainContent();
+            /*
             newWindow.document.write(html);
 
             $(newWindow.document).ready(function() {
                 var form = $(newWindow.document.body).find('form');
                 form.submit();
             });
+            */
         });
 
         return promise;
@@ -141,8 +163,8 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates'], function(
         if (isCartridgeURL()) {
             promise = submitCartridgeURL();
         } else {
-            var newWindow = window.open('', "_blank");
-            promise = submitRegistrationURL(newWindow);
+            //var newWindow = window.open('', "_blank");
+            promise = submitRegistrationURL();
         }
 
         promise.done(function() {
