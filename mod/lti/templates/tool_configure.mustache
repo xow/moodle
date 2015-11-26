@@ -36,7 +36,19 @@
 }}
 <h2>{{#str}} manage_tool_proxies, mod_lti {{/str}}</h2>
 <div class="fluid-container">
-    <div id="external-registration-container" class="hidden"></div>
+    <div id="external-registration-container" class="hidden">
+        <button id="cancel-external-registration" class="btn btn-danger">
+            <span class="btn-text">Cancel</span>
+            <div class="btn-loader">
+                <div class="spinner">
+                    <div class="bounce1"></div>
+                    <div class="bounce2"></div>
+                    <div class="bounce3"></div>
+                </div>
+            </div>
+        </button>
+        <div id="external-registration-template-container"></div>
+    </div>
     <div id="main-content-container">
         <div id="registration-form-container">
             <h3>Add new external tool</h3>

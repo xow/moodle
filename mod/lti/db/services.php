@@ -60,6 +60,15 @@ $functions = array(
         'ajax'          => true
     ),
 
+    'mod_lti_delete_tool_proxy' => array(
+        'classname'     => 'mod_lti_external',
+        'methodname'    => 'delete_tool_proxy',
+        'description'   => 'Delete a tool proxy',
+        'type'          => 'write',
+        'capabilities'  => 'mod/lti:manage',
+        'ajax'          => true
+    ),
+
     'mod_lti_get_tool_proxy_registration_request' => array(
         'classname'     => 'mod_lti_external',
         'methodname'    => 'get_tool_proxy_registration_request',

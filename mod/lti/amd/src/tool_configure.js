@@ -32,6 +32,8 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates'], function(
         REGISTRATION_SUBMIT_BUTTON: '#registration-submit',
         MAIN_CONTENT_CONTAINER: '#main-content-container',
         EXTERNAL_REGISTRATION_CONTAINER: '#external-registration-container',
+        EXTERNAL_REGISTRATION_TEMPLATE_CONTAINER: '#external-registration-template-container',
+        EXTERNAL_REGISTRATION_CANCEL_BUTTON: '#cancel-external-registration',
     };
 
     var KEYS = {
@@ -47,6 +49,14 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates'], function(
         return $(SELECTORS.REGISTRATION_SUBMIT_BUTTON);
     };
 
+    var getExternalRegistrationCancelButton = function() {
+        return $(SELECTORS.EXTERNAL_REGISTRATION_CANCEL_BUTTON);
+    };
+
+    var getExternalRegistrationTemplateContainer = function() {
+        return $(SELECTORS.EXTERNAL_REGISTRATION_TEMPLATE_CONTAINER);
+    };
+
     var isCartridgeURL = function() {
         var value = getRegistrationURL().val();
         return /\.xml$/.test(value);
@@ -60,9 +70,17 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates'], function(
         getRegistrationSubmitButton().removeClass('loading');
     };
 
+    var startLoadingCancel = function() {
+        getExternalRegistrationCancelButton().addClass('loading');
+    };
+
+    var stopLoadingCancel = function() {
+        getExternalRegistrationCancelButton().removeClass('loading');
+    };
+
     var isLoading = function() {
         return getRegistrationSubmitButton().hasClass('loading');
-    }
+    };
 
     var hideMainContent = function() {
         var container = $(SELECTORS.MAIN_CONTENT_CONTAINER);
@@ -72,6 +90,35 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates'], function(
     var showMainContent = function() {
         var container = $(SELECTORS.MAIN_CONTENT_CONTAINER);
         container.removeClass('hidden');
+    };
+
+    var hideExternalRegistrationContent = function() {
+        var container = $(SELECTORS.EXTERNAL_REGISTRATION_CONTAINER);
+        container.addClass('hidden');
+    };
+
+    var showExternalRegistrationContent = function() {
+        var container = $(SELECTORS.EXTERNAL_REGISTRATION_CONTAINER);
+        container.removeClass('hidden');
+    };
+
+    var setToolProxyId = function(id) {
+        var button = getExternalRegistrationCancelButton();
+        button.attr('data-tool-proxy-id', id);
+    };
+
+    var getToolProxyId = function() {
+        var button = getExternalRegistrationCancelButton();
+        return button.attr('data-tool-proxy-id');
+    };
+
+    var clearToolProxyId = function() {
+        var button = getExternalRegistrationCancelButton();
+        button.remoteAttr('data-tool-proxy-id');
+    };
+
+    var hasCreatedToolProxy = function() {
+        return getToolProxyId() ? true : false;
     };
 
     var submitCartridgeURL = function() {
@@ -93,6 +140,17 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates'], function(
         return ajax.call([request])[0];
     };
 
+    var deleteToolProxy = function(id) {
+        var request = {
+            methodname: 'mod_lti_delete_tool_proxy',
+            args: {
+                id: id
+            }
+        };
+
+        return ajax.call([request])[0];
+    };
+
     var getRegistrationRequest = function(id) {
         var request = {
             methodname: 'mod_lti_get_tool_proxy_registration_request',
@@ -104,17 +162,17 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates'], function(
         return ajax.call([request])[0];
     };
 
-    var renderRegistrationWindow = function(newWindow, registrationRequest) {
+    var renderExternalRegistrationWindow = function(newWindow, registrationRequest) {
         var promise = templates.render('mod_lti/tool_proxy_registration_form', registrationRequest);
 
         promise.done(function(html, js) {
+
+            var container = getExternalRegistrationTemplateContainer();
+            container.append(html);
             templates.runTemplateJS(js);
 
-            var container = $(SELECTORS.EXTERNAL_REGISTRATION_CONTAINER);
-            container.append(html);
-            container.removeClass('hidden');
             container.find('form').submit();
-
+            showExternalRegistrationContent();
             hideMainContent();
             /*
             newWindow.document.write(html);
@@ -129,17 +187,20 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates'], function(
         return promise;
     };
 
-    var submitRegistrationURL = function(newWindow) {
+    var submitExternalRegistration = function(newWindow) {
         var promise = $.Deferred();
 
         createToolProxy().done(function(result) {
             var id = result.id;
             var regURL = result.regurl;
 
+            // Save the id on the DOM to cleanup later.
+            setToolProxyId(id);
+
             getRegistrationRequest(id).done(function(registrationRequest) {
 
                 registrationRequest.reg_url = regURL;
-                renderRegistrationWindow(newWindow, registrationRequest).done(function() {
+                renderExternalRegistrationWindow(newWindow, registrationRequest).done(function() {
 
                     promise.resolve();
 
@@ -150,6 +211,29 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates'], function(
         }).fail(promise.fail);
 
         return promise;
+    };
+
+    var cancelExternalRegistration = function() {
+        startLoadingCancel();
+        var promise = $.Deferred();
+
+        if (hasCreatedToolProxy()) {
+            var id = getToolProxyId();
+            deleteToolProxy(id).done(function() {
+                promise.resolve();
+            });
+        } else {
+            promise.resolve();
+        }
+
+        promise.done(function() {
+            hideExternalRegistrationContent();
+            showMainContent();
+            stopLoadingCancel();
+
+            var container = getExternalRegistrationTemplateContainer();
+            container.empty();
+        });
     };
 
     var processURL = function() {
@@ -163,8 +247,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates'], function(
         if (isCartridgeURL()) {
             promise = submitCartridgeURL();
         } else {
-            //var newWindow = window.open('', "_blank");
-            promise = submitRegistrationURL();
+            promise = submitExternalRegistration();
         }
 
         promise.done(function() {
@@ -183,6 +266,20 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates'], function(
                 if (e.keyCode == KEYS.ENTER || e.keyCode == KEYS.SPACE) {
                     e.preventDefault();
                     processURL();
+                }
+            }
+        });
+
+        var cancelButton = getExternalRegistrationCancelButton();
+        cancelButton.click(function(e) {
+            e.preventDefault();
+            cancelExternalRegistration();
+        });
+        cancelButton.keypress(function(e) {
+            if (!e.metaKey && !e.shiftKey && !e.altKey && !e.ctrlKey) {
+                if (e.keyCode == KEYS.ENTER || e.keyCode == KEYS.SPACE) {
+                    e.preventDefault();
+                    cancelExternalRegistration();
                 }
             }
         });

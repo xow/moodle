@@ -1588,7 +1588,7 @@ function lti_add_tool_proxy($config) {
     if (isset($config->lti_services)) {
         $toolproxy->serviceoffered = implode("\n", $config->lti_services);
     } else {
-        $func = function($s) { return $s->get_name(); };
+        $func = function($s) { return $s->get_id(); };
         $servicenames = array_map($func, lti_get_services());
         $toolproxy->serviceoffered = implode("\n", $servicenames);
     }

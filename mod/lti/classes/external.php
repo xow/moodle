@@ -437,6 +437,71 @@ class mod_lti_external extends external_api {
      * @return external_function_parameters
      * @since Moodle 3.0
      */
+    public static function delete_tool_proxy_parameters() {
+        return new external_function_parameters(
+            array(
+                'id' => new external_value(PARAM_INT, 'Tool proxy id'),
+            )
+        );
+    }
+
+    /**
+     * Trigger the course module viewed event and update the module completion status.
+     *
+     * @param int $ltiid the lti instance id
+     * @return array of warnings and status result
+     * @since Moodle 3.0
+     * @throws moodle_exception
+     */
+    public static function delete_tool_proxy($id) {
+        $params = self::validate_parameters(self::delete_tool_proxy_parameters(),
+                                            array(
+                                                'id' => $id,
+                                            ));
+        $warnings = array();
+
+        $context = context_system::instance();
+        self::validate_context($context);
+        require_capability('mod/lti:manage', $context);
+
+        $toolproxy = lti_get_tool_proxy($id);
+
+        lti_delete_tool_proxy($id);
+
+        return $toolproxy;
+    }
+
+    /**
+     * Returns description of method result value
+     *
+     * @return external_description
+     * @since Moodle 3.0
+     */
+    public static function delete_tool_proxy_returns() {
+        return new external_function_parameters(
+            array(
+                'id' => new external_value(PARAM_INT, 'Tool proxy id'),
+                'name' => new external_value(PARAM_ALPHANUM, 'Tool proxy name'),
+                'regurl' => new external_value(PARAM_URL, 'Tool proxy registration URL'),
+                'state' => new external_value(PARAM_INT, 'Tool proxy state'),
+                'guid' => new external_value(PARAM_ALPHANUM, 'Tool proxy globally unique identifier'),
+                'secret' => new external_value(PARAM_ALPHANUM, 'Tool proxy shared secret'),
+                'vendorcode' => new external_value(PARAM_ALPHANUM, 'Tool proxy consumer code'),
+                'capabilityoffered' => new external_value(PARAM_TEXT, 'Tool proxy capabilities offered'),
+                'serviceoffered' => new external_value(PARAM_TEXT, 'Tool proxy services offered'),
+                'toolproxy' => new external_value(PARAM_TEXT, 'Tool proxy'),
+                'timecreated' => new external_value(PARAM_INT, 'Tool proxy time created'),
+                'timemodified' => new external_value(PARAM_INT, 'Tool proxy modified'),
+            )
+        );
+    }
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     * @since Moodle 3.0
+     */
     public static function get_tool_proxy_registration_request_parameters() {
         return new external_function_parameters(
             array(
