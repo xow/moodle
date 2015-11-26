@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Renderer class for template library.
+ * Class containing data for external registration return page.
  *
  * @package    mod_lti
  * @copyright  2015 Ryan Wyllie <ryan@moodle.com>
@@ -23,32 +23,29 @@
  */
 namespace mod_lti\output;
 
-defined('MOODLE_INTERNAL') || die;
+require_once($CFG->dirroot.'/mod/lti/locallib.php');
 
-use plugin_renderer_base;
+use moodle_url;
+use renderable;
+use templatable;
+use renderer_base;
+use stdClass;
+use core_plugin_manager;
 
 /**
- * Renderer class for template library.
+ * Class containing data for tool_configure page
  *
- * @package    mod_lti
  * @copyright  2015 Ryan Wyllie <ryan@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class renderer extends plugin_renderer_base {
+class external_registration_return_page implements renderable, templatable {
 
     /**
-     * Defer to template.
+     * Export this data so it can be used as the context for a mustache template.
      *
-     * @param tool_configure_page $page
-     *
-     * @return string html for the page
+     * @return stdClass
      */
-    public function render_tool_configure_page($page) {
-        $data = $page->export_for_template($this);
-        return parent::render_from_template('mod_lti/tool_configure', $data);
-    }
-
-    public function render_external_registration_return_page($page) {
-        return '';
+    public function export_for_template(renderer_base $output) {
+        return new stdClass();
     }
 }

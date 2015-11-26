@@ -114,7 +114,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates'], function(
 
     var clearToolProxyId = function() {
         var button = getExternalRegistrationCancelButton();
-        button.remoteAttr('data-tool-proxy-id');
+        button.removeAttr('data-tool-proxy-id');
     };
 
     var hasCreatedToolProxy = function() {
@@ -213,6 +213,17 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates'], function(
         return promise;
     };
 
+    var finishExternalRegistration = function() {
+        if (hasCreatedToolProxy()) {
+            clearToolProxyId();
+        };
+
+        hideExternalRegistrationContent();
+        showMainContent();
+        var container = getExternalRegistrationTemplateContainer();
+        container.empty();
+    };
+
     var cancelExternalRegistration = function() {
         startLoadingCancel();
         var promise = $.Deferred();
@@ -227,12 +238,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates'], function(
         }
 
         promise.done(function() {
-            hideExternalRegistrationContent();
-            showMainContent();
-            stopLoadingCancel();
-
-            var container = getExternalRegistrationTemplateContainer();
-            container.empty();
+            finishExternalRegistration();
         });
     };
 
@@ -283,6 +289,12 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates'], function(
                 }
             }
         });
+
+        // This is gross but necessary due to isolated jQuery scopes between
+        // child iframe and parent windows. There is no other way to communicate.
+        window.triggerExternalRegistrationComplete = function(data) {
+            finishExternalRegistration();
+        };
     };
 
     return {

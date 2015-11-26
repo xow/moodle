@@ -302,7 +302,7 @@ function lti_get_register_parameters($toolproxy) {
 
     // Add the return URL.
     $returnurlparams = array('id' => $toolproxy->id, 'sesskey' => sesskey());
-    $url = new \moodle_url('/mod/lti/registrationreturn.php', $returnurlparams);
+    $url = new \moodle_url('/mod/lti/externalregistrationreturn.php', $returnurlparams);
     $returnurl = $url->out(false);
 
     $requestparams['launch_presentation_return_url'] = $returnurl;
