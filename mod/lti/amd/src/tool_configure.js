@@ -30,10 +30,12 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates'], function(
         REGISTRATION_FORM: '#registration-form',
         REGISTRATION_URL: '#registration-url',
         REGISTRATION_SUBMIT_BUTTON: '#registration-submit',
+        REGISTRATION_FEEDBACK_CONTAINER: '#registration-feedback-container',
         MAIN_CONTENT_CONTAINER: '#main-content-container',
         EXTERNAL_REGISTRATION_CONTAINER: '#external-registration-container',
         EXTERNAL_REGISTRATION_TEMPLATE_CONTAINER: '#external-registration-template-container',
         EXTERNAL_REGISTRATION_CANCEL_BUTTON: '#cancel-external-registration',
+        TOOL_LIST_CONTAINER: '#tool-list-container'
     };
 
     var KEYS = {
@@ -49,12 +51,20 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates'], function(
         return $(SELECTORS.REGISTRATION_SUBMIT_BUTTON);
     };
 
+    var getRegistrationFeedbackContainer = function() {
+        return $(SELECTORS.REGISTRATION_FEEDBACK_CONTAINER);
+    };
+
     var getExternalRegistrationCancelButton = function() {
         return $(SELECTORS.EXTERNAL_REGISTRATION_CANCEL_BUTTON);
     };
 
     var getExternalRegistrationTemplateContainer = function() {
         return $(SELECTORS.EXTERNAL_REGISTRATION_TEMPLATE_CONTAINER);
+    };
+
+    var getToolListContainer = function() {
+        return $(SELECTORS.TOOL_LIST_CONTAINER);
     };
 
     var isCartridgeURL = function() {
@@ -100,6 +110,16 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates'], function(
     var showExternalRegistrationContent = function() {
         var container = $(SELECTORS.EXTERNAL_REGISTRATION_CONTAINER);
         container.removeClass('hidden');
+    };
+
+    var hideRegistrationForm = function() {
+        var form = $(SELECTORS.REGISTRATION_FORM);
+        form.addClass('hidden');
+    };
+
+    var showRegistrationForm = function() {
+        var form = $(SELECTORS.REGISTRATION_FORM);
+        form.removeClass('hidden');
     };
 
     var setToolProxyId = function(id) {
@@ -162,6 +182,19 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates'], function(
         return ajax.call([request])[0];
     };
 
+    var getToolTypes = function() {
+        var request = {
+            methodname: 'mod_lti_get_tool_types',
+            args: {}
+        };
+
+        var promise = ajax.call([request])[0];
+
+        promise.fail(notification.exception);
+
+        return promise;
+    };
+
     var renderExternalRegistrationWindow = function(newWindow, registrationRequest) {
         var promise = templates.render('mod_lti/tool_proxy_registration_form', registrationRequest);
 
@@ -222,6 +255,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates'], function(
         showMainContent();
         var container = getExternalRegistrationTemplateContainer();
         container.empty();
+        reloadToolList();
     };
 
     var cancelExternalRegistration = function() {
@@ -239,6 +273,44 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates'], function(
 
         promise.done(function() {
             finishExternalRegistration();
+        });
+    };
+
+    var showRegistrationFeedback = function(data) {
+        hideRegistrationForm();
+
+        templates.render('mod_lti/registration_feedback', data).done(function(html) {
+            var container = getRegistrationFeedbackContainer();
+            container.append(html);
+            container.click(function() {
+                clearRegistrationFeedback();
+            });
+            container.removeClass('hidden');
+
+            setTimeout(function() {
+                clearRegistrationFeedback();
+            }, 5000);
+        });
+    };
+
+    var clearRegistrationFeedback = function() {
+        showRegistrationForm();
+
+        var container = getRegistrationFeedbackContainer();
+        container.empty();
+        container.addClass('hidden');
+    };
+
+    var reloadToolList = function() {
+        var container = getToolListContainer();
+        container.addClass('loading');
+
+        getToolTypes().done(function(types) {
+            templates.render('mod_lti/tool_list', {tools: types}).done(function(html) {
+                container.empty();
+                container.append(html);
+                container.removeClass('loading');
+            });
         });
     };
 
@@ -290,16 +362,41 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates'], function(
             }
         });
 
+        var feedbackContainer = getRegistrationFeedbackContainer();
+        feedbackContainer.click(function(e) {
+            e.preventDefault();
+            clearRegistrationFeedback();
+        });
+        feedbackContainer.keypress(function(e) {
+            if (!e.metaKey && !e.shiftKey && !e.altKey && !e.ctrlKey) {
+                if (e.keyCode == KEYS.ENTER || e.keyCode == KEYS.SPACE) {
+                    e.preventDefault();
+                    clearRegistrationFeedback();
+                }
+            }
+        });
+
         // This is gross but necessary due to isolated jQuery scopes between
         // child iframe and parent windows. There is no other way to communicate.
         window.triggerExternalRegistrationComplete = function(data) {
             finishExternalRegistration();
+
+            var status = data.status;
+            var message = "";
+            if (data.error == "") {
+                message = data.message;
+            } else {
+                message = data.error;
+            }
+
+            showRegistrationFeedback({status: status, message: message});
         };
     };
 
     return {
         enhancePage: function() {
             registerEventListeners();
+            reloadToolList();
         }
     };
 });

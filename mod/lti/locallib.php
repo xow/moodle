@@ -2117,3 +2117,87 @@ function lti_get_fqid($contexts, $id) {
     return $id;
 
 }
+
+function get_tool_icon_url(stdClass $type) {
+    global $OUTPUT;
+
+    $iconurl = $type->secureicon;
+
+    if (empty($iconurl)) {
+        $iconurl = $type->icon;
+    }
+
+    if (empty($iconurl)) {
+        $iconurl = $OUTPUT->pix_url('icon', 'lti')->out();
+    }
+
+    return $iconurl;
+}
+
+function get_tool_edit_url(stdClass $type) {
+    $url = new moodle_url('/mod/lti/typessettings.php', array('action' => 'update', 'id' => $type->id, 'sesskey' => sesskey()));
+    return $url->out();
+}
+
+function get_tool_reject_url(stdClass $type) {
+    $url = new moodle_url('/mod/lti/typessettings.php', array('action' => 'reject', 'id' => $type->id, 'sesskey' => sesskey()));
+    return $url->out();
+}
+
+function get_tool_urls(stdClass $type) {
+    return array(
+        'icon' => get_tool_icon_url($type),
+        'edit' => get_tool_edit_url($type),
+        'reject' => get_tool_reject_url($type)
+    );
+}
+
+function get_tool_state_info(stdClass $type) {
+    $state = '';
+    $isconfigured = false;
+    $ispending = false;
+    $isany = false;
+    $isrejected = false;
+    $isunknown = false;
+    switch ($type->state) {
+        case LTI_TOOL_STATE_ANY:
+            $state = 'any';
+            $isany = true;
+            break;
+        case LTI_TOOL_STATE_CONFIGURED:
+            $state = 'configured';
+            $isconfigured = true;
+            break;
+        case LTI_TOOL_STATE_PENDING:
+           $state = 'pending';
+            $ispending = true;
+            break;
+        case LTI_TOOL_STATE_REJECTED:
+            $state = 'rejected';
+            $isrejected = true;
+            break;
+        default:
+            $state = 'unknown state';
+            $isunknown = true;
+            break;
+    }
+
+    return array(
+        'text' => $state,
+        'pending' => $ispending,
+        'configured' => $isconfigured,
+        'rejected' => $isrejected,
+        'any' => $isany,
+        'unknown' => $isunknown
+    );
+}
+
+function serialise_tool_type(stdClass $type) {
+    return array(
+        'id' => $type->id,
+        'name' => $type->name,
+        'description' => isset($type->description) ? $type->description : "Default tool description placeholder until we can code this in.",
+        'urls' => get_tool_urls($type),
+        'state' => get_tool_state_info($type)
+    );
+}

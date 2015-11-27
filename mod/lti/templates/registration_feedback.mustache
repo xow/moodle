@@ -15,7 +15,7 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template mod_lti/tool_card
+    @template mod_lti/registration_feedback
 
     This template provides the layout for a single tool card on the tool
     configuration page.
@@ -34,25 +34,8 @@
     }
 
 }}
-<div class="tool-card">
-    <div class="tool-card-header">
-        <div class="tool-card-actions">
-            <a href="{{{urls.edit}}}">{{#pix}} t/edit, core, Edit{{/pix}}</a>
-            <a href="{{{urls.reject}}}">{{#pix}} t/delete, core, Reject{{/pix}}</a>
-        </div>
-        <img class="tool-card-icon" src="{{{urls.icon}}}" alt="{{name}}"></img>
-        <h4>{{name}}</h4>
-    </div>
-    <div class="tool-card-body">
-        <span class="label
-                    {{#state.pending}}label-info{{/state.pending}}
-                    {{#state.configured}}label-success{{/state.configured}}
-                    {{#state.rejected}}label-important{{/state.rejected}}
-                    {{#state.unknown}}label-warning{{/state.unknown}}">
-            {{state.text}}
-        </span>
-        <p class="description">{{description}}</p>
-    </div>
-    <div class="tool-card-footer">
-    </div>
+<div class="alert">
+    <button type="button" class="close">&times;</button>
+    <h4>{{status}}</h4>
+    {{message}}
 </div>

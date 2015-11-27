@@ -140,8 +140,6 @@ class tool_configure_page implements renderable, templatable {
         $url = new moodle_url('/mod/lti/typessettings.php', array('sesskey' => sesskey()));
         $data->configuremanualurl = $url->out();
 
-        $data->tools = $this->get_tool_types();
-
         return $data;
     }
 }

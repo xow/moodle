@@ -53,6 +53,18 @@
     min-width: 140px;
 }
 
+#registration-form-container {
+    min-height: 230px;
+}
+
+#registration-feedback-container {
+    cursor: pointer;
+}
+
+#registration-feedback-container h4 {
+    text-transform: capitalize;
+}
+
 .btn-text {
     display: block;
 }
@@ -69,12 +81,29 @@
     display: block;
 }
 
+#tool-list-container h3 {
+    display: inline-block;
+}
+
+#tool-list-container .spinner {
+    display: none;
+}
+
+#tool-list-container .spinner > div {
+    background-color: #000;
+}
+
+#tool-list-container.loading .spinner {
+    display: inline-block;
+}
+
 .tool-card {
     display: inline-block;
     width: 250px;
     height: 300px;
     border: 1px solid #e5e5e5;
     border-radius: 10px;
+    margin: 5px;
 }
 
 .tool-card-header {

@@ -551,4 +551,72 @@ class mod_lti_external extends external_api {
             )
         );
     }
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     * @since Moodle 3.0
+     */
+    public static function get_tool_types_parameters() {
+        return new external_function_parameters(array());
+    }
+
+    /**
+     * Returns the tool types.
+     *
+     * @return array of warnings and status result
+     * @since Moodle 3.0
+     * @throws moodle_exception
+     */
+    public static function get_tool_types() {
+        $warnings = array();
+
+        $context = context_system::instance();
+        self::validate_context($context);
+        require_capability('mod/lti:manage', $context);
+
+        $types = lti_get_lti_types();
+
+        return array_map("serialise_tool_type", array_values($types));
+    }
+
+    /**
+     * Returns description of method result value
+     *
+     * @return external_description
+     * @since Moodle 3.0
+     */
+    public static function get_tool_types_returns() {
+        return new external_function_parameters(
+            array(
+                'tools' => new external_multiple_structure(
+                    new external_single_structure(
+                        array(
+                            'id' => new external_value(PARAM_INT, 'Tool type id'),
+                            'name' => new external_value(PARAM_ALPHANUM, 'Tool type name'),
+                            'description' => new external_value(PARAM_TEXT, 'Tool type description'),
+                            'urls' => new external_single_structure(
+                                array(
+                                    'icon' => new external_value(PARAM_URL, 'Tool type icon URL'),
+                                    'edit' => new external_value(PARAM_URL, 'Tool type edit URL'),
+                                    'reject' => new external_value(PARAM_URL, 'Tool type reject URL'),
+                                )
+                            ),
+                            'state' => new external_single_structure(
+                                array(
+                                    'text' => new external_value(PARAM_TEXT, 'Tool type state name string'),
+                                    'pending' => new external_value(PARAM_BOOL, 'Is the state pending'),
+                                    'configured' => new external_value(PARAM_BOOL, 'Is the state configured'),
+                                    'rejected' => new external_value(PARAM_BOOL, 'Is the state rejected'),
+                                    'any' => new external_value(PARAM_BOOL, 'Is the state any'),
+                                    'unknown' => new external_value(PARAM_BOOL, 'Is the state unknown'),
+                                )
+                            )
+                        ), 'Tool'
+                    )
+                ),
+            )
+        );
+    }
 }

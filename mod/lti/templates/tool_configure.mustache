@@ -73,6 +73,7 @@
                 or <a href="{{configuremanualurl}}">Add manually</a>
             </form>
             -->
+            <div id="registration-feedback-container" class="hidden"></div>
             <form id="registration-form" class="form-horizontal">
                 <div class="control-group">
                     <label class="control-label" for="registration-url">URL</label>
@@ -119,13 +120,8 @@
             </form>
         </div>
 
-        <div id="tool-list-container">
-            <h3>Tools</h3>
-            <div id="tool-card-container" class="container-fluid">
-                {{#tools}}
-                    {{> mod_lti/tool_card }}
-                {{/tools}}
-            </div>
+        <div id="tool-list-container" class="loading">
+            {{> mod_lti/tool_list }}
         </div>
     </div>
 </div>

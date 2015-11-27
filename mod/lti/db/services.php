@@ -77,4 +77,13 @@ $functions = array(
         'capabilities'  => 'mod/lti:manage',
         'ajax'          => true
     ),
+
+    'mod_lti_get_tool_types' => array(
+        'classname'     => 'mod_lti_external',
+        'methodname'    => 'get_tool_types',
+        'description'   => 'Get a list of the tool types',
+        'type'          => 'read',
+        'capabilities'  => 'mod/lti:manage',
+        'ajax'          => true
+    ),
 );
