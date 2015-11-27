@@ -15,11 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Authentication Plugin: Manual Authentication
- * Just does a simple check against the moodle database.
+ * Authentication Plugin: LTI Provider Authentication.
+ * Used to authenticate users accessing courses or modules provided via LTI.
  *
- * @package    auth_manual
- * @copyright  1999 onwards Martin Dougiamas (http://dougiamas.com)
+ * @package    auth_ltiprovider
+ * @copyright  2015 John Okely <john@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -28,26 +28,26 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->libdir.'/authlib.php');
 
 /**
- * Manual authentication plugin.
+ * LTI provider authentication plugin.
  *
  * @package    auth
- * @subpackage manual
- * @copyright  1999 onwards Martin Dougiamas (http://dougiamas.com)
+ * @subpackage ltiprovider
+ * @copyright  2015 John Okely <john@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class auth_plugin_manual extends auth_plugin_base {
+class auth_plugin_ltiprovider extends auth_plugin_base {
 
     /**
      * The name of the component. Used by the configuration.
      */
-    const COMPONENT_NAME = 'auth_manual';
-    const LEGACY_COMPONENT_NAME = 'auth/manual';
+    const COMPONENT_NAME = 'auth_ltiprovider';
+    const LEGACY_COMPONENT_NAME = 'auth/ltiprovider';
 
     /**
      * Constructor.
      */
-    function auth_plugin_manual() {
-        $this->authtype = 'manual';
+    function auth_plugin_ltiprovider() {
+        $this->authtype = 'ltiprovider';
         $config = get_config(self::COMPONENT_NAME);
         $legacyconfig = get_config(self::LEGACY_COMPONENT_NAME);
         $this->config = (object)array_merge((array)$legacyconfig, (array)$config);
@@ -69,12 +69,6 @@ class auth_plugin_manual extends auth_plugin_base {
         if (!validate_internal_user_password($user, $password)) {
             return false;
         }
-        if ($password === 'changeme') {
-            // force the change - this is deprecated and it makes sense only for manual auth,
-            // because most other plugins can not change password easily or
-            // passwords are always specified by users
-            set_user_preference('auth_forcepasswordchange', true, $user->id);
-        }
         return true;
     }
 
@@ -89,7 +83,7 @@ class auth_plugin_manual extends auth_plugin_base {
      */
     function user_update_password($user, $newpassword) {
         $user = get_complete_user_data('id', $user->id);
-        set_user_preference('auth_manual_passwordupdatetime', time(), $user->id);
+        set_user_preference('auth_ltiprovider_passwordupdatetime', time(), $user->id);
         // This will also update the stored hash to the latest algorithm
         // if the existing hash is using an out-of-date algorithm (or the
         // legacy md5 algorithm).
@@ -176,7 +170,7 @@ class auth_plugin_manual extends auth_plugin_base {
 
         if (!empty($this->config->expirationtime)) {
             $user = core_user::get_user_by_username($username, 'id,timecreated');
-            $lastpasswordupdatetime = get_user_preferences('auth_manual_passwordupdatetime', $user->timecreated, $user->id);
+            $lastpasswordupdatetime = get_user_preferences('auth_ltiprovider_passwordupdatetime', $user->timecreated, $user->id);
             $expiretime = $lastpasswordupdatetime + $this->config->expirationtime * DAYSECS;
             $now = time();
             $result = ($expiretime - $now) / DAYSECS;
@@ -217,7 +211,7 @@ class auth_plugin_manual extends auth_plugin_base {
 
    /**
     * Confirm the new user as registered. This should normally not be used,
-    * but it may be necessary if the user auth_method is changed to manual
+    * but it may be necessary if the user auth_method is changed to ltiprovider
     * before the user is confirmed.
     *
     * @param string $username

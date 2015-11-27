@@ -15,15 +15,15 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Manual authentication plugin version information
+ * Authentication plugin for the LTI provider version information
  *
- * @package    auth_manual
- * @copyright  2011 Petr Skoda (http://skodak.org)
+ * @package    auth_ltiprovider
+ * @copyright  2015 John Okely <john@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2015111600;        // The current plugin version (Date: YYYYMMDDXX)
-$plugin->requires  = 2015111000;        // Requires this Moodle version
-$plugin->component = 'auth_manual';     // Full name of the plugin (used for diagnostics)
+$plugin->version   = 2015112600;         // The current plugin version (Date: YYYYMMDDXX)
+$plugin->requires  = 2015111000;         // Requires this Moodle version
+$plugin->component = 'auth_ltiprovider'; // Full name of the plugin (used for diagnostics)

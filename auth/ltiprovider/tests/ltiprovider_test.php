@@ -15,30 +15,30 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Manual authentication tests.
+ * LTI provider authentication tests.
  *
- * @package    auth_manual
+ * @package    auth_ltiprovider
  * @category   test
- * @copyright  2014 Gilles-Philippe Leblanc <gilles-philippe.leblanc@umontreal.ca>
+ * @copyright  2015 John Okely <john@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
-require_once($CFG->dirroot.'/auth/manual/auth.php');
+require_once($CFG->dirroot.'/auth/ltiprovider/auth.php');
 
 /**
- * Manual authentication tests class.
+ * LTI provider authentication tests class.
  *
- * @package    auth_manual
+ * @package    auth_ltiprovider
  * @category   test
- * @copyright  2014 Gilles-Philippe Leblanc <gilles-philippe.leblanc@umontreal.ca>
+ * @copyright  2015 John Okely <john@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class auth_manual_testcase extends advanced_testcase {
+class auth_ltiprovider_testcase extends advanced_testcase {
 
-    /** @var auth_plugin_manual Keeps the authentication plugin. */
+    /** @var auth_plugin_ltiprovider Keeps the authentication plugin. */
     protected $authplugin;
 
     /** @var stdClass Keeps authentication plugin config */
@@ -49,13 +49,13 @@ class auth_manual_testcase extends advanced_testcase {
      */
     protected function setUp() {
         $this->resetAfterTest(true);
-        $this->authplugin = new auth_plugin_manual();
+        $this->authplugin = new auth_plugin_ltiprovider();
         $this->config = new stdClass();
         $this->config->expiration = '1';
         $this->config->expiration_warning = '2';
         $this->config->expirationtime = '30';
         $this->authplugin->process_config($this->config);
-        $this->authplugin->config = get_config(auth_plugin_manual::COMPONENT_NAME);
+        $this->authplugin->config = get_config(auth_plugin_ltiprovider::COMPONENT_NAME);
     }
 
     /**
@@ -67,7 +67,7 @@ class auth_manual_testcase extends advanced_testcase {
         $passwordisupdated = $this->authplugin->user_update_password($user, 'MyNewPassword*');
 
         // Assert that the actual time should be equal or a little greater than the expected time.
-        $this->assertGreaterThanOrEqual($expectedtime, get_user_preferences('auth_manual_passwordupdatetime', 0, $user->id));
+        $this->assertGreaterThanOrEqual($expectedtime, get_user_preferences('auth_ltiprovider_passwordupdatetime', 0, $user->id));
 
         // Assert that the password was successfully updated.
         $this->assertTrue($passwordisupdated);
@@ -100,7 +100,7 @@ class auth_manual_testcase extends advanced_testcase {
      */
     public function test_process_config() {
         $this->assertTrue($this->authplugin->process_config($this->config));
-        $config = get_config(auth_plugin_manual::COMPONENT_NAME);
+        $config = get_config(auth_plugin_ltiprovider::COMPONENT_NAME);
         $this->assertEquals($this->config->expiration, $config->expiration);
         $this->assertEquals($this->config->expiration_warning, $config->expiration_warning);
         $this->assertEquals($this->config->expirationtime, $config->expirationtime);
