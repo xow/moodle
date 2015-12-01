@@ -25,17 +25,24 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @since      3.1
  */
-define(['jquery', 'core/ajax', 'core/notification', 'core/templates'], function($, ajax, notification, templates) {
+define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/events'], function($, ajax, notification, templates, ltiEvents) {
     var SELECTORS = {
-        REGISTRATION_FORM: '#registration-form',
-        REGISTRATION_URL: '#registration-url',
-        REGISTRATION_SUBMIT_BUTTON: '#registration-submit',
+        CARTRIDGE_REGISTRATION_FORM: '#cartridge-registration-form',
+        EXTERNAL_REGISTRATION_FORM: '#external-registration-form',
+        CARTRIDGE_URL: '#cartridge-url',
+        EXTERNAL_REGISTRATION_URL: '#external-registration-url',
+        CONSUMER_KEY: '#registration-key',
+        SHARED_SECRET: '#registration-secret',
+        CARTRIDGE_REGISTRATION_SUBMIT_BUTTON: '#cartridge-registration-submit',
+        EXTERNAL_REGISTRATION_SUBMIT_BUTTON: '#external-registration-submit',
         REGISTRATION_FEEDBACK_CONTAINER: '#registration-feedback-container',
         MAIN_CONTENT_CONTAINER: '#main-content-container',
         EXTERNAL_REGISTRATION_CONTAINER: '#external-registration-container',
         EXTERNAL_REGISTRATION_TEMPLATE_CONTAINER: '#external-registration-template-container',
         EXTERNAL_REGISTRATION_CANCEL_BUTTON: '#cancel-external-registration',
-        TOOL_LIST_CONTAINER: '#tool-list-container'
+        TOOL_LIST_CONTAINER: '#tool-list-container',
+        REGISTRATION_URL_BUTTON: '#registration-url-button',
+        CARTRIDGE_URL_BUTTON: '#cartridge-url-button',
     };
 
     var KEYS = {
@@ -43,12 +50,28 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates'], function(
         SPACE: 13
     };
 
-    var getRegistrationURL = function() {
-        return $(SELECTORS.REGISTRATION_URL);
+    var getRegistrationURLButton = function() {
+        return $(SELECTORS.REGISTRATION_URL_BUTTON);
     };
 
-    var getRegistrationSubmitButton = function() {
-        return $(SELECTORS.REGISTRATION_SUBMIT_BUTTON);
+    var getCartridgeURLButton = function() {
+        return $(SELECTORS.CARTRIDGE_URL_BUTTON);
+    };
+
+    var getExternalRegistrationURL = function() {
+        return $(SELECTORS.EXTERNAL_REGISTRATION_URL).val();
+    };
+
+    var getCartridgeURL = function() {
+        return $(SELECTORS.CARTRIDGE_URL).val();
+    };
+
+    var getExternalRegistrationSubmitButton = function() {
+        return $(SELECTORS.EXTERNAL_REGISTRATION_SUBMIT_BUTTON);
+    };
+
+    var getCartridgeRegistrationSubmitButton = function() {
+        return $(SELECTORS.CARTRIDGE_REGISTRATION_SUBMIT_BUTTON);
     };
 
     var getRegistrationFeedbackContainer = function() {
@@ -67,16 +90,24 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates'], function(
         return $(SELECTORS.TOOL_LIST_CONTAINER);
     };
 
+    var getConsumerKey = function() {
+        return $(SELECTORS.CONSUMER_KEY).val();
+    };
+
+    var getSharedSecret = function() {
+        return $(SELECTORS.SHARED_SECRET).val();
+    };
+
     var isCartridgeURL = function() {
-        var value = getRegistrationURL().val();
+        var value = getRegistrationURL();
         return /\.xml$/.test(value);
     };
 
-    var startLoading = function() {
+    var startCartridgeLoading = function() {
         getRegistrationSubmitButton().addClass('loading');
     };
 
-    var stopLoading = function() {
+    var stopCartridgeLoading = function() {
         getRegistrationSubmitButton().removeClass('loading');
     };
 
@@ -142,14 +173,27 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates'], function(
     };
 
     var submitCartridgeURL = function() {
-        var cartridgeURL = getRegistrationURL().val();
-        window.location.search = 'cartridgeurl='+cartridgeURL;
+        return createToolType();
+    };
 
-        return $.Deferred();
+    var createToolType = function() {
+        var url = getRegistrationURL();
+        var consumerKey = getRegistrationConsumerKey();
+        var sharedSecret = getRegistrationSharedSecret();
+        var request = {
+            methodname: 'mod_lti_create_tool_type',
+            args: {
+                cartridgeurl: url,
+                key: consumerKey,
+                secret: sharedSecret
+            }
+        };
+
+        return ajax.call([request])[0];
     };
 
     var createToolProxy = function() {
-        var url = getRegistrationURL().val();
+        var url = getRegistrationURL();
         var request = {
             methodname: 'mod_lti_create_tool_proxy',
             args: {
@@ -207,20 +251,12 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates'], function(
             container.find('form').submit();
             showExternalRegistrationContent();
             hideMainContent();
-            /*
-            newWindow.document.write(html);
-
-            $(newWindow.document).ready(function() {
-                var form = $(newWindow.document.body).find('form');
-                form.submit();
-            });
-            */
         });
 
         return promise;
     };
 
-    var submitExternalRegistration = function(newWindow) {
+    var submitExternalRegistration = function() {
         var promise = $.Deferred();
 
         createToolProxy().done(function(result) {
@@ -323,7 +359,8 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates'], function(
 
         var promise = null;
         if (isCartridgeURL()) {
-            promise = submitCartridgeURL();
+            promise = createToolType();
+            promise.done(function() { reloadToolList() });
         } else {
             promise = submitExternalRegistration();
         }
@@ -334,32 +371,9 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates'], function(
     };
 
     var registerEventListeners = function() {
-        var submitButton = getRegistrationSubmitButton();
-        submitButton.click(function(e) {
-            e.preventDefault();
-            processURL();
-        });
-        submitButton.keypress(function(e) {
-            if (!e.metaKey && !e.shiftKey && !e.altKey && !e.ctrlKey) {
-                if (e.keyCode == KEYS.ENTER || e.keyCode == KEYS.SPACE) {
-                    e.preventDefault();
-                    processURL();
-                }
-            }
-        });
 
-        var cancelButton = getExternalRegistrationCancelButton();
-        cancelButton.click(function(e) {
-            e.preventDefault();
-            cancelExternalRegistration();
-        });
-        cancelButton.keypress(function(e) {
-            if (!e.metaKey && !e.shiftKey && !e.altKey && !e.ctrlKey) {
-                if (e.keyCode == KEYS.ENTER || e.keyCode == KEYS.SPACE) {
-                    e.preventDefault();
-                    cancelExternalRegistration();
-                }
-            }
+        $(document).on(ltiEvents.NEW_TOOL_TYPE, function() {
+            reloadToolList();
         });
 
         var feedbackContainer = getRegistrationFeedbackContainer();

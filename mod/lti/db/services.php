@@ -86,4 +86,13 @@ $functions = array(
         'capabilities'  => 'mod/lti:manage',
         'ajax'          => true
     ),
+
+    'mod_lti_create_tool_type' => array(
+        'classname'     => 'mod_lti_external',
+        'methodname'    => 'create_tool_type',
+        'description'   => 'Create a tool type',
+        'type'          => 'write',
+        'capabilities'  => 'mod/lti:manage',
+        'ajax'          => true
+    ),
 );

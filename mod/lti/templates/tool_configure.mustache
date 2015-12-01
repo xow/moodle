@@ -36,80 +36,21 @@
 }}
 <h2>{{#str}} manage_tool_proxies, mod_lti {{/str}}</h2>
 <div class="fluid-container">
-    <div id="external-registration-container" class="hidden">
-        <button id="cancel-external-registration" class="btn btn-danger">
-            <span class="btn-text">Cancel</span>
-            <div class="btn-loader">
-                {{> mod_lti/loader }}
-            </div>
-        </button>
-        <div id="external-registration-template-container"></div>
-    </div>
     <div id="main-content-container">
         <div id="registration-form-container">
             <h3>Add new external tool</h3>
-            <!--
-            <form id="registration-form" class="form-inline">
-                <input name="tool-url"
-                    class="input-xxlarge"
-                    type="url"
-                    id="registration-url"
-                    placeholder="URL for XML cartridge or tool registration page..."
-                    required>
-                <button id="registration-submit" type="button" class="btn btn-success">
-                    <span class="btn-text">Add automatically</span>
-                    <div class="btn-loader">
-                        <div class="spinner">
-                            <div class="bounce1"></div>
-                            <div class="bounce2"></div>
-                            <div class="bounce3"></div>
-                        </div>
-                    </div>
-                </button>
-                or <a href="{{configuremanualurl}}">Add manually</a>
-            </form>
-            -->
+            <div class="btn-group">
+                <button id="configuration-url-button" class="btn">I have a configuration URL</button>
+                <button id="registration-url-button" class="btn">I have a registration URL</button>
+                <a href="{{configuremanualurl}}" class="btn">I'd like to configure a tool manually</a>
+            </div>
             <div id="registration-feedback-container" class="hidden"></div>
-            <form id="registration-form" class="form-horizontal">
-                <div class="control-group">
-                    <label class="control-label" for="registration-url">URL</label>
-                    <div class="controls">
-                        <input name="tool-url"
-                            class="input-xxlarge"
-                            type="url"
-                            id="registration-url"
-                            placeholder="XML cartridge or tool registration page..."
-                            required>
-                    </div>
-                </div>
-                <div class="control-group">
-                    <label class="control-label" for="registration-key">Consumer Key</label>
-                    <div class="controls">
-                        <input name="tool-key"
-                            type="text"
-                            id="registration-key">
-                    </div>
-                </div>
-                <div class="control-group">
-                    <label class="control-label" for="registration-secret">Shared Secret</label>
-                    <div class="controls">
-                        <input name="tool-secret"
-                            type="text"
-                            id="registration-secret">
-                    </div>
-                </div>
-                <div class="control-group">
-                    <div class="controls">
-                        <button id="registration-submit" type="button" class="btn btn-success">
-                            <span class="btn-text">Add automatically</span>
-                            <div class="btn-loader">
-                                {{> mod_lti/loader }}
-                            </div>
-                        </button>
-                        or <a href="{{configuremanualurl}}">Add manually</a>
-                    </div>
-                </div>
-            </form>
+            <div id="cartridge-registration-container">
+                {{> mod_lti/cartridge_registration_form }}
+            </div>
+            <div id="external-registration-container">
+                {{> mod_lti/external_registration }}
+            </div>
         </div>
 
         <div id="tool-list-container" class="loading">

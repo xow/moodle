@@ -1,0 +1,74 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template mod_lti/external_registration
+
+    This template provides the layout for the external tool configuration page in the
+    LTI module.
+
+    Classes required for JS:
+    * none
+
+    Data attributes required for JS:
+    * none
+
+    Context variables required for this template:
+    *
+
+    Example context (json):
+    {
+    }
+
+}}
+<div id="external-registration-container" class="hidden">
+    <button id="cancel-external-registration" class="btn btn-danger">
+        <span class="btn-text">Cancel</span>
+        <div class="btn-loader">
+            {{> mod_lti/loader }}
+        </div>
+    </button>
+    <div id="external-registration-template-container"></div>
+</div>
+
+<form id="external-registration-form" class="form-horizontal">
+    <div class="control-group">
+        <label class="control-label" for="registration-url">URL</label>
+        <div class="controls">
+            <input name="tool-url"
+                class="input-xxlarge"
+                type="url"
+                id="external-registration-url"
+                placeholder="Tool registration URL..."
+                required>
+        </div>
+    </div>
+    <div class="control-group">
+        <div class="controls">
+            <button id="external-registration-submit" type="button" class="btn btn-success">
+                <span class="btn-text">Create</span>
+                <div class="btn-loader">
+                    {{> mod_lti/loader }}
+                </div>
+            </button>
+        </div>
+    </div>
+</form>
+{{#js}}
+    require(['mod_lti/external_registration'], function(registration) {
+        registration.init();
+    });
+{{/js}}
