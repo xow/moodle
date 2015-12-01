@@ -15,9 +15,10 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template mod_lti/tool_list
+    @template mod_lti/loader
 
-    This template provides a list of LTI tools.
+    This template provides the registration form to submit an external
+    LTI registration.
 
     Classes required for JS:
     * none
@@ -33,10 +34,17 @@
     }
 
 }}
-<h3>Tools</h3>
-{{> mod_lti/loader }}
-<div id="tool-card-container" class="container-fluid">
-    {{#tools}}
-        {{> mod_lti/tool_card }}
-    {{/tools}}
+<div class="sk-fading-circle loader">
+    <div class="sk-circle1 sk-circle"></div>
+    <div class="sk-circle2 sk-circle"></div>
+    <div class="sk-circle3 sk-circle"></div>
+    <div class="sk-circle4 sk-circle"></div>
+    <div class="sk-circle5 sk-circle"></div>
+    <div class="sk-circle6 sk-circle"></div>
+    <div class="sk-circle7 sk-circle"></div>
+    <div class="sk-circle8 sk-circle"></div>
+    <div class="sk-circle9 sk-circle"></div>
+    <div class="sk-circle10 sk-circle"></div>
+    <div class="sk-circle11 sk-circle"></div>
+    <div class="sk-circle12 sk-circle"></div>
 </div>

@@ -40,11 +40,7 @@
         <button id="cancel-external-registration" class="btn btn-danger">
             <span class="btn-text">Cancel</span>
             <div class="btn-loader">
-                <div class="spinner">
-                    <div class="bounce1"></div>
-                    <div class="bounce2"></div>
-                    <div class="bounce3"></div>
-                </div>
+                {{> mod_lti/loader }}
             </div>
         </button>
         <div id="external-registration-template-container"></div>
@@ -107,11 +103,7 @@
                         <button id="registration-submit" type="button" class="btn btn-success">
                             <span class="btn-text">Add automatically</span>
                             <div class="btn-loader">
-                                <div class="spinner">
-                                    <div class="bounce1"></div>
-                                    <div class="bounce2"></div>
-                                    <div class="bounce3"></div>
-                                </div>
+                                {{> mod_lti/loader }}
                             </div>
                         </button>
                         or <a href="{{configuremanualurl}}">Add manually</a>
