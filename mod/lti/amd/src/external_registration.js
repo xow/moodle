@@ -30,7 +30,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
         REGISTRATION_FORM: '#external-registration-form',
         REGISTRATION_URL: '#external-registration-url',
         REGISTRATION_SUBMIT_BUTTON: '#external-registration-submit',
-        EXTERNAL_REGISTRATION_CONTAINER: '#external-registration-container',
+        EXTERNAL_REGISTRATION_CONTAINER: '#external-registration-page-container',
         EXTERNAL_REGISTRATION_TEMPLATE_CONTAINER: '#external-registration-template-container',
         EXTERNAL_REGISTRATION_CANCEL_BUTTON: '#cancel-external-registration',
     };
@@ -41,7 +41,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
     };
 
     var getRegistrationURL = function() {
-        return $(SELECTORS.EXTERNAL_REGISTRATION_URL).val();
+        return $(SELECTORS.REGISTRATION_URL).val();
     };
 
     var getRegistrationSubmitButton = function() {
@@ -101,17 +101,17 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
     };
 
     var setToolProxyId = function(id) {
-        var button = getExternalRegistrationCancelButton();
+        var button = getRegistrationCancelButton();
         button.attr('data-tool-proxy-id', id);
     };
 
     var getToolProxyId = function() {
-        var button = getExternalRegistrationCancelButton();
+        var button = getRegistrationCancelButton();
         return button.attr('data-tool-proxy-id');
     };
 
     var clearToolProxyId = function() {
-        var button = getExternalRegistrationCancelButton();
+        var button = getRegistrationCancelButton();
         button.removeAttr('data-tool-proxy-id');
     };
 
@@ -130,7 +130,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
         return ajax.call([request])[0];
     };
 
-    var renderExternalRegistrationWindow = function(newWindow, registrationRequest) {
+    var renderExternalRegistrationWindow = function(registrationRequest) {
         var promise = templates.render('mod_lti/tool_proxy_registration_form', registrationRequest);
 
         promise.done(function(html, js) {
@@ -152,25 +152,33 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
         var promise = $.Deferred();
         var url = getRegistrationURL();
 
-        toolProxy.create({regurl: url}).done(function(result) {
-            var id = result.id;
-            var regURL = result.regurl;
+        startLoading();
+        promise.done(function() { stopLoading() });
 
-            // Save the id on the DOM to cleanup later.
-            setToolProxyId(id);
+        if (url == "") {
+            // No URL has been input.
+            promise.resolve();
+        } else {
+            toolProxy.create({regurl: url}).done(function(result) {
+                var id = result.id;
+                var regURL = result.regurl;
 
-            getRegistrationRequest(id).done(function(registrationRequest) {
+                // Save the id on the DOM to cleanup later.
+                setToolProxyId(id);
 
-                registrationRequest.reg_url = regURL;
-                renderExternalRegistrationWindow(newWindow, registrationRequest).done(function() {
+                getRegistrationRequest(id).done(function(registrationRequest) {
 
-                    promise.resolve();
+                    registrationRequest.reg_url = regURL;
+                    renderExternalRegistrationWindow(registrationRequest).done(function() {
+
+                        promise.resolve();
+
+                    }).fail(promise.fail);
 
                 }).fail(promise.fail);
 
             }).fail(promise.fail);
-
-        }).fail(promise.fail);
+        }
 
         return promise;
     };
