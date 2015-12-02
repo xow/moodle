@@ -32,6 +32,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'mod_lti/tool_type', 'mod_lt
         SHARED_SECRET: '#registration-secret',
         REGISTRATION_FORM: '#cartridge-registration-form',
         REGISTRATION_SUBMIT_BUTTON: '#cartridge-registration-submit',
+        REGISTRATION_CANCEL_BUTTON: '#cartridge-registration-cancel',
     };
 
     var KEYS = {
@@ -45,6 +46,10 @@ define(['jquery', 'core/ajax', 'core/notification', 'mod_lti/tool_type', 'mod_lt
 
     var getSubmitButton = function() {
         return $(SELECTORS.REGISTRATION_SUBMIT_BUTTON);
+    };
+
+    var getCancelButton = function() {
+        return $(SELECTORS.REGISTRATION_CANCEL_BUTTON);
     };
 
     var getConsumerKey = function() {
@@ -81,6 +86,12 @@ define(['jquery', 'core/ajax', 'core/notification', 'mod_lti/tool_type', 'mod_lt
         promise.done(function(result) {
             stopLoading();
             $(document).trigger(ltiEvents.NEW_TOOL_TYPE);
+            $(document).trigger(ltiEvents.STOP_CARTRIDGE_REGISTRATION);
+            // TODO: Language strings
+            $(document).trigger(ltiEvents.REGISTRATION_FEEDBACK, {
+                status: "Success",
+                message: "Successfully created new tool!"
+            });
         });
     };
 
@@ -95,6 +106,20 @@ define(['jquery', 'core/ajax', 'core/notification', 'mod_lti/tool_type', 'mod_lt
                 if (e.keyCode == KEYS.ENTER || e.keyCode == KEYS.SPACE) {
                     e.preventDefault();
                     submitCartridgeURL();
+                }
+            }
+        });
+
+        var cancelButton = getCancelButton();
+        cancelButton.click(function(e) {
+            e.preventDefault();
+            $(document).trigger(ltiEvents.STOP_CARTRIDGE_REGISTRATION);
+        });
+        cancelButton.keypress(function(e) {
+            if (!e.metaKey && !e.shiftKey && !e.altKey && !e.ctrlKey) {
+                if (e.keyCode == KEYS.ENTER || e.keyCode == KEYS.SPACE) {
+                    e.preventDefault();
+                    $(document).trigger(ltiEvents.STOP_CARTRIDGE_REGISTRATION);
                 }
             }
         });

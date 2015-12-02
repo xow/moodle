@@ -39,16 +39,16 @@
     <div id="main-content-container">
         <div id="registration-form-container">
             <h3>Add new external tool</h3>
-            <div class="btn-group">
-                <button id="configuration-url-button" class="btn">I have a configuration URL</button>
+            <div id="registration-choice-container" class="btn-group">
+                <button id="cartridge-url-button" class="btn">I have a configuration URL</button>
                 <button id="registration-url-button" class="btn">I have a registration URL</button>
                 <a href="{{configuremanualurl}}" class="btn">I'd like to configure a tool manually</a>
             </div>
             <div id="registration-feedback-container" class="hidden"></div>
-            <div id="cartridge-registration-container">
+            <div id="cartridge-registration-container" class="hidden">
                 {{> mod_lti/cartridge_registration_form }}
             </div>
-            <div id="external-registration-container">
+            <div id="external-registration-container" class="hidden">
                 {{> mod_lti/external_registration }}
             </div>
         </div>
@@ -59,7 +59,7 @@
     </div>
 </div>
 {{#js}}
-    require(['mod_lti/tool_configure'], function(toolConfigure) {
-        toolConfigure.enhancePage();
+    require(['mod_lti/tool_configure_controller'], function(controller) {
+        controller.init();
     });
 {{/js}}

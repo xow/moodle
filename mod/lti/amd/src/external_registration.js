@@ -30,6 +30,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
         REGISTRATION_FORM: '#external-registration-form',
         REGISTRATION_URL: '#external-registration-url',
         REGISTRATION_SUBMIT_BUTTON: '#external-registration-submit',
+        REGISTRATION_CANCEL_BUTTON: '#external-registration-cancel',
         EXTERNAL_REGISTRATION_CONTAINER: '#external-registration-page-container',
         EXTERNAL_REGISTRATION_TEMPLATE_CONTAINER: '#external-registration-template-container',
         EXTERNAL_REGISTRATION_CANCEL_BUTTON: '#cancel-external-registration',
@@ -49,6 +50,10 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
     };
 
     var getRegistrationCancelButton = function() {
+        return $(SELECTORS.REGISTRATION_CANCEL_BUTTON);
+    };
+
+    var getExternalRegistrationCancelButton = function() {
         return $(SELECTORS.EXTERNAL_REGISTRATION_CANCEL_BUTTON);
     };
 
@@ -65,11 +70,11 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
     };
 
     var startLoadingCancel = function() {
-        getRegistrationCancelButton().addClass('loading');
+        getExternalRegistrationCancelButton().addClass('loading');
     };
 
     var stopLoadingCancel = function() {
-        getRegistrationCancelButton().removeClass('loading');
+        getExternalRegistrationCancelButton().removeClass('loading');
     };
 
     var startLoading = function() {
@@ -101,17 +106,17 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
     };
 
     var setToolProxyId = function(id) {
-        var button = getRegistrationCancelButton();
+        var button = getExternalRegistrationCancelButton();
         button.attr('data-tool-proxy-id', id);
     };
 
     var getToolProxyId = function() {
-        var button = getRegistrationCancelButton();
+        var button = getExternalRegistrationCancelButton();
         return button.attr('data-tool-proxy-id');
     };
 
     var clearToolProxyId = function() {
-        var button = getRegistrationCancelButton();
+        var button = getExternalRegistrationCancelButton();
         button.removeAttr('data-tool-proxy-id');
     };
 
@@ -211,6 +216,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
 
         promise.done(function() {
             finishExternalRegistration();
+            stopLoadingCancel();
         });
     };
 
@@ -225,6 +231,20 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
                 if (e.keyCode == KEYS.ENTER || e.keyCode == KEYS.SPACE) {
                     e.preventDefault();
                     submitExternalRegistration();
+                }
+            }
+        });
+
+        var cancelExternalRegistrationButton = getExternalRegistrationCancelButton();
+        cancelExternalRegistrationButton.click(function(e) {
+            e.preventDefault();
+            cancelRegistration();
+        });
+        cancelExternalRegistrationButton.keypress(function(e) {
+            if (!e.metaKey && !e.shiftKey && !e.altKey && !e.ctrlKey) {
+                if (e.keyCode == KEYS.ENTER || e.keyCode == KEYS.SPACE) {
+                    e.preventDefault();
+                    cancelRegistration();
                 }
             }
         });
