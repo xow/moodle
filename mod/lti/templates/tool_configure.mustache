@@ -35,14 +35,21 @@
 
 }}
 <h2>{{#str}} manage_tool_proxies, mod_lti {{/str}}</h2>
-<div class="fluid-container">
+<div class="container-fluid">
     <div id="main-content-container">
         <div id="registration-form-container">
             <h3>Add new external tool</h3>
-            <div id="registration-choice-container" class="btn-group">
-                <button id="cartridge-url-button" class="btn">I have a configuration URL</button>
-                <button id="registration-url-button" class="btn">I have a registration URL</button>
-                <a href="{{configuremanualurl}}" class="btn">I'd like to configure a tool manually</a>
+            <div id="registration-choice-container" class="row">
+                <div class="span12">
+                    <div class="well">
+                        <p class="lead">Automatically configure a new external tool using a</p>
+                        <div class="btn-toolbar">
+                            <button id="cartridge-url-button" class="btn btn-primary">Configuration URL</button>
+                            <button id="registration-url-button" class="btn btn-primary">Registration URL</button>
+                        </div>
+                        <p>Or you can <a href="{{configuremanualurl}}">configure a tool manually</a></p>
+                    </div>
+                </div>
             </div>
             <div id="registration-feedback-container" class="hidden"></div>
             <div id="cartridge-registration-container" class="hidden">

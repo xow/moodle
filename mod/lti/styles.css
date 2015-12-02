@@ -26,6 +26,9 @@
 #page-mod-lti-instructor_edit_tool_type .mform .fitem .fitemtitle { min-width:18em;padding-right:1em } /* Prevent setting titles from wrapping */
 
 /* Styling for tool_configure page */
+#registration-choice-container .btn {
+}
+
 #external-registration-container iframe {
     border: 1px solid #e5e5e5;
     border-radius: 10px;
@@ -53,6 +56,22 @@
 
 #registration-form-container {
     min-height: 230px;
+}
+
+#registration-form-container .control-group:last-child {
+    margin-bottom: 0;
+}
+
+#registration-choice-container .well {
+    text-align: center;
+}
+
+#registration-choice-container .btn-toolbar {
+    margin-bottom: 0;
+}
+
+#registration-choice-container p:last-child {
+    margin-top: 20px;
 }
 
 #registration-feedback-container {
