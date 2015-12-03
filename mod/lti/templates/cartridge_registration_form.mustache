@@ -34,51 +34,59 @@
     }
 
 }}
-<form id="cartridge-registration-form" class="form-horizontal">
-    <div class="control-group">
-        <label class="control-label" for="registration-url">URL</label>
-        <div class="controls">
-            <input name="tool-url"
-                class="input-xxlarge"
-                type="url"
-                id="cartridge-url"
-                placeholder="XML cartridge URL..."
-                required>
-        </div>
-    </div>
-    <div class="control-group">
-        <label class="control-label" for="registration-key">Consumer Key</label>
-        <div class="controls">
-            <input name="tool-key"
-                type="text"
-                id="registration-key">
-        </div>
-    </div>
-    <div class="control-group">
-        <label class="control-label" for="registration-secret">Shared Secret</label>
-        <div class="controls">
-            <input name="tool-secret"
-                type="text"
-                id="registration-secret">
-        </div>
-    </div>
-    <div class="control-group">
-        <div class="controls">
-            <button id="cartridge-registration-submit" type="button" class="btn btn-success">
-                <span class="btn-text">Create</span>
-                <div class="btn-loader">
-                    {{> mod_lti/loader }}
+<div class="row-fluid">
+    <div class="span6 offset3">
+        <div class="well">
+            <form id="cartridge-registration-form" class="form-horizontal">
+                <div class="control-group">
+                    <label class="control-label" for="registration-url">URL</label>
+                    <div class="controls">
+                        <input name="tool-url"
+                            class="input-block-level"
+                            type="url"
+                            id="cartridge-url"
+                            placeholder="XML cartridge URL..."
+                            required>
+                    </div>
                 </div>
-            </button>
-            <button id="cartridge-registration-cancel" type="button" class="btn btn-danger">
-                <span class="btn-text">Cancel</span>
-                <div class="btn-loader">
-                    {{> mod_lti/loader }}
+                <div class="control-group">
+                    <label class="control-label" for="registration-key">Consumer Key</label>
+                    <div class="controls">
+                        <input name="tool-key"
+                            class="input-block-level"
+                            type="text"
+                            id="registration-key">
+                    </div>
                 </div>
-            </button>
+                <div class="control-group">
+                    <label class="control-label" for="registration-secret">Shared Secret</label>
+                    <div class="controls">
+                        <input name="tool-secret"
+                            class="input-block-level"
+                            type="text"
+                            id="registration-secret">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <div class="controls">
+                        <button id="cartridge-registration-submit" type="button" class="btn btn-success">
+                            <span class="btn-text">Create</span>
+                            <div class="btn-loader">
+                                {{> mod_lti/loader }}
+                            </div>
+                        </button>
+                        <button id="cartridge-registration-cancel" type="button" class="btn btn-danger">
+                            <span class="btn-text">Cancel</span>
+                            <div class="btn-loader">
+                                {{> mod_lti/loader }}
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
-</form>
+</div>
 {{#js}}
     require(['mod_lti/cartridge_registration_form'], function(registration) {
         registration.init();

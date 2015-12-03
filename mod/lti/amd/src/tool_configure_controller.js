@@ -160,10 +160,11 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
         container.addClass('loading');
 
         getToolTypes().done(function(types) {
-            templates.render('mod_lti/tool_list', {tools: types}).done(function(html) {
+            templates.render('mod_lti/tool_list', {tools: types}).done(function(html, js) {
                 container.empty();
                 container.append(html);
                 container.removeClass('loading');
+                templates.runTemplateJS(js);
             });
         });
     };

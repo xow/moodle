@@ -34,7 +34,9 @@
 
 }}
 <h3>Tools</h3>
-{{> mod_lti/loader }}
+<div id="tool-list-loader-container">
+    {{> mod_lti/loader }}
+</div>
 <div id="tool-card-container" class="container-fluid">
     {{#tools}}
         {{> mod_lti/tool_card }}

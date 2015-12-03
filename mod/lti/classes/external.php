@@ -644,6 +644,12 @@ class mod_lti_external extends external_api {
      * @throws moodle_exception
      */
     public static function create_tool_type($cartridgeurl, $key, $secret) {
+        $params = self::validate_parameters(self::create_tool_type_parameters(),
+                                            array(
+                                                'cartridgeurl' => $cartridgeurl,
+                                                'key' => $key,
+                                                'secret' => $secret
+                                            ));
         $warnings = array();
 
         $context = context_system::instance();
@@ -709,6 +715,57 @@ class mod_lti_external extends external_api {
                     )
                 )
             ), 'Tool'
+        );
+    }
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     * @since Moodle 3.0
+     */
+    public static function delete_tool_type_parameters() {
+        return new external_function_parameters(
+            array(
+                'id' => new external_value(PARAM_INT, 'Tool type id'),
+            )
+        );
+    }
+
+    /**
+     * Delete a tool type.
+     *
+     * @return array created tool type
+     * @since Moodle 3.0
+     * @throws moodle_exception
+     */
+    public static function delete_tool_type($id) {
+        $params = self::validate_parameters(self::delete_tool_type_parameters(),
+                                            array(
+                                                'id' => $id,
+                                            ));
+        $warnings = array();
+
+        $context = context_system::instance();
+        self::validate_context($context);
+        require_capability('mod/lti:manage', $context);
+
+        lti_delete_type($id);
+
+        return array('id' => $id);
+    }
+
+    /**
+     * Returns description of method result value
+     *
+     * @return external_description
+     * @since Moodle 3.0
+     */
+    public static function delete_tool_type_returns() {
+        return new external_function_parameters(
+            array(
+                'id' => new external_value(PARAM_INT, 'Tool type id'),
+            )
         );
     }
 }

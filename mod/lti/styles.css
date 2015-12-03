@@ -33,14 +33,11 @@
     margin: 20px;
 }
 
-#registration-choice-container .well {
-    margin-bottom: 0;
-}
-
 #choice-list {
     list-style: none;
     border-bottom: 1px solid #e3e3e3;
     padding-bottom: 1em;
+    margin-left: 0;
 }
 
 #choice-list > li {
@@ -74,6 +71,10 @@
 
 #registration-form-container {
     min-height: 230px;
+}
+
+#registration-form-container .well {
+    margin-bottom: 0;
 }
 
 #registration-form-container .control-group:last-child {
@@ -129,12 +130,16 @@
     display: inline-block;
 }
 
-#tool-list-container .loader {
+#tool-list-loader-container {
+    display: inline-block;
+}
+
+#tool-list-loader-container .loader {
     display: none;
 }
 
-#tool-list-container.loading .loader {
-    display: inline-block;
+.loading #tool-list-loader-container .loader {
+    display: block;
 }
 
 .tool-card {
@@ -144,6 +149,71 @@
     border: 1px solid #e5e5e5;
     border-radius: 10px;
     margin: 5px;
+    position: relative;
+}
+
+.tool-card:hover,
+.tool-card:focus {
+    border-color: #0088cc;
+    box-shadow: 0 1px 4px rgba(0, 105, 214, 0.25);
+}
+
+.tool-card .overlay-container {
+    z-index: 100;
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 10px;
+    display: none;
+}
+
+.tool-card .overlay-container .img-container {
+    position: absolute;
+    top: 115px;
+    left: 90px;
+    display: block;
+    width: 70px;
+    height: 70px;
+}
+
+.tool-card .overlay-container .img-container img {
+    height: 100%;
+    width: 100%;
+}
+
+.tool-card.announcement .overlay-container {
+    display: block;
+}
+
+.tool-card.announcement .overlay-container .loader {
+    display: none;
+}
+
+.tool-card.announcement.loading .overlay-container .loader {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.tool-card.announcement .overlay-container .success-icon-container {
+    display: none;
+}
+
+.tool-card.announcement.success .overlay-container .success-icon-container {
+    display: block;
+}
+
+.tool-card.announcement .overlay-container .fail-icon-container {
+    display: none;
+}
+
+.tool-card.announcement.fail .overlay-container .fail-icon-container {
+    display: block;
+}
+
+.tool-card-content {
+    z-index: 1;
 }
 
 .tool-card-header {

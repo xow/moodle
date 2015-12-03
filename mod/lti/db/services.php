@@ -95,4 +95,13 @@ $functions = array(
         'capabilities'  => 'mod/lti:manage',
         'ajax'          => true
     ),
+
+    'mod_lti_delete_tool_type' => array(
+        'classname'     => 'mod_lti_external',
+        'methodname'    => 'delete_tool_type',
+        'description'   => 'Delete a tool type',
+        'type'          => 'write',
+        'capabilities'  => 'mod/lti:manage',
+        'ajax'          => true
+    ),
 );

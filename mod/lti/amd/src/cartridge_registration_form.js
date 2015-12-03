@@ -18,8 +18,8 @@
  * which can call any existing webservice using the current session.
  * In addition, it can batch multiple requests and return multiple responses.
  *
- * @module     mod_lti/tool_configure
- * @class      tool_configure
+ * @module     mod_lti/cartridge_registration_form
+ * @class      cartridge_registration_form
  * @package    core
  * @copyright  2015 Ryan Wyllie <ryan@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later

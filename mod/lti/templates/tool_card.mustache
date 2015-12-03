@@ -34,25 +34,40 @@
     }
 
 }}
-<div class="tool-card">
-    <div class="tool-card-header">
-        <div class="tool-card-actions">
-            <a href="{{{urls.edit}}}">{{#pix}} t/edit, core, Edit{{/pix}}</a>
-            <a href="{{{urls.reject}}}">{{#pix}} t/delete, core, Reject{{/pix}}</a>
+<div class="tool-card" data-type-id="{{id}}">
+    <div class="overlay-container">
+        <div class="img-container">
+            {{> mod_lti/loader }}
+            <div class="success-icon-container">{{#pix}} i/valid, core, Success{{/pix}}</div>
+            <div class="fail-icon-container">{{#pix}} i/invalid, core, Fail{{/pix}}</div>
         </div>
-        <img class="tool-card-icon" src="{{{urls.icon}}}" alt="{{name}}"></img>
-        <h4>{{name}}</h4>
     </div>
-    <div class="tool-card-body">
-        <span class="label
-                    {{#state.pending}}label-info{{/state.pending}}
-                    {{#state.configured}}label-success{{/state.configured}}
-                    {{#state.rejected}}label-important{{/state.rejected}}
-                    {{#state.unknown}}label-warning{{/state.unknown}}">
-            {{state.text}}
-        </span>
-        <p class="description">{{description}}</p>
-    </div>
-    <div class="tool-card-footer">
+    <div class="tool-card-content">
+        <div class="tool-card-header">
+            <div class="tool-card-actions">
+                <a class="edit" href="{{{urls.edit}}}">{{#pix}} t/edit, core, Edit{{/pix}}</a>
+                <a class="delete" href="#">{{#pix}} t/delete, core, Reject{{/pix}}</a>
+            </div>
+            <img class="tool-card-icon" src="{{{urls.icon}}}" alt="{{name}}"></img>
+            <h4>{{name}}</h4>
+        </div>
+        <div class="tool-card-body">
+            <span class="label
+                        {{#state.pending}}label-info{{/state.pending}}
+                        {{#state.configured}}label-success{{/state.configured}}
+                        {{#state.rejected}}label-important{{/state.rejected}}
+                        {{#state.unknown}}label-warning{{/state.unknown}}">
+                {{state.text}}
+            </span>
+            <p class="description">{{description}}</p>
+        </div>
+        <div class="tool-card-footer">
+        </div>
     </div>
 </div>
+{{#js}}
+    require(['jquery', 'mod_lti/tool_card_controller'], function($, controller) {
+        var cardElement = $('[data-type-id={{id}}]');
+        controller.init(cardElement);
+    });
+{{/js}}
