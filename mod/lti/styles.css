@@ -29,6 +29,24 @@
 #registration-choice-container .btn {
 }
 
+#registration-choice-container .buffer-text {
+    margin: 20px;
+}
+
+#registration-choice-container .well {
+    margin-bottom: 0;
+}
+
+#choice-list {
+    list-style: none;
+    border-bottom: 1px solid #e3e3e3;
+    padding-bottom: 1em;
+}
+
+#choice-list > li {
+    display: inline-block;
+}
+
 #external-registration-container iframe {
     border: 1px solid #e5e5e5;
     border-radius: 10px;
