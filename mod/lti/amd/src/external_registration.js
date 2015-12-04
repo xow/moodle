@@ -157,13 +157,14 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
         var promise = $.Deferred();
         var url = getRegistrationURL();
 
-        startLoading();
         promise.done(function() { stopLoading() });
 
         if (url == "") {
             // No URL has been input.
             promise.resolve();
         } else {
+            startLoading();
+
             toolProxy.create({regurl: url}).done(function(result) {
                 var id = result.id;
                 var regURL = result.regurl;
@@ -274,6 +275,10 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
                 message = data.message;
             } else {
                 message = data.error;
+            }
+
+            if (status == "success") {
+                $(document).trigger(ltiEvents.NEW_TOOL_TYPE);
             }
 
             $(document).trigger(ltiEvents.REGISTRATION_FEEDBACK, {status: status, message: message});

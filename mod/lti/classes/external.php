@@ -600,7 +600,6 @@ class mod_lti_external extends external_api {
                                 array(
                                     'icon' => new external_value(PARAM_URL, 'Tool type icon URL'),
                                     'edit' => new external_value(PARAM_URL, 'Tool type edit URL'),
-                                    'reject' => new external_value(PARAM_URL, 'Tool type reject URL'),
                                 )
                             ),
                             'state' => new external_single_structure(
@@ -701,7 +700,112 @@ class mod_lti_external extends external_api {
                     array(
                         'icon' => new external_value(PARAM_URL, 'Tool type icon URL'),
                         'edit' => new external_value(PARAM_URL, 'Tool type edit URL'),
-                        'reject' => new external_value(PARAM_URL, 'Tool type reject URL'),
+                    )
+                ),
+                'state' => new external_single_structure(
+                    array(
+                        'text' => new external_value(PARAM_TEXT, 'Tool type state name string'),
+                        'pending' => new external_value(PARAM_BOOL, 'Is the state pending'),
+                        'configured' => new external_value(PARAM_BOOL, 'Is the state configured'),
+                        'rejected' => new external_value(PARAM_BOOL, 'Is the state rejected'),
+                        'any' => new external_value(PARAM_BOOL, 'Is the state any'),
+                        'unknown' => new external_value(PARAM_BOOL, 'Is the state unknown'),
+                    )
+                )
+            ), 'Tool'
+        );
+    }
+
+    /**
+     * Returns description of method parameters
+     *
+     * @return external_function_parameters
+     * @since Moodle 3.0
+     */
+    public static function update_tool_type_parameters() {
+        return new external_function_parameters(
+            array(
+                'name' => new external_value(PARAM_ALPHANUM, 'Tool type name'),
+                'description' => new external_value(PARAM_TEXT, 'Tool type description'),
+                'state' => new external_single_structure(
+                    array(
+                        'text' => new external_value(PARAM_TEXT, 'Tool type state name string'),
+                        'pending' => new external_value(PARAM_BOOL, 'Is the state pending'),
+                        'configured' => new external_value(PARAM_BOOL, 'Is the state configured'),
+                        'rejected' => new external_value(PARAM_BOOL, 'Is the state rejected'),
+                        'any' => new external_value(PARAM_BOOL, 'Is the state any'),
+                        'unknown' => new external_value(PARAM_BOOL, 'Is the state unknown'),
+                    )
+                )
+            ), 'Tool'
+        );
+    }
+
+    /**
+     * Update a tool type.
+     *
+     * @return array created tool type
+     * @since Moodle 3.0
+     * @throws moodle_exception
+     */
+    public static function update_tool_type($cartridgeurl, $key, $secret) {
+        $params = self::validate_parameters(self::update_tool_type_parameters(),
+                                            array(
+                                                'cartridgeurl' => $cartridgeurl,
+                                                'key' => $key,
+                                                'secret' => $secret
+                                            ));
+        $warnings = array();
+
+        $context = context_system::instance();
+        self::validate_context($context);
+        require_capability('mod/lti:manage', $context);
+
+        $id = null;
+
+        if (!empty($cartridgeurl)) {
+            $type = new stdClass();
+            $data = new stdClass();
+            $type->state = LTI_TOOL_STATE_CONFIGURED;
+            $data->lti_coursevisible = 1;
+
+            if (!empty($key)) {
+                $data->lti_resourcekey = $key;
+            }
+
+            if (!empty($secret)) {
+                $data->lti_password = $secret;
+            }
+
+            lti_load_cartridge($cartridgeurl, $data);
+            $id = lti_add_type($type, $data);
+        }
+
+        if (!empty($id)) {
+            $type = lti_get_type($id);
+            return serialise_tool_type($type);
+        } else {
+            # TODO: lang string?
+            throw new moodle_exception('Unable to create tool type');
+        }
+    }
+
+    /**
+     * Returns description of method result value
+     *
+     * @return external_description
+     * @since Moodle 3.0
+     */
+    public static function update_tool_type_returns() {
+        return new external_function_parameters(
+            array(
+                'id' => new external_value(PARAM_INT, 'Tool type id'),
+                'name' => new external_value(PARAM_ALPHANUM, 'Tool type name'),
+                'description' => new external_value(PARAM_TEXT, 'Tool type description'),
+                'urls' => new external_single_structure(
+                    array(
+                        'icon' => new external_value(PARAM_URL, 'Tool type icon URL'),
+                        'edit' => new external_value(PARAM_URL, 'Tool type edit URL'),
                     )
                 ),
                 'state' => new external_single_structure(

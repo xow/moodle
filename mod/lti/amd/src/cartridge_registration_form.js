@@ -77,8 +77,12 @@ define(['jquery', 'core/ajax', 'core/notification', 'mod_lti/tool_type', 'mod_lt
             return;
         }
 
-        startLoading();
         var url = getCartridgeURL();
+        if (url == "") {
+            return;
+        }
+
+        startLoading();
         var consumerKey = getConsumerKey();
         var sharedSecret = getSharedSecret();
         var promise = toolType.create({cartridgeurl: url, key: consumerKey, secret: sharedSecret});
@@ -92,7 +96,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'mod_lti/tool_type', 'mod_lt
                 status: "Success",
                 message: "Successfully created new tool!"
             });
-        });
+        }).fail(function() { stopLoading() });
     };
 
     var registerEventListeners = function() {
