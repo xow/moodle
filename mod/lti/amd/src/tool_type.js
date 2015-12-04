@@ -53,6 +53,19 @@ define(['core/ajax', 'core/notification'], function(ajax, notification) {
             return promise;
         },
 
+        update: function(args) {
+            var request = {
+                methodname: 'mod_lti_update_tool_type',
+                args: args
+            };
+
+            var promise = ajax.call([request])[0];
+
+            promise.fail(notification.exception);
+
+            return promise;
+        },
+
         delete: function(id) {
             var request = {
                 methodname: 'mod_lti_delete_tool_type',

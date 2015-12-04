@@ -98,6 +98,7 @@
     text-transform: capitalize;
 }
 
+
 .centered-menu {
     max-width: 70%;
     margin-left: auto;
@@ -159,16 +160,23 @@
 .tool-card:focus {
     border-color: #0088cc;
     box-shadow: 0 1px 4px rgba(0, 105, 214, 0.25);
+    -webkit-transition: border linear 0.2s, box-shadow linear 0.2s;
+       -moz-transition: border linear 0.2s, box-shadow linear 0.2s;
+         -o-transition: border linear 0.2s, box-shadow linear 0.2s;
+            transition: border linear 0.2s, box-shadow linear 0.2s;
 }
 
 .tool-card .overlay-container {
-    z-index: 100;
-    height: 100%;
-    width: 100%;
-    position: absolute;
     background-color: rgba(255, 255, 255, 0.8);
     border-radius: 10px;
     display: none;
+    height: 100%;
+    left: 0;
+    position: absolute;
+    text-align: center;
+    top: 0;
+    width: 100%;
+    z-index: 100;
 }
 
 .tool-card .overlay-container .img-container {
@@ -185,7 +193,7 @@
     width: 100%;
 }
 
-.tool-card.announcement .overlay-container {
+.tool-card.announcement > .overlay-container {
     display: block;
 }
 
@@ -262,6 +270,52 @@
 
 .tool-card-footer a {
     margin-left: 10px;
+}
+
+.tool-card .contenteditable-container {
+    position: relative;
+}
+
+.tool-card [contenteditable=true] {
+    border: 1px solid transparent;
+    padding: 0.25em;
+    position: relative;
+    z-index: 1;
+}
+
+.tool-card [contenteditable=true]:hover {
+    border-radius: 4px;
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    background-color: #fff;
+    border: 1px solid #e3e3e3;
+    -webkit-transition: border linear 0.2s, box-shadow linear 0.2s;
+       -moz-transition: border linear 0.2s, box-shadow linear 0.2s;
+         -o-transition: border linear 0.2s, box-shadow linear 0.2s;
+            transition: border linear 0.2s, box-shadow linear 0.2s;
+    cursor: text;
+}
+
+.tool-card [contenteditable=true]:focus {
+    outline: 0;
+    border-radius: 4px;
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(82, 168, 236, 0.6);
+    background-color: #fff;
+    border: 1px solid rgba(82, 168, 236, 0.8);
+    -webkit-transition: border linear 0.2s, box-shadow linear 0.2s;
+       -moz-transition: border linear 0.2s, box-shadow linear 0.2s;
+         -o-transition: border linear 0.2s, box-shadow linear 0.2s;
+            transition: border linear 0.2s, box-shadow linear 0.2s;
+    cursor: text;
+}
+
+.tool-card [contenteditable=true].loading + .overlay-container {
+    border-radius: 4px;
+    display: block;
+}
+
+.tool-card [contenteditable=true] + .overlay-container .loader {
+    display: inline-block;
+    vertical-align: middle;
 }
 
 /* LOADER STYLING */

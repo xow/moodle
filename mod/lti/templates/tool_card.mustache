@@ -49,7 +49,10 @@
                 <a class="delete" href="#">{{#pix}} t/delete, core, Reject{{/pix}}</a>
             </div>
             <img class="tool-card-icon" src="{{{urls.icon}}}" alt="{{name}}"></img>
-            <h4>{{name}}</h4>
+            <div class="contenteditable-container">
+                <h4 class="name" contenteditable="true">{{name}}</h4>
+                <div class="overlay-container">{{> mod_lti/loader }}</div>
+            </div>
         </div>
         <div class="tool-card-body">
             <span class="label
@@ -59,7 +62,10 @@
                         {{#state.unknown}}label-warning{{/state.unknown}}">
                 {{state.text}}
             </span>
-            <p class="description">{{description}}</p>
+            <div class="description" contenteditable="true">
+                {{description}}
+                <div class="overlay-container">{{> mod_lti/loader }}</div>
+            </div>
         </div>
         <div class="tool-card-footer">
         </div>

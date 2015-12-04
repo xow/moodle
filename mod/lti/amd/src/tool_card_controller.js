@@ -28,6 +28,8 @@
 define(['jquery', 'core/ajax', 'core/notification', 'mod_lti/tool_type'], function($, ajax, notification, toolType) {
     var SELECTORS = {
         DELETE_BUTTON: '.delete',
+        NAME_ELEMENT: '.name',
+        DESCRIPTION_ELEMENT: '.description',
     };
 
     var KEYS = {
@@ -37,6 +39,14 @@ define(['jquery', 'core/ajax', 'core/notification', 'mod_lti/tool_type'], functi
 
     var getDeleteButton = function(element) {
         return element.find(SELECTORS.DELETE_BUTTON);
+    };
+
+    var getNameElement = function(element) {
+        return element.find(SELECTORS.NAME_ELEMENT);
+    };
+
+    var getDescriptionElement = function(element) {
+        return element.find(SELECTORS.DESCRIPTION_ELEMENT);
     };
 
     var getTypeId = function(element) {
@@ -99,6 +109,70 @@ define(['jquery', 'core/ajax', 'core/notification', 'mod_lti/tool_type'], functi
         promise.fail(function() { announceFailure(element) });
     };
 
+    var updateDescription = function(element) {
+        var typeId = getTypeId(element);
+
+        if (typeId == "") {
+            return;
+        }
+
+        var descriptionElement = getDescriptionElement(element);
+
+        if (descriptionElement.hasClass('loading')) {
+            return;
+        }
+
+        descriptionElement.addClass('loading');
+
+        var description = descriptionElement.text().trim();
+        var promise = toolType.update({id: typeId, description: description});
+
+        promise.done(function(type) {
+            descriptionElement.removeClass('loading');
+            // Make sure the text is updated with the description from the
+            // server, just in case the update didn't work.
+            descriptionElement.text(type.description);
+        });
+
+        // Probably need to handle failures better so that we can revert
+        // the value in the input for the user.
+        promise.fail(function() { descriptionElement.removeClass('loading'); });
+
+        return promise;
+    };
+
+    var updateName = function(element, value) {
+        var typeId = getTypeId(element);
+
+        if (typeId == "") {
+            return;
+        }
+
+        var nameElement = getNameElement(element);
+
+        if (nameElement.hasClass('loading')) {
+            return;
+        }
+
+        nameElement.addClass('loading');
+
+        var name = nameElement.text().trim();
+        var promise = toolType.update({id: typeId, name: name});
+
+        promise.done(function(type) {
+            nameElement.removeClass('loading');
+            // Make sure the text is updated with the name from the
+            // server, just in case the update didn't work.
+            nameElement.text(type.name);
+        });
+
+        // Probably need to handle failures better so that we can revert
+        // the value in the input for the user.
+        promise.fail(function() { nameElement.removeClass('loading'); });
+
+        return promise;
+    };
+
     var registerEventListeners = function(element) {
         var deleteButton = getDeleteButton(element);
         deleteButton.click(function(e) {
@@ -110,6 +184,34 @@ define(['jquery', 'core/ajax', 'core/notification', 'mod_lti/tool_type'], functi
                 if (e.keyCode == KEYS.ENTER || e.keyCode == KEYS.SPACE) {
                     e.preventDefault();
                     deleteType(element);
+                }
+            }
+        });
+
+        var descriptionElement = getDescriptionElement(element);
+        descriptionElement.blur(function(e) {
+            e.preventDefault();
+            updateDescription(element);
+        });
+        descriptionElement.keypress(function(e) {
+            if (!e.metaKey && !e.shiftKey && !e.altKey && !e.ctrlKey) {
+                if (e.keyCode == KEYS.ENTER) {
+                    e.preventDefault();
+                    updateDescription(element);
+                }
+            }
+        });
+
+        var nameElement = getNameElement(element);
+        nameElement.blur(function(e) {
+            e.preventDefault();
+            updateName(element);
+        });
+        nameElement.keypress(function(e) {
+            if (!e.metaKey && !e.shiftKey && !e.altKey && !e.ctrlKey) {
+                if (e.keyCode == KEYS.ENTER) {
+                    e.preventDefault();
+                    updateName(element);
                 }
             }
         });

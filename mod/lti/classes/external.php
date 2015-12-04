@@ -721,19 +721,11 @@ class mod_lti_external extends external_api {
     public static function update_tool_type_parameters() {
         return new external_function_parameters(
             array(
-                'name' => new external_value(PARAM_TEXT, 'Tool type name'),
-                'description' => new external_value(PARAM_TEXT, 'Tool type description'),
-                'state' => new external_single_structure(
-                    array(
-                        'text' => new external_value(PARAM_TEXT, 'Tool type state name string'),
-                        'pending' => new external_value(PARAM_BOOL, 'Is the state pending'),
-                        'configured' => new external_value(PARAM_BOOL, 'Is the state configured'),
-                        'rejected' => new external_value(PARAM_BOOL, 'Is the state rejected'),
-                        'any' => new external_value(PARAM_BOOL, 'Is the state any'),
-                        'unknown' => new external_value(PARAM_BOOL, 'Is the state unknown'),
-                    )
-                )
-            ), 'Tool'
+                'id' => new external_value(PARAM_INT, 'Tool type id'),
+                'name' => new external_value(PARAM_TEXT, 'Tool type name', VALUE_DEFAULT, null),
+                'description' => new external_value(PARAM_TEXT, 'Tool type description', VALUE_DEFAULT, null),
+                'state' => new external_value(PARAM_INT, 'Tool type state', VALUE_DEFAULT, null)
+            )
         );
     }
 
@@ -744,12 +736,13 @@ class mod_lti_external extends external_api {
      * @since Moodle 3.0
      * @throws moodle_exception
      */
-    public static function update_tool_type($cartridgeurl, $key, $secret) {
+    public static function update_tool_type($id, $name, $description, $state) {
         $params = self::validate_parameters(self::update_tool_type_parameters(),
                                             array(
-                                                'cartridgeurl' => $cartridgeurl,
-                                                'key' => $key,
-                                                'secret' => $secret
+                                                'id' => $id,
+                                                'name' => $name,
+                                                'description' => $description,
+                                                'state' => $state,
                                             ));
         $warnings = array();
 
@@ -757,33 +750,35 @@ class mod_lti_external extends external_api {
         self::validate_context($context);
         require_capability('mod/lti:manage', $context);
 
-        $id = null;
+        $type = lti_get_type($id);
 
-        if (!empty($cartridgeurl)) {
-            $type = new stdClass();
-            $data = new stdClass();
-            $type->state = LTI_TOOL_STATE_CONFIGURED;
-            $data->lti_coursevisible = 1;
-
-            if (!empty($key)) {
-                $data->lti_resourcekey = $key;
-            }
-
-            if (!empty($secret)) {
-                $data->lti_password = $secret;
-            }
-
-            lti_load_cartridge($cartridgeurl, $data);
-            $id = lti_add_type($type, $data);
+        if (empty($type)) {
+            // TODO: lang string
+            throw new moodle_exception(sprintf("Unable to find tool type for %d", $id));
         }
 
-        if (!empty($id)) {
-            $type = lti_get_type($id);
-            return serialise_tool_type($type);
-        } else {
-            # TODO: lang string?
-            throw new moodle_exception('Unable to create tool type');
+        if (!empty($name)) {
+            $type->name = $name;
         }
+
+        if (!empty($description)) {
+            $type->description = $description;
+        }
+
+        if (!empty($state)) {
+            // Valid state range.
+            if ($state < 1 || $state > 3) {
+                $type->state = $state;
+            } else {
+                // TODO: lang string
+                throw new moodle_exception(sprintf("Invalid state: %d - must be 1, 2 or 3"), $state);
+            }
+        }
+
+        $config = lti_get_type_config($id);
+        lti_update_type($type, $config);
+
+        return serialise_tool_type($type);
     }
 
     /**
