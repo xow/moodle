@@ -56,17 +56,27 @@ define(['jquery', 'core/ajax', 'core/notification', 'mod_lti/tool_type'], functi
     };
 
     var announceSuccess = function(element) {
+        var promise = $.Deferred();
+
         element.addClass('announcement success');
         setTimeout(function() {
             element.removeClass('announcement success');
+            promise.resolve();
         }, 2000);
+
+        return promise;
     };
 
     var announceFailure = function(element) {
+        var promise = $.Deferred();
+
         element.addClass('announcement fail');
         setTimeout(function() {
             element.removeClass('announcement fail');
+            promise.resolve();
         }, 2000);
+
+        return promise;
     };
 
     var deleteType = function(element) {
@@ -81,7 +91,9 @@ define(['jquery', 'core/ajax', 'core/notification', 'mod_lti/tool_type'], functi
 
         promise.done(function() {
             stopLoading(element);
-            announceSuccess(element);
+            announceSuccess(element).done(function() {
+                element.remove();
+            });
         });
 
         promise.fail(function() { announceFailure(element) });

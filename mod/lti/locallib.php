@@ -2139,20 +2139,15 @@ function get_tool_edit_url(stdClass $type) {
     return $url->out();
 }
 
-function get_tool_reject_url(stdClass $type) {
-    $url = new moodle_url('/mod/lti/typessettings.php', array('action' => 'reject', 'id' => $type->id, 'sesskey' => sesskey()));
-    return $url->out();
-}
-
 function get_tool_urls(stdClass $type) {
     return array(
         'icon' => get_tool_icon_url($type),
         'edit' => get_tool_edit_url($type),
-        'reject' => get_tool_reject_url($type)
     );
 }
 
 function get_tool_state_info(stdClass $type) {
+    # TODO: lang strings.
     $state = '';
     $isconfigured = false;
     $ispending = false;
@@ -2165,7 +2160,7 @@ function get_tool_state_info(stdClass $type) {
             $isany = true;
             break;
         case LTI_TOOL_STATE_CONFIGURED:
-            $state = 'configured';
+            $state = 'active';
             $isconfigured = true;
             break;
         case LTI_TOOL_STATE_PENDING:
@@ -2193,6 +2188,7 @@ function get_tool_state_info(stdClass $type) {
 }
 
 function serialise_tool_type(stdClass $type) {
+    # TODO: lang strings.
     return array(
         'id' => $type->id,
         'name' => $type->name,

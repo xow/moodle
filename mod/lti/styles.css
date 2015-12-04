@@ -26,9 +26,6 @@
 #page-mod-lti-instructor_edit_tool_type .mform .fitem .fitemtitle { min-width:18em;padding-right:1em } /* Prevent setting titles from wrapping */
 
 /* Styling for tool_configure page */
-#registration-choice-container .btn {
-}
-
 #registration-choice-container .buffer-text {
     margin: 20px;
 }
@@ -99,6 +96,12 @@
 
 #registration-feedback-container h4 {
     text-transform: capitalize;
+}
+
+.centered-menu {
+    max-width: 70%;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .btn-text {

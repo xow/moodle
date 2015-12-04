@@ -27,7 +27,7 @@
  */
 define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/events', 'mod_lti/tool_proxy'], function($, ajax, notification, templates, ltiEvents, toolProxy) {
     var SELECTORS = {
-        REGISTRATION_FORM: '#external-registration-form',
+        REGISTRATION_FORM_CONTAINER: '#external-registration-form-container',
         REGISTRATION_URL: '#external-registration-url',
         REGISTRATION_SUBMIT_BUTTON: '#external-registration-submit',
         REGISTRATION_CANCEL_BUTTON: '#external-registration-cancel',
@@ -57,8 +57,8 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
         return $(SELECTORS.EXTERNAL_REGISTRATION_CANCEL_BUTTON);
     };
 
-    var getRegistrationForm = function() {
-        return $(SELECTORS.REGISTRATION_FORM);
+    var getRegistrationFormContainer = function() {
+        return $(SELECTORS.REGISTRATION_FORM_CONTAINER);
     };
 
     var getExternalRegistrationContainer = function() {
@@ -98,11 +98,11 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
     };
 
     var hideRegistrationForm = function() {
-        getRegistrationForm().addClass('hidden');
+        getRegistrationFormContainer().addClass('hidden');
     };
 
     var showRegistrationForm = function() {
-        getRegistrationForm().removeClass('hidden');
+        getRegistrationFormContainer().removeClass('hidden');
     };
 
     var setToolProxyId = function(id) {
