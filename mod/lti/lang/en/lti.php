@@ -435,6 +435,10 @@ $string['subplugintype_ltisource_plural'] = 'LTI sources';
 $string['toggle_debug_data'] = 'Toggle debug data';
 $string['tool_config_not_found'] = 'Tool configuration not found for this URL.';
 $string['tool_settings'] = 'Tool settings';
+$string['tooldescription'] = 'Tool description';
+$string['tooldescription_help'] = 'The description of the tool that will be displayed to teachers in the activity list.
+
+This should describe what the tool is for and what it does and any additional information the teacher may need to know.';
 $string['toolproxy'] = 'External tool registrations';
 $string['toolproxy_help'] = 'External tool registrations allow Moodle site administrators to configure external tools from a tool proxy obtained from a tool provider supporting LTI 2.0. A registration URL provided by the tool provider is all that is required to initiate the process. The capabilities and services offered to the tool provider are selected when configuring a new registration.
 

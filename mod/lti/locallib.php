@@ -1316,6 +1316,8 @@ function lti_get_type_type_config($id) {
 
     $type->lti_toolurl = $basicltitype->baseurl;
 
+    $type->lti_description = $basicltitype->description;
+
     $type->lti_parameters = $basicltitype->parameter;
 
     $type->lti_icon = $basicltitype->icon;
@@ -1395,6 +1397,9 @@ function lti_prepare_type_for_save($type, $config) {
         $type->baseurl = $config->lti_toolurl;
         $type->tooldomain = lti_get_domain_from_url($config->lti_toolurl);
     }
+    if (isset($config->lti_description)) {
+        $type->description = $config->lti_description;
+    }
     if (isset($config->lti_typename)) {
         $type->name = $config->lti_typename;
     }
@@ -1417,6 +1422,7 @@ function lti_prepare_type_for_save($type, $config) {
 
     unset ($config->lti_typename);
     unset ($config->lti_toolurl);
+    unset ($config->lti_description);
     unset ($config->lti_icon);
     unset ($config->lti_secureicon);
 }
