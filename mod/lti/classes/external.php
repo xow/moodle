@@ -344,14 +344,14 @@ class mod_lti_external extends external_api {
     public static function create_tool_proxy_parameters() {
         return new external_function_parameters(
             array(
-                'name' => new external_value(PARAM_ALPHANUM, 'Tool proxy name', VALUE_DEFAULT, ''),
+                'name' => new external_value(PARAM_TEXT, 'Tool proxy name', VALUE_DEFAULT, ''),
                 'regurl' => new external_value(PARAM_URL, 'Tool proxy registration URL'),
                 'capabilityoffered' => new external_multiple_structure(
-                    new external_value(PARAM_ALPHANUM, 'Tool proxy capabilities offered'),
+                    new external_value(PARAM_TEXT, 'Tool proxy capabilities offered'),
                     'Array of capabilities', VALUE_DEFAULT, array()
                 ),
                 'serviceoffered' => new external_multiple_structure(
-                    new external_value(PARAM_ALPHANUM, 'Tool proxy services offered'),
+                    new external_value(PARAM_TEXT, 'Tool proxy services offered'),
                     'Array of services', VALUE_DEFAULT, array()
                 )
             )
@@ -416,12 +416,12 @@ class mod_lti_external extends external_api {
         return new external_function_parameters(
             array(
                 'id' => new external_value(PARAM_INT, 'Tool proxy id'),
-                'name' => new external_value(PARAM_ALPHANUM, 'Tool proxy name'),
+                'name' => new external_value(PARAM_TEXT, 'Tool proxy name'),
                 'regurl' => new external_value(PARAM_URL, 'Tool proxy registration URL'),
                 'state' => new external_value(PARAM_INT, 'Tool proxy state'),
-                'guid' => new external_value(PARAM_ALPHANUM, 'Tool proxy globally unique identifier'),
-                'secret' => new external_value(PARAM_ALPHANUM, 'Tool proxy shared secret'),
-                'vendorcode' => new external_value(PARAM_ALPHANUM, 'Tool proxy consumer code'),
+                'guid' => new external_value(PARAM_TEXT, 'Tool proxy globally unique identifier'),
+                'secret' => new external_value(PARAM_TEXT, 'Tool proxy shared secret'),
+                'vendorcode' => new external_value(PARAM_TEXT, 'Tool proxy consumer code'),
                 'capabilityoffered' => new external_value(PARAM_TEXT, 'Tool proxy capabilities offered'),
                 'serviceoffered' => new external_value(PARAM_TEXT, 'Tool proxy services offered'),
                 'toolproxy' => new external_value(PARAM_TEXT, 'Tool proxy'),
@@ -481,12 +481,12 @@ class mod_lti_external extends external_api {
         return new external_function_parameters(
             array(
                 'id' => new external_value(PARAM_INT, 'Tool proxy id'),
-                'name' => new external_value(PARAM_ALPHANUM, 'Tool proxy name'),
+                'name' => new external_value(PARAM_TEXT, 'Tool proxy name'),
                 'regurl' => new external_value(PARAM_URL, 'Tool proxy registration URL'),
                 'state' => new external_value(PARAM_INT, 'Tool proxy state'),
-                'guid' => new external_value(PARAM_ALPHANUM, 'Tool proxy globally unique identifier'),
-                'secret' => new external_value(PARAM_ALPHANUM, 'Tool proxy shared secret'),
-                'vendorcode' => new external_value(PARAM_ALPHANUM, 'Tool proxy consumer code'),
+                'guid' => new external_value(PARAM_TEXT, 'Tool proxy globally unique identifier'),
+                'secret' => new external_value(PARAM_TEXT, 'Tool proxy shared secret'),
+                'vendorcode' => new external_value(PARAM_TEXT, 'Tool proxy consumer code'),
                 'capabilityoffered' => new external_value(PARAM_TEXT, 'Tool proxy capabilities offered'),
                 'serviceoffered' => new external_value(PARAM_TEXT, 'Tool proxy services offered'),
                 'toolproxy' => new external_value(PARAM_TEXT, 'Tool proxy'),
@@ -542,10 +542,10 @@ class mod_lti_external extends external_api {
     public static function get_tool_proxy_registration_request_returns() {
         return new external_function_parameters(
             array(
-                'lti_message_type' => new external_value(PARAM_ALPHANUM, 'LTI message type'),
-                'lti_version' => new external_value(PARAM_ALPHANUM, 'LTI version'),
-                'reg_key' => new external_value(PARAM_ALPHANUM, 'Tool proxy registration key'),
-                'reg_password' => new external_value(PARAM_ALPHANUM, 'Tool proxy registration password'),
+                'lti_message_type' => new external_value(PARAM_TEXT, 'LTI message type'),
+                'lti_version' => new external_value(PARAM_TEXT, 'LTI version'),
+                'reg_key' => new external_value(PARAM_TEXT, 'Tool proxy registration key'),
+                'reg_password' => new external_value(PARAM_TEXT, 'Tool proxy registration password'),
                 'tc_profile_url' => new external_value(PARAM_URL, 'Tool consumers profile URL'),
                 'launch_presentation_return_url' => new external_value(PARAM_URL, 'URL to redirect on registration completion'),
             )
@@ -588,33 +588,29 @@ class mod_lti_external extends external_api {
      * @since Moodle 3.0
      */
     public static function get_tool_types_returns() {
-        return new external_function_parameters(
-            array(
-                'tools' => new external_multiple_structure(
-                    new external_single_structure(
+        return new external_multiple_structure(
+            new external_single_structure(
+                array(
+                    'id' => new external_value(PARAM_INT, 'Tool type id'),
+                    'name' => new external_value(PARAM_TEXT, 'Tool type name'),
+                    'description' => new external_value(PARAM_TEXT, 'Tool type description'),
+                    'urls' => new external_single_structure(
                         array(
-                            'id' => new external_value(PARAM_INT, 'Tool type id'),
-                            'name' => new external_value(PARAM_ALPHANUM, 'Tool type name'),
-                            'description' => new external_value(PARAM_TEXT, 'Tool type description'),
-                            'urls' => new external_single_structure(
-                                array(
-                                    'icon' => new external_value(PARAM_URL, 'Tool type icon URL'),
-                                    'edit' => new external_value(PARAM_URL, 'Tool type edit URL'),
-                                )
-                            ),
-                            'state' => new external_single_structure(
-                                array(
-                                    'text' => new external_value(PARAM_TEXT, 'Tool type state name string'),
-                                    'pending' => new external_value(PARAM_BOOL, 'Is the state pending'),
-                                    'configured' => new external_value(PARAM_BOOL, 'Is the state configured'),
-                                    'rejected' => new external_value(PARAM_BOOL, 'Is the state rejected'),
-                                    'any' => new external_value(PARAM_BOOL, 'Is the state any'),
-                                    'unknown' => new external_value(PARAM_BOOL, 'Is the state unknown'),
-                                )
-                            )
-                        ), 'Tool'
+                            'icon' => new external_value(PARAM_URL, 'Tool type icon URL'),
+                            'edit' => new external_value(PARAM_URL, 'Tool type edit URL'),
+                        )
+                    ),
+                    'state' => new external_single_structure(
+                        array(
+                            'text' => new external_value(PARAM_TEXT, 'Tool type state name string'),
+                            'pending' => new external_value(PARAM_BOOL, 'Is the state pending'),
+                            'configured' => new external_value(PARAM_BOOL, 'Is the state configured'),
+                            'rejected' => new external_value(PARAM_BOOL, 'Is the state rejected'),
+                            'any' => new external_value(PARAM_BOOL, 'Is the state any'),
+                            'unknown' => new external_value(PARAM_BOOL, 'Is the state unknown'),
+                        )
                     )
-                ),
+                ), 'Tool'
             )
         );
     }
@@ -694,7 +690,7 @@ class mod_lti_external extends external_api {
         return new external_function_parameters(
             array(
                 'id' => new external_value(PARAM_INT, 'Tool type id'),
-                'name' => new external_value(PARAM_ALPHANUM, 'Tool type name'),
+                'name' => new external_value(PARAM_TEXT, 'Tool type name'),
                 'description' => new external_value(PARAM_TEXT, 'Tool type description'),
                 'urls' => new external_single_structure(
                     array(
@@ -725,7 +721,7 @@ class mod_lti_external extends external_api {
     public static function update_tool_type_parameters() {
         return new external_function_parameters(
             array(
-                'name' => new external_value(PARAM_ALPHANUM, 'Tool type name'),
+                'name' => new external_value(PARAM_TEXT, 'Tool type name'),
                 'description' => new external_value(PARAM_TEXT, 'Tool type description'),
                 'state' => new external_single_structure(
                     array(
@@ -800,7 +796,7 @@ class mod_lti_external extends external_api {
         return new external_function_parameters(
             array(
                 'id' => new external_value(PARAM_INT, 'Tool type id'),
-                'name' => new external_value(PARAM_ALPHANUM, 'Tool type name'),
+                'name' => new external_value(PARAM_TEXT, 'Tool type name'),
                 'description' => new external_value(PARAM_TEXT, 'Tool type description'),
                 'urls' => new external_single_structure(
                     array(
