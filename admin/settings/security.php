@@ -11,6 +11,47 @@ if ($hassiteconfig) { // speedup for non-admins, add all caps used on this page
                                                 new lang_string('ipblockersyntax', 'admin'), ''));
     $ADMIN->add('security', $temp);
 
+    $temp = new admin_settingpage('sitepolicy', new lang_string('sitepolicy', 'admin'));
+
+    $sitepolicyoptions = array(
+        0 => new lang_string('none', ''),
+        1 => new lang_string('sitepolicyoptionexternalurl', 'admin'),
+        2 => new lang_string('sitepolicyoptiontext', 'admin')
+    );
+
+    $temp->add(new admin_setting_heading('loggedinusers', new lang_string('loggedinusers', 'admin'), ''));
+    $temp->add(new admin_setting_configselect(
+        'sitepolicysourceloggedin',
+        new lang_string('sitepolicysource', 'admin'),
+        new lang_string('sitepolicysource_help', 'admin'),
+        0,
+        $sitepolicyoptions));
+    $temp->add(new admin_setting_configtext(
+        'sitepolicy',
+        new lang_string('sitepolicyurl', 'admin'),
+        new lang_string('sitepolicyurl_help', 'admin'),
+        '',
+        PARAM_TEXT));
+    $temp->add(new admin_setting_confightmleditor('sitepolicy_text', new lang_string('sitepolicytext', 'admin'),
+        new lang_string('sitepolicytext', 'admin'), ''));
+
+    $temp->add(new admin_setting_heading('guestusers', new lang_string('guestusers', 'admin'), ''));
+    $temp->add(new admin_setting_configselect(
+        'sitepolicysourceguest',
+        new lang_string('sitepolicysource', 'admin'),
+        new lang_string('sitepolicysource_help', 'admin'),
+        0,
+        $sitepolicyoptions));
+    $temp->add(new admin_setting_configtext(
+        'sitepolicyguest',
+        new lang_string('sitepolicyurlguest', 'admin'),
+        new lang_string('sitepolicyurlguest_help', 'admin'),
+        (isset($CFG->sitepolicy) ? $CFG->sitepolicy : ''),
+        PARAM_TEXT));
+    $temp->add(new admin_setting_confightmleditor('sitepolicyguest_text', new lang_string('sitepolicytextguest', 'admin'),
+        new lang_string('sitepolicytextguest', 'admin'), ''));
+    $ADMIN->add('security', $temp);
+
     // "sitepolicies" settingpage
     $temp = new admin_settingpage('sitepolicies', new lang_string('sitepolicies', 'admin'));
     $temp->add(new admin_setting_configcheckbox('protectusernames', new lang_string('protectusernames', 'admin'), new lang_string('configprotectusernames', 'admin'), 1));
@@ -49,8 +90,6 @@ if ($hassiteconfig) { // speedup for non-admins, add all caps used on this page
                        3600 => new lang_string('numminutes', '', 60))));
 
     $temp->add(new admin_setting_configcheckbox('extendedusernamechars', new lang_string('extendedusernamechars', 'admin'), new lang_string('configextendedusernamechars', 'admin'), 0));
-    $temp->add(new admin_setting_configtext('sitepolicy', new lang_string('sitepolicy', 'admin'), new lang_string('sitepolicy_help', 'admin'), '', PARAM_RAW));
-    $temp->add(new admin_setting_configtext('sitepolicyguest', new lang_string('sitepolicyguest', 'admin'), new lang_string('sitepolicyguest_help', 'admin'), (isset($CFG->sitepolicy) ? $CFG->sitepolicy : ''), PARAM_RAW));
     $temp->add(new admin_setting_configcheckbox('extendedusernamechars', new lang_string('extendedusernamechars', 'admin'), new lang_string('configextendedusernamechars', 'admin'), 0));
     $temp->add(new admin_setting_configcheckbox('keeptagnamecase', new lang_string('keeptagnamecase','admin'),new lang_string('configkeeptagnamecase', 'admin'),'1'));
 

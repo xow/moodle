@@ -4609,5 +4609,15 @@ function xmldb_main_upgrade($oldversion) {
     // Moodle v3.0.0 release upgrade line.
     // Put any upgrade step following this.
 
+    if ($oldversion < 2016010700.01) {
+        if (!empty($CFG->sitepolicy)) {
+            set_config('sitepolicysourceloggedin', 1);
+        }
+        if (!empty($CFG->sitepolicyguest)) {
+            set_config('sitepolicysourceguest', 1);
+        }
+        upgrade_main_savepoint(true, 2016010700.01);
+    }
+
     return true;
 }
