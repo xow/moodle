@@ -109,22 +109,52 @@ define(['jquery', 'core/ajax', 'core/notification', 'mod_lti/tool_type'], functi
         promise.fail(function() { announceFailure(element) });
     };
 
-    var updateDescription = function(element) {
-        var typeId = getTypeId(element);
+    var setValueSnapshot = function(element, value) {
+        element.attr('data-val-snapshot', value);
+    };
 
-        if (typeId == "") {
-            return;
-        }
+    var getValueSnapshot = function(element) {
+        return element.attr('data-val-snapshot');
+    };
 
+    var snapshotDescription = function(element) {
         var descriptionElement = getDescriptionElement(element);
 
         if (descriptionElement.hasClass('loading')) {
             return;
         }
 
-        descriptionElement.addClass('loading');
+        var description = descriptionElement.text().trim();
+        setValueSnapshot(descriptionElement, description);
+    };
+
+    var updateDescription = function(element) {
+        var typeId = getTypeId(element);
+
+        // Return early if we don't have an id because it's
+        // required to save the changes.
+        if (typeId == "") {
+            return;
+        }
+
+        var descriptionElement = getDescriptionElement(element);
+
+        // Return early if we're already saving a value.
+        if (descriptionElement.hasClass('loading')) {
+            return;
+        }
 
         var description = descriptionElement.text().trim();
+        var snapshotVal = getValueSnapshot(descriptionElement);
+
+        // If the value hasn't change then don't bother sending the
+        // update request.
+        if (snapshotVal && snapshotVal == description) {
+            return;
+        }
+
+        descriptionElement.addClass('loading');
+
         var promise = toolType.update({id: typeId, description: description});
 
         promise.done(function(type) {
@@ -141,22 +171,42 @@ define(['jquery', 'core/ajax', 'core/notification', 'mod_lti/tool_type'], functi
         return promise;
     };
 
-    var updateName = function(element, value) {
-        var typeId = getTypeId(element);
-
-        if (typeId == "") {
-            return;
-        }
-
+    var snapshotName = function(element) {
         var nameElement = getNameElement(element);
 
         if (nameElement.hasClass('loading')) {
             return;
         }
 
-        nameElement.addClass('loading');
+        var name = nameElement.text().trim();
+        setValueSnapshot(nameElement, name);
+    };
+
+    var updateName = function(element, value) {
+        var typeId = getTypeId(element);
+
+        // Return if we don't have an id.
+        if (typeId == "") {
+            return;
+        }
+
+        var nameElement = getNameElement(element);
+
+        // Return if we're already saving.
+        if (nameElement.hasClass('loading')) {
+            return;
+        }
 
         var name = nameElement.text().trim();
+        var snapshotVal = getValueSnapshot(nameElement);
+
+        // If the value hasn't change then don't bother sending the
+        // update request.
+        if (snapshotVal && snapshotVal == name) {
+            return;
+        }
+
+        nameElement.addClass('loading');
         var promise = toolType.update({id: typeId, name: name});
 
         promise.done(function(type) {
@@ -189,6 +239,10 @@ define(['jquery', 'core/ajax', 'core/notification', 'mod_lti/tool_type'], functi
         });
 
         var descriptionElement = getDescriptionElement(element);
+        descriptionElement.focus(function(e) {
+            e.preventDefault();
+            snapshotDescription(element);
+        });
         descriptionElement.blur(function(e) {
             e.preventDefault();
             updateDescription(element);
@@ -197,12 +251,16 @@ define(['jquery', 'core/ajax', 'core/notification', 'mod_lti/tool_type'], functi
             if (!e.metaKey && !e.shiftKey && !e.altKey && !e.ctrlKey) {
                 if (e.keyCode == KEYS.ENTER) {
                     e.preventDefault();
-                    updateDescription(element);
+                    descriptionElement.blur();
                 }
             }
         });
 
         var nameElement = getNameElement(element);
+        nameElement.focus(function(e) {
+            e.preventDefault();
+            snapshotName(element);
+        });
         nameElement.blur(function(e) {
             e.preventDefault();
             updateName(element);
@@ -211,7 +269,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'mod_lti/tool_type'], functi
             if (!e.metaKey && !e.shiftKey && !e.altKey && !e.ctrlKey) {
                 if (e.keyCode == KEYS.ENTER) {
                     e.preventDefault();
-                    updateName(element);
+                    nameElement.blur();
                 }
             }
         });
