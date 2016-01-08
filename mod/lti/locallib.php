@@ -1099,6 +1099,7 @@ function lti_get_configured_types() {
     $admintypes = lti_get_lti_types_by_course();
 
     foreach ($admintypes as $lti_type) {
+        print_object('this is a type');
         $type           = new stdClass();
         $type->modclass = MOD_CLASS_ACTIVITY;
         $type->type     = 'lti_type' . $lti_type->id;

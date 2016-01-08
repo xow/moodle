@@ -1345,7 +1345,7 @@ function get_module_metadata($course, $modnames, $sectionreturn = null) {
         }
         if (isset($modlist[$course->id][$modname])) {
             $return[$modname] = $modlist[$course->id][$modname];
-            $return[$modname+'asdf'] = $modlist[$course->id][$modname];
+            #$return[$modname+'asdf'] = $modlist[$course->id][$modname];
         } else {
             debugging("Invalid module metadata configuration for {$modname}");
         }
