@@ -30,6 +30,10 @@ define(['jquery', 'core/ajax', 'core/notification', 'mod_lti/tool_type'], functi
         DELETE_BUTTON: '.delete',
         NAME_ELEMENT: '.name',
         DESCRIPTION_ELEMENT: '.description',
+        CAPABILITIES_CONTAINER: '.capabilities-container',
+        CAPABILITIES_YES_BUTTON: '.capabilities-container a.yes',
+        CAPABILITIES_NO_BUTTON: '.capabilities-container a.no',
+        APPROVE_BUTTON: '.tool-card-footer a.approve',
     };
 
     var KEYS = {
@@ -49,11 +53,36 @@ define(['jquery', 'core/ajax', 'core/notification', 'mod_lti/tool_type'], functi
         return element.find(SELECTORS.DESCRIPTION_ELEMENT);
     };
 
+    var getApproveButton = function(element) {
+        return element.find(SELECTORS.APPROVE_BUTTON);
+    };
+
+    var hasApproveButton = function(element) {
+        return getApproveButton(element).length ? true : false;
+    };
+
+    var hasCapabilitiesContainer = function(element) {
+        return element.find(SELECTORS.CAPABILITIES_CONTAINER).length ? true : false;
+    };
+
+    var getCapabilitiesApproveButton = function(element) {
+        return element.find(SELECTORS.CAPABILITIES_YES_BUTTON);
+    };
+
+    var getCapabilitiesDeclineButton = function(element) {
+        return element.find(SELECTORS.CAPABILITIES_NO_BUTTON);
+    };
+
     var getTypeId = function(element) {
         return element.attr('data-type-id');
     };
 
+    var clearAllAnnouncements = function(element) {
+        element.removeClass('announcement loading success fail capabilities');
+    };
+
     var startLoading = function(element) {
+        clearAllAnnouncements();
         element.addClass('announcement loading');
     };
 
@@ -68,6 +97,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'mod_lti/tool_type'], functi
     var announceSuccess = function(element) {
         var promise = $.Deferred();
 
+        clearAllAnnouncements(element);
         element.addClass('announcement success');
         setTimeout(function() {
             element.removeClass('announcement success');
@@ -80,6 +110,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'mod_lti/tool_type'], functi
     var announceFailure = function(element) {
         var promise = $.Deferred();
 
+        clearAllAnnouncements(element);
         element.addClass('announcement fail');
         setTimeout(function() {
             element.removeClass('announcement fail');
@@ -223,6 +254,26 @@ define(['jquery', 'core/ajax', 'core/notification', 'mod_lti/tool_type'], functi
         return promise;
     };
 
+    var setStatusActive = function(element) {
+        announceSuccess(element);
+    };
+
+    var displayCapabilitiesApproval = function(element) {
+        element.addClass('announcement capabilities');
+    };
+
+    var hideCapabilitiesApproval = function(element) {
+        element.removeClass('announcement capabilities');
+    };
+
+    var approveTool = function(element) {
+        if (hasCapabilitiesContainer(element)) {
+            displayCapabilitiesApproval(element);
+        } else {
+            setStatusActive(element);
+        }
+    };
+
     var registerEventListeners = function(element) {
         var deleteButton = getDeleteButton(element);
         deleteButton.click(function(e) {
@@ -233,7 +284,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'mod_lti/tool_type'], functi
             if (!e.metaKey && !e.shiftKey && !e.altKey && !e.ctrlKey) {
                 if (e.keyCode == KEYS.ENTER || e.keyCode == KEYS.SPACE) {
                     e.preventDefault();
-                    deleteType(element);
+                    deleteButton.click();
                 }
             }
         });
@@ -273,6 +324,52 @@ define(['jquery', 'core/ajax', 'core/notification', 'mod_lti/tool_type'], functi
                 }
             }
         });
+
+        if (hasApproveButton(element)) {
+            var approveButton = getApproveButton(element);
+            approveButton.click(function(e) {
+                e.preventDefault();
+                approveTool(element);
+            });
+            approveButton.keypress(function(e) {
+                if (!e.metaKey && !e.shiftKey && !e.altKey && !e.ctrlKey) {
+                    if (e.keyCode == KEYS.ENTER || e.keyCode == KEYS.SPACE) {
+                        e.preventDefault();
+                        approveButton.click();
+                    }
+                }
+            });
+        }
+
+        if (hasCapabilitiesContainer(element)) {
+            var capabilitiesApproveButton = getCapabilitiesApproveButton(element);
+            capabilitiesApproveButton.click(function(e) {
+                e.preventDefault();
+                setStatusActive(element);
+            });
+            capabilitiesApproveButton.keypress(function(e) {
+                if (!e.metaKey && !e.shiftKey && !e.altKey && !e.ctrlKey) {
+                    if (e.keyCode == KEYS.ENTER || e.keyCode == KEYS.SPACE) {
+                        e.preventDefault();
+                        capabilitiesApproveButton.click();
+                    }
+                }
+            });
+
+            var capabilitiesDeclineButton = getCapabilitiesDeclineButton(element);
+            capabilitiesDeclineButton.click(function(e) {
+                e.preventDefault();
+                hideCapabilitiesApproval(element);
+            });
+            capabilitiesDeclineButton.keypress(function(e) {
+                if (!e.metaKey && !e.shiftKey && !e.altKey && !e.ctrlKey) {
+                    if (e.keyCode == KEYS.ENTER || e.keyCode == KEYS.SPACE) {
+                        e.preventDefault();
+                        capabilitiesDeclineButton.click();
+                    }
+                }
+            });
+        }
     };
 
     return {

@@ -154,6 +154,8 @@
     border-radius: 10px;
     margin: 5px;
     position: relative;
+    box-sizing: border-box;
+    vertical-align: top;
 }
 
 .tool-card:hover,
@@ -223,6 +225,22 @@
     display: block;
 }
 
+.tool-card.announcement .overlay-container .capabilities-container {
+    display: none;
+}
+
+.tool-card.announcement.capabilities .overlay-container .capabilities-container {
+    display: block;
+}
+
+.tool-card.announcement.capabilities .overlay-container {
+    background-color: rgb(255, 255, 255);
+}
+
+.tool-card.announcement.capabilities .overlay-container .img-container {
+    display: none;
+}
+
 .tool-card-content {
     z-index: 1;
 }
@@ -233,12 +251,18 @@
     padding: 10px;
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
-    position: relative;
+    box-sizing: border-box;
+    height: 125px;
+}
+
+.tool-card-subheader {
+    margin-bottom: 10px;
+    text-align: left;
 }
 
 .tool-card-header .tool-card-icon {
-    width: 50px;
-    height: 50px;
+    width: 35px;
+    height: 35px;
 }
 
 .tool-card-header h4 {
@@ -246,12 +270,8 @@
 }
 
 .tool-card-header .tool-card-actions {
-    position: absolute;
-    top: 10px;
-    right: 10px;
     text-align: right;
 }
-
 
 .tool-card-header .tool-card-actions img {
     width: 15px;
@@ -261,15 +281,14 @@
 
 .tool-card-body {
     border-top: 1px solid #e5e5e5;
-    padding: 10px;
+    box-sizing: border-box;
+    padding: 5px;
+    height: 125px;
 }
 
-.tool-card-body .description {
-    margin-top: 10px;
-}
-
-.tool-card-footer a {
-    margin-left: 10px;
+.tool-card-footer {
+    height: 50px;
+    text-align: center;
 }
 
 .tool-card .contenteditable-container {
