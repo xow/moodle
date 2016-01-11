@@ -33,7 +33,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'mod_lti/tool_type'], functi
         CAPABILITIES_CONTAINER: '.capabilities-container',
         CAPABILITIES_YES_BUTTON: '.capabilities-container a.yes',
         CAPABILITIES_NO_BUTTON: '.capabilities-container a.no',
-        APPROVE_BUTTON: '.tool-card-footer a.approve',
+        ACTIVATE_BUTTON: '.tool-card-footer a.activate',
     };
 
     var KEYS = {
@@ -53,12 +53,12 @@ define(['jquery', 'core/ajax', 'core/notification', 'mod_lti/tool_type'], functi
         return element.find(SELECTORS.DESCRIPTION_ELEMENT);
     };
 
-    var getApproveButton = function(element) {
-        return element.find(SELECTORS.APPROVE_BUTTON);
+    var getActivateButton = function(element) {
+        return element.find(SELECTORS.ACTIVATE_BUTTON);
     };
 
-    var hasApproveButton = function(element) {
-        return getApproveButton(element).length ? true : false;
+    var hasActivateButton = function(element) {
+        return getActivateButton(element).length ? true : false;
     };
 
     var hasCapabilitiesContainer = function(element) {
@@ -325,17 +325,17 @@ define(['jquery', 'core/ajax', 'core/notification', 'mod_lti/tool_type'], functi
             }
         });
 
-        if (hasApproveButton(element)) {
-            var approveButton = getApproveButton(element);
-            approveButton.click(function(e) {
+        if (hasActivateButton(element)) {
+            var activateButton = getActivateButton(element);
+            activateButton.click(function(e) {
                 e.preventDefault();
                 approveTool(element);
             });
-            approveButton.keypress(function(e) {
+            activateButton.keypress(function(e) {
                 if (!e.metaKey && !e.shiftKey && !e.altKey && !e.ctrlKey) {
                     if (e.keyCode == KEYS.ENTER || e.keyCode == KEYS.SPACE) {
                         e.preventDefault();
-                        approveButton.click();
+                        activateButton.click();
                     }
                 }
             });
