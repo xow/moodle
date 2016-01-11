@@ -79,6 +79,14 @@ define(['core/ajax', 'core/notification'], function(ajax, notification) {
             promise.fail(notification.exception);
 
             return promise;
+        },
+
+        constants: {
+            state: {
+                configured: 1,
+                pending: 2,
+                rejected: 3
+            },
         }
     };
 });

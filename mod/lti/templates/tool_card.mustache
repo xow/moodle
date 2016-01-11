@@ -41,16 +41,17 @@
             <div class="success-icon-container">{{#pix}} i/valid, core, Success{{/pix}}</div>
             <div class="fail-icon-container">{{#pix}} i/invalid, core, Fail{{/pix}}</div>
         </div>
-        <div class="capabilities-container">
-            <p>This tool requires access to the following data in your site:</p>
-            <ul>
-                <li>Something</li>
-                <li>Something else</li>
-            </ul>
-            <p>Are you sure you'd like to approve this tool?</p>
-            <a class="yes btn btn-success" href="#">Yes</a>
-            <a class="no btn btn-danger" href="#">No</a>
-        </div>
+        {{#hascapabilitygroups}}
+            <div class="capabilities-container">
+                <p>This tool requires access to the following data in your site:</p>
+                <ul>
+                    {{#capabilitygroups}}<li>{{.}}</li>{{/capabilitygroups}}
+                </ul>
+                <p>Are you sure you'd like to approve this tool?</p>
+                <a class="yes btn btn-success" href="#">Yes</a>
+                <a class="no btn btn-danger" href="#">No</a>
+            </div>
+        {{/hascapabilitygroups}}
     </div>
     <div class="tool-card-content">
         <div class="tool-card-header">

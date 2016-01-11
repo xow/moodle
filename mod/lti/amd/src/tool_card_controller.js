@@ -25,7 +25,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @since      3.1
  */
-define(['jquery', 'core/ajax', 'core/notification', 'mod_lti/tool_type'], function($, ajax, notification, toolType) {
+define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/tool_type'], function($, ajax, notification, templates, toolType) {
     var SELECTORS = {
         DELETE_BUTTON: '.delete',
         NAME_ELEMENT: '.name',
@@ -82,7 +82,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'mod_lti/tool_type'], functi
     };
 
     var startLoading = function(element) {
-        clearAllAnnouncements();
+        clearAllAnnouncements(element);
         element.addClass('announcement loading');
     };
 
@@ -255,7 +255,38 @@ define(['jquery', 'core/ajax', 'core/notification', 'mod_lti/tool_type'], functi
     };
 
     var setStatusActive = function(element) {
-        announceSuccess(element);
+        var id = getTypeId(element);
+
+        // Return if we don't have an id.
+        if (id == "") {
+            return;
+        }
+
+        startLoading(element);
+
+        var promise = toolType.update({
+            id: id,
+            state: toolType.constants.state.configured
+        });
+
+        promise.done(function(toolTypeData) {
+            stopLoading(element);
+
+            var announcePromise = announceSuccess(element);
+            var renderPromise = templates.render('mod_lti/tool_card', toolTypeData);
+
+            $.when(renderPromise, announcePromise).then(function(renderResult) {
+                var html = renderResult[0];
+                var js = renderResult[1];
+
+                templates.replaceNode(element, html, js);
+            });
+        });
+
+        promise.fail(function() {
+            stopLoading(element);
+            announceFailure(element);
+        });
     };
 
     var displayCapabilitiesApproval = function(element) {

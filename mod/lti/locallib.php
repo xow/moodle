@@ -2193,13 +2193,50 @@ function get_tool_state_info(stdClass $type) {
     );
 }
 
+function get_tool_capability_groups($type) {
+    $capabilities = lti_get_enabled_capabilities($type);
+    $groups = array();
+    $hasCourse = false;
+    $hasActivities = false;
+    $hasUserAccount = false;
+    $hasUserPersonal = false;
+
+    # TODO: lang strings.
+    foreach ($capabilities as $capability) {
+        // Bail out early if we've already found all groups.
+        if (count($groups) >= 4) {
+            continue;
+        }
+
+        if (!$hasCourse && preg_match('/^CourseSection/', $capability)) {
+            $hasCourse = true;
+            $groups[] = 'course information';
+        } else if (!$hasActivities && preg_match('/^ResourceLink/', $capability)) {
+            $hasActivities = true;
+            $groups[] = 'course activities or resources';
+        } else if (!$hasUserAccount && preg_match('/^User/', $capability) || preg_match('/^Membership/', $capability)) {
+            $hasUserAccount = true;
+            $groups[] = 'user account information';
+        } else if (!$hasUserPersonal && preg_match('/^Person/', $capability)) {
+            $hasUserPersonal = true;
+            $groups[] = 'user personal information';
+        }
+    }
+
+    return $groups;
+}
+
 function serialise_tool_type(stdClass $type) {
+    $capabilitygroups = get_tool_capability_groups($type);
+
     # TODO: lang strings.
     return array(
         'id' => $type->id,
         'name' => $type->name,
         'description' => isset($type->description) ? $type->description : "Default tool description placeholder until we can code this in.",
         'urls' => get_tool_urls($type),
-        'state' => get_tool_state_info($type)
+        'state' => get_tool_state_info($type),
+        'hascapabilitygroups' => !empty($capabilitygroups),
+        'capabilitygroups' => $capabilitygroups
     );
 }

@@ -609,6 +609,11 @@ class mod_lti_external extends external_api {
                             'any' => new external_value(PARAM_BOOL, 'Is the state any'),
                             'unknown' => new external_value(PARAM_BOOL, 'Is the state unknown'),
                         )
+                    ),
+                    'hascapabilitygroups' => new external_value(PARAM_BOOL, 'Indicate if capabilitygroups is populated'),
+                    'capabilitygroups' => new external_multiple_structure(
+                        new external_value(PARAM_TEXT, 'Tool type capability groups enabled'),
+                        'Array of capability groups', VALUE_DEFAULT, array()
                     )
                 ), 'Tool'
             )
@@ -707,6 +712,11 @@ class mod_lti_external extends external_api {
                         'any' => new external_value(PARAM_BOOL, 'Is the state any'),
                         'unknown' => new external_value(PARAM_BOOL, 'Is the state unknown'),
                     )
+                ),
+                'hascapabilitygroups' => new external_value(PARAM_BOOL, 'Indicate if capabilitygroups is populated'),
+                'capabilitygroups' => new external_multiple_structure(
+                    new external_value(PARAM_TEXT, 'Tool type capability groups enabled'),
+                    'Array of capability groups', VALUE_DEFAULT, array()
                 )
             ), 'Tool'
         );
@@ -767,11 +777,11 @@ class mod_lti_external extends external_api {
 
         if (!empty($state)) {
             // Valid state range.
-            if ($state < 1 || $state > 3) {
+            if ($state > 0 || $state < 4) {
                 $type->state = $state;
             } else {
                 // TODO: lang string
-                throw new moodle_exception(sprintf("Invalid state: %d - must be 1, 2 or 3"), $state);
+                throw new moodle_exception(sprintf("Invalid state: %d - must be 1, 2 or 3", $state));
             }
         }
 
@@ -808,6 +818,11 @@ class mod_lti_external extends external_api {
                         'any' => new external_value(PARAM_BOOL, 'Is the state any'),
                         'unknown' => new external_value(PARAM_BOOL, 'Is the state unknown'),
                     )
+                ),
+                'hascapabilitygroups' => new external_value(PARAM_BOOL, 'Indicate if capabilitygroups is populated'),
+                'capabilitygroups' => new external_multiple_structure(
+                    new external_value(PARAM_TEXT, 'Tool type capability groups enabled'),
+                    'Array of capability groups', VALUE_DEFAULT, array()
                 )
             ), 'Tool'
         );

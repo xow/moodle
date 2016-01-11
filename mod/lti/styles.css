@@ -179,6 +179,8 @@
     top: 0;
     width: 100%;
     z-index: 100;
+    box-sizing: border-box;
+    padding: 10px;
 }
 
 .tool-card .overlay-container .img-container {
