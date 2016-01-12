@@ -18,8 +18,7 @@
  * Handle the return from the Tool Provider after registering a tool proxy.
  *
  * @package mod_lti
- * @copyright  2014 Vital Source Technologies http://vitalsource.com
- * @author     Stephen Vickers
+ * @copyright  2015 Ryan Wyllie
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

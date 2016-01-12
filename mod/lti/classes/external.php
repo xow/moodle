@@ -559,13 +559,17 @@ class mod_lti_external extends external_api {
      * @since Moodle 3.0
      */
     public static function get_tool_types_parameters() {
-        return new external_function_parameters(array());
+        return new external_function_parameters(
+            array(
+                'toolProxyId' => new external_value(PARAM_INT, 'Tool proxy id', VALUE_OPTIONAL)
+            )
+        );
     }
 
     /**
      * Returns the tool types.
      *
-     * @return array of warnings and status result
+     * @return array of tool types
      * @since Moodle 3.0
      * @throws moodle_exception
      */

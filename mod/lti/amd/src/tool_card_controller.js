@@ -25,20 +25,15 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @since      3.1
  */
-define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/tool_type'], function($, ajax, notification, templates, toolType) {
+define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/tool_type', 'mod_lti/events', 'mod_lti/keys'],
+        function($, ajax, notification, templates, toolType, ltiEvents, KEYS) {
+
     var SELECTORS = {
         DELETE_BUTTON: '.delete',
         NAME_ELEMENT: '.name',
         DESCRIPTION_ELEMENT: '.description',
         CAPABILITIES_CONTAINER: '.capabilities-container',
-        CAPABILITIES_YES_BUTTON: '.capabilities-container a.yes',
-        CAPABILITIES_NO_BUTTON: '.capabilities-container a.no',
         ACTIVATE_BUTTON: '.tool-card-footer a.activate',
-    };
-
-    var KEYS = {
-        ENTER: 13,
-        SPACE: 13
     };
 
     var getDeleteButton = function(element) {
@@ -61,16 +56,12 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/t
         return getActivateButton(element).length ? true : false;
     };
 
+    var getCapabilitiesContainer = function(element) {
+        return element.find(SELECTORS.CAPABILITIES_CONTAINER);
+    };
+
     var hasCapabilitiesContainer = function(element) {
-        return element.find(SELECTORS.CAPABILITIES_CONTAINER).length ? true : false;
-    };
-
-    var getCapabilitiesApproveButton = function(element) {
-        return element.find(SELECTORS.CAPABILITIES_YES_BUTTON);
-    };
-
-    var getCapabilitiesDeclineButton = function(element) {
-        return element.find(SELECTORS.CAPABILITIES_NO_BUTTON);
+        return getCapabilitiesContainer(element).length ? true : false;
     };
 
     var getTypeId = function(element) {
@@ -373,32 +364,14 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/t
         }
 
         if (hasCapabilitiesContainer(element)) {
-            var capabilitiesApproveButton = getCapabilitiesApproveButton(element);
-            capabilitiesApproveButton.click(function(e) {
-                e.preventDefault();
+            var capabilitiesContainer = getCapabilitiesContainer(element);
+
+            capabilitiesContainer.on(ltiEvents.CAPABILITIES_AGREE, function() {
                 setStatusActive(element);
             });
-            capabilitiesApproveButton.keypress(function(e) {
-                if (!e.metaKey && !e.shiftKey && !e.altKey && !e.ctrlKey) {
-                    if (e.keyCode == KEYS.ENTER || e.keyCode == KEYS.SPACE) {
-                        e.preventDefault();
-                        capabilitiesApproveButton.click();
-                    }
-                }
-            });
 
-            var capabilitiesDeclineButton = getCapabilitiesDeclineButton(element);
-            capabilitiesDeclineButton.click(function(e) {
-                e.preventDefault();
+            capabilitiesContainer.on(ltiEvents.CAPABILITIES_DECLINE, function() {
                 hideCapabilitiesApproval(element);
-            });
-            capabilitiesDeclineButton.keypress(function(e) {
-                if (!e.metaKey && !e.shiftKey && !e.altKey && !e.ctrlKey) {
-                    if (e.keyCode == KEYS.ENTER || e.keyCode == KEYS.SPACE) {
-                        e.preventDefault();
-                        capabilitiesDeclineButton.click();
-                    }
-                }
             });
         }
     };

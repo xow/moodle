@@ -25,7 +25,9 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @since      3.1
  */
-define(['jquery', 'core/ajax', 'core/notification', 'mod_lti/tool_type', 'mod_lti/events'], function($, ajax, notification, toolType, ltiEvents) {
+define(['jquery', 'core/ajax', 'core/notification', 'mod_lti/tool_type', 'mod_lti/events', 'mod_lti/keys'],
+        function($, ajax, notification, toolType, ltiEvents, KEYS) {
+
     var SELECTORS = {
         CARTRIDGE_URL: '#cartridge-url',
         CONSUMER_KEY: '#registration-key',
@@ -33,11 +35,6 @@ define(['jquery', 'core/ajax', 'core/notification', 'mod_lti/tool_type', 'mod_lt
         REGISTRATION_FORM: '#cartridge-registration-form',
         REGISTRATION_SUBMIT_BUTTON: '#cartridge-registration-submit',
         REGISTRATION_CANCEL_BUTTON: '#cartridge-registration-cancel',
-    };
-
-    var KEYS = {
-        ENTER: 13,
-        SPACE: 13
     };
 
     var getCartridgeURL = function() {

@@ -25,7 +25,10 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @since      3.1
  */
-define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/events', 'mod_lti/tool_proxy'], function($, ajax, notification, templates, ltiEvents, toolProxy) {
+define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/events',
+        'mod_lti/tool_proxy', 'mod_lti/tool_type', 'mod_lti/keys'],
+        function($, ajax, notification, templates, ltiEvents, toolProxy, toolType, KEYS) {
+
     var SELECTORS = {
         REGISTRATION_FORM_CONTAINER: '#external-registration-form-container',
         REGISTRATION_URL: '#external-registration-url',
@@ -34,11 +37,8 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
         EXTERNAL_REGISTRATION_CONTAINER: '#external-registration-page-container',
         EXTERNAL_REGISTRATION_TEMPLATE_CONTAINER: '#external-registration-template-container',
         EXTERNAL_REGISTRATION_CANCEL_BUTTON: '#cancel-external-registration',
-    };
-
-    var KEYS = {
-        ENTER: 13,
-        SPACE: 13
+        TOOL_TYPE_CAPABILITIES_CONTAINER: '#tool-type-capabilities-container',
+        CAPABILITIES_AGREE_CONTAINER: '.capabilities-container',
     };
 
     var getRegistrationURL = function() {
@@ -69,6 +69,10 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
         return $(SELECTORS.EXTERNAL_REGISTRATION_TEMPLATE_CONTAINER);
     };
 
+    var getToolTypeCapabilitiesContainer = function() {
+        return $(SELECTORS.TOOL_TYPE_CAPABILITIES_CONTAINER);
+    };
+
     var startLoadingCancel = function() {
         getExternalRegistrationCancelButton().addClass('loading');
     };
@@ -87,6 +91,22 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
 
     var isLoading = function() {
         return getRegistrationSubmitButton().hasClass('loading');
+    };
+
+    var hideRegistrationCancelButton = function() {
+        getRegistrationCancelButton().addClass('hidden');
+    };
+
+    var showRegistrationCancelButton = function() {
+        getRegistrationCancelButton().addClass('hidden');
+    };
+
+    var hideToolTypeCapabilitiesContainer = function() {
+        getToolTypeCapabilitiesContainer().addClass('hidden');
+    };
+
+    var showToolTypeCapabilitiesContainer = function() {
+        getToolTypeCapabilitiesContainer().removeClass('hidden');
     };
 
     var hideExternalRegistrationContent = function() {
@@ -139,7 +159,6 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
         var promise = templates.render('mod_lti/tool_proxy_registration_form', registrationRequest);
 
         promise.done(function(html, js) {
-
             var container = getExternalRegistrationTemplateContainer();
             container.append(html);
             templates.runTemplateJS(js);
@@ -148,6 +167,43 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
             showExternalRegistrationContent();
             hideRegistrationForm();
             $(document).trigger(ltiEvents.START_EXTERNAL_REGISTRATION);
+        });
+
+        return promise;
+    };
+
+    var setTypeStatusActive = function(typeData) {
+        return toolType.update({
+            id: typeData.id,
+            state: toolType.constants.state.configured
+        });
+    };
+
+    var promptForToolTypeCapabilitiesAgreement = function(typeData) {
+        var promise = $.Deferred();
+
+        templates.render('mod_lti/tool_type_capabilities_agree', typeData).done(function(html, js) {
+            var container = getToolTypeCapabilitiesContainer();
+
+            hideRegistrationForm();
+            hideRegistrationCancelButton();
+            hideExternalRegistrationContent();
+
+            templates.replaceNodeContents(container, html, js).done(function() {
+                showToolTypeCapabilitiesContainer();
+
+                var choiceContainer = getToolTypeCapabilitiesContainer().find(SELECTORS.CAPABILITIES_AGREE_CONTAINER);
+
+                choiceContainer.on(ltiEvents.CAPABILITIES_AGREE, function() {
+                    setTypeStatusActive(typeData).always(function() {
+                        promise.resolve();
+                    });
+                });
+
+                choiceContainer.on(ltiEvents.CAPABILITIES_DECLINE, function() {
+                    promise.resolve();
+                });
+            });
         });
 
         return promise;
@@ -267,10 +323,10 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
         // This is gross but necessary due to isolated jQuery scopes between
         // child iframe and parent windows. There is no other way to communicate.
         window.triggerExternalRegistrationComplete = function(data) {
-            finishExternalRegistration();
-
             var status = data.status;
             var message = "";
+            var promise = $.Deferred();
+
             if (data.error == "") {
                 message = data.message;
             } else {
@@ -278,10 +334,44 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
             }
 
             if (status == "success") {
-                $(document).trigger(ltiEvents.NEW_TOOL_TYPE);
+                promise.done(function() {
+                    $(document).trigger(ltiEvents.NEW_TOOL_TYPE);
+                });
+
+                if (hasCreatedToolProxy()) {
+                    var proxyId = getToolProxyId();
+
+                    toolType.getFromToolProxyId(proxyId).done(
+                        // Success.
+                        function(types) {
+                            if (types && types.length) {
+                                // There should only be one result.
+                                var typeData = types[0];
+
+                                if (typeData.hascapabilitygroups) {
+                                    promptForToolTypeCapabilitiesAgreement(typeData).always(function() {
+                                        promise.resolve();
+                                    });
+                                } else {
+                                    promise.resolve();
+                                }
+                            } else {
+                                promise.resolve();
+                            }
+                        },
+                        // Failure.
+                        function() {
+                            promise.resolve();
+                        }
+                    );
+                }
             }
 
-            $(document).trigger(ltiEvents.REGISTRATION_FEEDBACK, {status: status, message: message});
+            promise.done(function() {
+                $(document).trigger(ltiEvents.REGISTRATION_FEEDBACK, {status: status, message: message});
+            });
+
+            finishExternalRegistration();
         };
     };
 

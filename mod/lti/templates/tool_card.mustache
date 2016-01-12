@@ -42,15 +42,7 @@
             <div class="fail-icon-container">{{#pix}} i/invalid, core, Fail{{/pix}}</div>
         </div>
         {{#hascapabilitygroups}}
-            <div class="capabilities-container">
-                <p>This tool requires access to the following data in your site:</p>
-                <ul>
-                    {{#capabilitygroups}}<li>{{.}}</li>{{/capabilitygroups}}
-                </ul>
-                <p>Are you sure you'd like to approve this tool?</p>
-                <a class="yes btn btn-success" href="#">Yes</a>
-                <a class="no btn btn-danger" href="#">No</a>
-            </div>
+            {{> mod_lti/tool_type_capabilities_agree }}
         {{/hascapabilitygroups}}
     </div>
     <div class="tool-card-content">

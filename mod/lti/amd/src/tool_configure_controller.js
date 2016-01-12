@@ -25,7 +25,9 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @since      3.1
  */
-define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/events'], function($, ajax, notification, templates, ltiEvents) {
+define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/events', 'mod_lti/keys'],
+        function($, ajax, notification, templates, ltiEvents, KEYS) {
+
     var SELECTORS = {
         REGISTRATION_FEEDBACK_CONTAINER: '#registration-feedback-container',
         EXTERNAL_REGISTRATION_CONTAINER: '#external-registration-container',
@@ -34,11 +36,6 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
         REGISTRATION_URL_BUTTON: '#registration-url-button',
         CARTRIDGE_URL_BUTTON: '#cartridge-url-button',
         REGISTRATION_CHOICE_CONTAINER: '#registration-choice-container'
-    };
-
-    var KEYS = {
-        ENTER: 13,
-        SPACE: 13
     };
 
     var getRegistrationURLButton = function() {

@@ -81,6 +81,10 @@ define(['core/ajax', 'core/notification'], function(ajax, notification) {
             return promise;
         },
 
+        getFromToolProxyId: function(id) {
+
+        },
+
         constants: {
             state: {
                 configured: 1,

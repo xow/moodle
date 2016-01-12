@@ -18,8 +18,8 @@
  * which can call any existing webservice using the current session.
  * In addition, it can batch multiple requests and return multiple responses.
  *
- * @module     mod_lti/events
- * @class      events
+ * @module     mod_lti/keys
+ * @class      keys
  * @package    core
  * @copyright  2015 Ryan Wyllie <ryan@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -27,12 +27,7 @@
  */
 define([], function() {
     return {
-        NEW_TOOL_TYPE: 'lti.tool.type.new',
-        START_EXTERNAL_REGISTRATION: 'lti.registration.external.start',
-        STOP_EXTERNAL_REGISTRATION: 'lti.registration.external.stop',
-        STOP_CARTRIDGE_REGISTRATION: 'lti.registration.cartridge.stop',
-        REGISTRATION_FEEDBACK: 'lti.registration.feedback',
-        CAPABILITIES_AGREE: 'lti.tool.type.capabilities.agree',
-        CAPABILITIES_DECLINE: 'lti.tool.type.capabilities.decline',
+        ENTER: 13,
+        SPACE: 32
     };
 });
