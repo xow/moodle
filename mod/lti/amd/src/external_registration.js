@@ -38,6 +38,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
         EXTERNAL_REGISTRATION_TEMPLATE_CONTAINER: '#external-registration-template-container',
         EXTERNAL_REGISTRATION_CANCEL_BUTTON: '#cancel-external-registration',
         TOOL_TYPE_CAPABILITIES_CONTAINER: '#tool-type-capabilities-container',
+        TOOL_TYPE_CAPABILITIES_TEMPLATE_CONTAINER: '#tool-type-capabilities-template-container',
         CAPABILITIES_AGREE_CONTAINER: '.capabilities-container',
     };
 
@@ -71,6 +72,18 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
 
     var getToolTypeCapabilitiesContainer = function() {
         return $(SELECTORS.TOOL_TYPE_CAPABILITIES_CONTAINER);
+    };
+
+    var getToolTypeCapabilitiesTemplateContainer = function() {
+        return $(SELECTORS.TOOL_TYPE_CAPABILITIES_TEMPLATE_CONTAINER);
+    };
+
+    var startLoadingCapabilitiesContainer = function() {
+        getToolTypeCapabilitiesContainer().addClass('loading');
+    };
+
+    var stopLoadingCapabilitiesContainer = function() {
+        getToolTypeCapabilitiesContainer().removeClass('loading');
     };
 
     var startLoadingCancel = function() {
@@ -165,17 +178,25 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
     };
 
     var setTypeStatusActive = function(typeData) {
-        return toolType.update({
+        var promise = $.Deferred();
+        startLoadingCapabilitiesContainer();
+
+        toolType.update({
             id: typeData.id,
             state: toolType.constants.state.configured
+        }).always(function() {
+            stopLoadingCapabilitiesContainer();
+            promise.resolve();
         });
+
+        return promise;
     };
 
     var promptForToolTypeCapabilitiesAgreement = function(typeData) {
         var promise = $.Deferred();
 
         templates.render('mod_lti/tool_type_capabilities_agree', typeData).done(function(html, js) {
-            var container = getToolTypeCapabilitiesContainer();
+            var container = getToolTypeCapabilitiesTemplateContainer();
 
             hideRegistrationForm();
             hideExternalRegistrationContent();
@@ -183,15 +204,17 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
             templates.replaceNodeContents(container, html, js)
             showToolTypeCapabilitiesContainer();
 
-            var choiceContainer = getToolTypeCapabilitiesContainer().find(SELECTORS.CAPABILITIES_AGREE_CONTAINER);
+            var choiceContainer = container.find(SELECTORS.CAPABILITIES_AGREE_CONTAINER);
 
             choiceContainer.on(ltiEvents.CAPABILITIES_AGREE, function() {
                 setTypeStatusActive(typeData).always(function() {
+                    container.empty();
                     promise.resolve();
                 });
             });
 
             choiceContainer.on(ltiEvents.CAPABILITIES_DECLINE, function() {
+                container.empty();
                 promise.resolve();
             });
         });
