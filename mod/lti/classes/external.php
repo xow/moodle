@@ -561,7 +561,7 @@ class mod_lti_external extends external_api {
     public static function get_tool_types_parameters() {
         return new external_function_parameters(
             array(
-                'toolProxyId' => new external_value(PARAM_INT, 'Tool proxy id', VALUE_OPTIONAL)
+                'toolproxyid' => new external_value(PARAM_INT, 'Tool proxy id', VALUE_DEFAULT, 0)
             )
         );
     }
@@ -573,14 +573,23 @@ class mod_lti_external extends external_api {
      * @since Moodle 3.0
      * @throws moodle_exception
      */
-    public static function get_tool_types() {
-        $warnings = array();
+    public static function get_tool_types($toolproxyid) {
+        $params = self::validate_parameters(self::get_tool_types_parameters(),
+                                            array(
+                                                'toolproxyid' => $toolproxyid
+                                            ));
 
+        $types = array();
         $context = context_system::instance();
+
         self::validate_context($context);
         require_capability('mod/lti:manage', $context);
 
-        $types = lti_get_lti_types();
+        if (!empty($toolproxyid)) {
+            $types = lti_get_lti_types_from_proxy_id($toolproxyid);
+        } else {
+            $types = lti_get_lti_types();
+        }
 
         return array_map("serialise_tool_type", array_values($types));
     }

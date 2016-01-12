@@ -82,7 +82,7 @@ define(['core/ajax', 'core/notification'], function(ajax, notification) {
         },
 
         getFromToolProxyId: function(id) {
-
+            return this.query({toolproxyid: id});
         },
 
         constants: {

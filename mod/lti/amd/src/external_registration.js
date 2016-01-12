@@ -93,14 +93,6 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
         return getRegistrationSubmitButton().hasClass('loading');
     };
 
-    var hideRegistrationCancelButton = function() {
-        getRegistrationCancelButton().addClass('hidden');
-    };
-
-    var showRegistrationCancelButton = function() {
-        getRegistrationCancelButton().addClass('hidden');
-    };
-
     var hideToolTypeCapabilitiesContainer = function() {
         getToolTypeCapabilitiesContainer().addClass('hidden');
     };
@@ -186,24 +178,26 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
             var container = getToolTypeCapabilitiesContainer();
 
             hideRegistrationForm();
-            hideRegistrationCancelButton();
             hideExternalRegistrationContent();
 
-            templates.replaceNodeContents(container, html, js).done(function() {
-                showToolTypeCapabilitiesContainer();
+            templates.replaceNodeContents(container, html, js)
+            showToolTypeCapabilitiesContainer();
 
-                var choiceContainer = getToolTypeCapabilitiesContainer().find(SELECTORS.CAPABILITIES_AGREE_CONTAINER);
+            var choiceContainer = getToolTypeCapabilitiesContainer().find(SELECTORS.CAPABILITIES_AGREE_CONTAINER);
 
-                choiceContainer.on(ltiEvents.CAPABILITIES_AGREE, function() {
-                    setTypeStatusActive(typeData).always(function() {
-                        promise.resolve();
-                    });
-                });
-
-                choiceContainer.on(ltiEvents.CAPABILITIES_DECLINE, function() {
+            choiceContainer.on(ltiEvents.CAPABILITIES_AGREE, function() {
+                setTypeStatusActive(typeData).always(function() {
                     promise.resolve();
                 });
             });
+
+            choiceContainer.on(ltiEvents.CAPABILITIES_DECLINE, function() {
+                promise.resolve();
+            });
+        });
+
+        promise.done(function() {
+            hideToolTypeCapabilitiesContainer();
         });
 
         return promise;
@@ -333,6 +327,11 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
                 message = data.error;
             }
 
+            promise.done(function() {
+                finishExternalRegistration();
+                $(document).trigger(ltiEvents.REGISTRATION_FEEDBACK, {status: status, message: message});
+            });
+
             if (status == "success") {
                 promise.done(function() {
                     $(document).trigger(ltiEvents.NEW_TOOL_TYPE);
@@ -341,37 +340,26 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
                 if (hasCreatedToolProxy()) {
                     var proxyId = getToolProxyId();
 
-                    toolType.getFromToolProxyId(proxyId).done(
-                        // Success.
-                        function(types) {
-                            if (types && types.length) {
-                                // There should only be one result.
-                                var typeData = types[0];
+                    toolType.getFromToolProxyId(proxyId).done(function(types) {
+                        if (types && types.length) {
+                            // There should only be one result.
+                            var typeData = types[0];
 
-                                if (typeData.hascapabilitygroups) {
-                                    promptForToolTypeCapabilitiesAgreement(typeData).always(function() {
-                                        promise.resolve();
-                                    });
-                                } else {
+                            if (typeData.hascapabilitygroups) {
+                                promptForToolTypeCapabilitiesAgreement(typeData).always(function() {
                                     promise.resolve();
-                                }
+                                });
                             } else {
                                 promise.resolve();
                             }
-                        },
-                        // Failure.
-                        function() {
+                        } else {
                             promise.resolve();
                         }
-                    );
+                    }).fail(function() {
+                        promise.resolve();
+                    });
                 }
             }
-
-            promise.done(function() {
-                $(document).trigger(ltiEvents.REGISTRATION_FEEDBACK, {status: status, message: message});
-            });
-
-            finishExternalRegistration();
         };
     };
 
