@@ -195,9 +195,11 @@ function lti_delete_instance($id) {
 }
 
 function lti_get_types() {
-    global $OUTPUT;
+    global $OUTPUT, $CFG;
+    require_once($CFG->dirroot.'/mod/lti/locallib.php');
 
     $subtypes = array();
+    $subtypes = array_merge($subtypes, lti_get_configured_types());
     foreach (get_plugin_list('ltisource') as $name => $dir) {
         if ($moretypes = component_callback("ltisource_$name", 'get_types')) {
             $subtypes = array_merge($subtypes, $moretypes);
