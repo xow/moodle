@@ -211,12 +211,6 @@ function lti_get_types() {
 
     $types = array();
 
-    $type           = new stdClass();
-    $type->modclass = MOD_CLASS_ACTIVITY;
-    $type->type     = 'lti_group_start';
-    $type->typestr  = '--'.get_string('modulenameplural', 'mod_lti');
-    $types[]        = $type;
-
     $link     = get_string('modulename_link', 'mod_lti');
     $linktext = get_string('morehelp');
     $help     = get_string('modulename_help', 'mod_lti');
@@ -224,18 +218,13 @@ function lti_get_types() {
 
     $type           = new stdClass();
     $type->modclass = MOD_CLASS_ACTIVITY;
-    $type->type     = '';
-    $type->typestr  = get_string('generaltool', 'mod_lti');
+    $type->type     = 'lti';
+    $type->typestr  = get_string('modulename', 'mod_lti');
+    $type->icon     = $OUTPUT->pix_url('icon', 'lti');
     $type->help     = $help;
     $types[]        = $type;
 
     $types = array_merge($types, $subtypes);
-
-    $type           = new stdClass();
-    $type->modclass = MOD_CLASS_ACTIVITY;
-    $type->type     = 'lti_group_end';
-    $type->typestr  = '--';
-    $types[]        = $type;
 
     return $types;
 }

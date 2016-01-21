@@ -1292,37 +1292,27 @@ function get_module_metadata($course, $modnames, $sectionreturn = null) {
         }
         if ($types !== MOD_SUBTYPE_NO_CHILDREN) {
             if (is_array($types) && count($types) > 0) {
-                $group = new stdClass();
-                $group->name = $modname;
-                $group->icon = $OUTPUT->pix_icon('icon', '', $modname, array('class' => 'icon'));
+                $module = new stdClass();
                 foreach($types as $type) {
-                    if ($type->typestr === '--') {
-                        continue;
+                    $module = new stdClass();
+                    $module->title = $type->typestr;
+                    $module->name = preg_replace('/.*type=/', '', $type->type);
+                    if (!empty($type->params)) {
+                        $module->link = new moodle_url($urlbase, $type->params);
+                    } else {
+                        $module->link = new moodle_url($urlbase, array('add' => $modname));
                     }
-                    if (strpos($type->typestr, '--') === 0) {
-                        $group->title = str_replace('--', '', $type->typestr);
-                        continue;
+                    if (!empty($type->icon)) {
+                        $module->icon = html_writer::empty_tag('img', array('src' => $type->icon, 'alt' => $module->title, 'class' => 'icon'));
+                    } else {
+                        $module->icon = $OUTPUT->pix_icon('icon', '', $modname, array('class' => 'icon'));
                     }
-                    // Set the Sub Type metadata
-                    $subtype = new stdClass();
-                    $subtype->title = $type->typestr;
-                    $subtype->type = str_replace('&amp;', '&', $type->type);
-                    $subtype->name = preg_replace('/.*type=/', '', $subtype->type);
-                    $subtype->archetype = $type->modclass;
-
-                    // The group archetype should match the subtype archetypes and all subtypes
-                    // should have the same archetype
-                    $group->archetype = $subtype->archetype;
-
                     if (!empty($type->help)) {
-                        $subtype->help = $type->help;
-                    } else if (get_string_manager()->string_exists('help' . $subtype->name, $modname)) {
-                        $subtype->help = get_string('help' . $subtype->name, $modname);
+                        $module->help = $type->help;
                     }
-                    $subtype->link = new moodle_url($urlbase, array('add' => $modname, 'type' => $subtype->name));
-                    $group->types[] = $subtype;
+                    $module->archetype = plugin_supports('mod', $modname, FEATURE_MOD_ARCHETYPE, MOD_ARCHETYPE_OTHER);
+                    $return[$type->type] = $module;
                 }
-                $modlist[$course->id][$modname] = $group;
             }
         } else {
             $module = new stdClass();
@@ -1341,11 +1331,11 @@ function get_module_metadata($course, $modnames, $sectionreturn = null) {
             }
             $module->archetype = plugin_supports('mod', $modname, FEATURE_MOD_ARCHETYPE, MOD_ARCHETYPE_OTHER);
             $modlist[$course->id][$modname] = $module;
-        }
-        if (isset($modlist[$course->id][$modname])) {
-            $return[$modname] = $modlist[$course->id][$modname];
-        } else {
-            debugging("Invalid module metadata configuration for {$modname}");
+            if (isset($modlist[$course->id][$modname])) {
+                $return[$modname] = $modlist[$course->id][$modname];
+            } else {
+                debugging("Invalid module metadata configuration for {$modname}");
+            }
         }
     }
 

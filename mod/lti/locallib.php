@@ -1101,9 +1101,11 @@ function lti_get_configured_types() {
     foreach ($admintypes as $lti_type) {
         $type           = new stdClass();
         $type->modclass = MOD_CLASS_ACTIVITY;
-        $type->type     = 'lti_type' . $lti_type->id;
+        $type->type     = 'type_' . $lti_type->id;
         $type->typestr  = $lti_type->name;
+        $type->icon     = $lti_type->icon;
         $type->help     = $lti_type->description;
+        $type->params   = array('add' => 'lti', 'typeid' => $lti_type->id);
         $types[] = $type;
     }
     return $types;
