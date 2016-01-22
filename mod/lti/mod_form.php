@@ -127,16 +127,18 @@ class mod_lti_mod_form extends moodleform_mod {
             $tooltypes->addOption($type->name, $id, $attributes);
         }
 
-        $mform->addElement('text', 'toolurl', get_string('launch_url', 'lti'), array('size' => '64'));
-        $mform->setType('toolurl', PARAM_TEXT);
-        $mform->addHelpButton('toolurl', 'launch_url', 'lti');
-        $mform->disabledIf('toolurl', 'typeid', 'neq', '0');
+        if (empty($typeid)) {
+            $mform->addElement('text', 'toolurl', get_string('launch_url', 'lti'), array('size' => '64'));
+            $mform->setType('toolurl', PARAM_TEXT);
+            $mform->addHelpButton('toolurl', 'launch_url', 'lti');
+            $mform->disabledIf('toolurl', 'typeid', 'neq', '0');
 
-        $mform->addElement('text', 'securetoolurl', get_string('secure_launch_url', 'lti'), array('size' => '64'));
-        $mform->setType('securetoolurl', PARAM_TEXT);
-        $mform->setAdvanced('securetoolurl');
-        $mform->addHelpButton('securetoolurl', 'secure_launch_url', 'lti');
-        $mform->disabledIf('securetoolurl', 'typeid', 'neq', '0');
+            $mform->addElement('text', 'securetoolurl', get_string('secure_launch_url', 'lti'), array('size' => '64'));
+            $mform->setType('securetoolurl', PARAM_TEXT);
+            $mform->setAdvanced('securetoolurl');
+            $mform->addHelpButton('securetoolurl', 'secure_launch_url', 'lti');
+            $mform->disabledIf('securetoolurl', 'typeid', 'neq', '0');
+        }
 
         $mform->addElement('hidden', 'urlmatchedtypeid', '', array( 'id' => 'id_urlmatchedtypeid' ));
         $mform->setType('urlmatchedtypeid', PARAM_INT);
@@ -152,52 +154,58 @@ class mod_lti_mod_form extends moodleform_mod {
         $mform->setDefault('launchcontainer', LTI_LAUNCH_CONTAINER_DEFAULT);
         $mform->addHelpButton('launchcontainer', 'launchinpopup', 'lti');
 
-        $mform->addElement('text', 'resourcekey', get_string('resourcekey', 'lti'));
-        $mform->setType('resourcekey', PARAM_TEXT);
-        $mform->setAdvanced('resourcekey');
-        $mform->addHelpButton('resourcekey', 'resourcekey', 'lti');
-        $mform->disabledIf('resourcekey', 'typeid', 'neq', '0');
+        if (empty($typeid)) {
+            $mform->addElement('text', 'resourcekey', get_string('resourcekey', 'lti'));
+            $mform->setType('resourcekey', PARAM_TEXT);
+            $mform->setAdvanced('resourcekey');
+            $mform->addHelpButton('resourcekey', 'resourcekey', 'lti');
+            $mform->disabledIf('resourcekey', 'typeid', 'neq', '0');
 
-        $mform->addElement('passwordunmask', 'password', get_string('password', 'lti'));
-        $mform->setType('password', PARAM_TEXT);
-        $mform->setAdvanced('password');
-        $mform->addHelpButton('password', 'password', 'lti');
-        $mform->disabledIf('password', 'typeid', 'neq', '0');
+            $mform->addElement('passwordunmask', 'password', get_string('password', 'lti'));
+            $mform->setType('password', PARAM_TEXT);
+            $mform->setAdvanced('password');
+            $mform->addHelpButton('password', 'password', 'lti');
+            $mform->disabledIf('password', 'typeid', 'neq', '0');
+        }
 
         $mform->addElement('textarea', 'instructorcustomparameters', get_string('custom', 'lti'), array('rows' => 4, 'cols' => 60));
         $mform->setType('instructorcustomparameters', PARAM_TEXT);
         $mform->setAdvanced('instructorcustomparameters');
         $mform->addHelpButton('instructorcustomparameters', 'custom', 'lti');
 
-        $mform->addElement('text', 'icon', get_string('icon_url', 'lti'), array('size' => '64'));
-        $mform->setType('icon', PARAM_URL);
-        $mform->setAdvanced('icon');
-        $mform->addHelpButton('icon', 'icon_url', 'lti');
-        $mform->disabledIf('icon', 'typeid', 'neq', '0');
+        if (empty($typeid)) {
+            $mform->addElement('text', 'icon', get_string('icon_url', 'lti'), array('size' => '64'));
+            $mform->setType('icon', PARAM_URL);
+            $mform->setAdvanced('icon');
+            $mform->addHelpButton('icon', 'icon_url', 'lti');
+            $mform->disabledIf('icon', 'typeid', 'neq', '0');
 
-        $mform->addElement('text', 'secureicon', get_string('secure_icon_url', 'lti'), array('size' => '64'));
-        $mform->setType('secureicon', PARAM_URL);
-        $mform->setAdvanced('secureicon');
-        $mform->addHelpButton('secureicon', 'secure_icon_url', 'lti');
-        $mform->disabledIf('secureicon', 'typeid', 'neq', '0');
+            $mform->addElement('text', 'secureicon', get_string('secure_icon_url', 'lti'), array('size' => '64'));
+            $mform->setType('secureicon', PARAM_URL);
+            $mform->setAdvanced('secureicon');
+            $mform->addHelpButton('secureicon', 'secure_icon_url', 'lti');
+            $mform->disabledIf('secureicon', 'typeid', 'neq', '0');
+        }
 
         // Add privacy preferences fieldset where users choose whether to send their data.
-        $mform->addElement('header', 'privacy', get_string('privacy', 'lti'));
+        if (empty($typeid)) {
+            $mform->addElement('header', 'privacy', get_string('privacy', 'lti'));
 
-        $mform->addElement('advcheckbox', 'instructorchoicesendname', '&nbsp;', ' ' . get_string('share_name', 'lti'));
-        $mform->setDefault('instructorchoicesendname', '1');
-        $mform->addHelpButton('instructorchoicesendname', 'share_name', 'lti');
-        $mform->disabledIf('instructorchoicesendname', 'typeid', 'in', $toolproxy);
+            $mform->addElement('advcheckbox', 'instructorchoicesendname', '&nbsp;', ' ' . get_string('share_name', 'lti'));
+            $mform->setDefault('instructorchoicesendname', '1');
+            $mform->addHelpButton('instructorchoicesendname', 'share_name', 'lti');
+            $mform->disabledIf('instructorchoicesendname', 'typeid', 'in', $toolproxy);
 
-        $mform->addElement('advcheckbox', 'instructorchoicesendemailaddr', '&nbsp;', ' ' . get_string('share_email', 'lti'));
-        $mform->setDefault('instructorchoicesendemailaddr', '1');
-        $mform->addHelpButton('instructorchoicesendemailaddr', 'share_email', 'lti');
-        $mform->disabledIf('instructorchoicesendemailaddr', 'typeid', 'in', $toolproxy);
+            $mform->addElement('advcheckbox', 'instructorchoicesendemailaddr', '&nbsp;', ' ' . get_string('share_email', 'lti'));
+            $mform->setDefault('instructorchoicesendemailaddr', '1');
+            $mform->addHelpButton('instructorchoicesendemailaddr', 'share_email', 'lti');
+            $mform->disabledIf('instructorchoicesendemailaddr', 'typeid', 'in', $toolproxy);
 
-        $mform->addElement('advcheckbox', 'instructorchoiceacceptgrades', '&nbsp;', ' ' . get_string('accept_grades', 'lti'));
-        $mform->setDefault('instructorchoiceacceptgrades', '1');
-        $mform->addHelpButton('instructorchoiceacceptgrades', 'accept_grades', 'lti');
-        $mform->disabledIf('instructorchoiceacceptgrades', 'typeid', 'in', $toolproxy);
+            $mform->addElement('advcheckbox', 'instructorchoiceacceptgrades', '&nbsp;', ' ' . get_string('accept_grades', 'lti'));
+            $mform->setDefault('instructorchoiceacceptgrades', '1');
+            $mform->addHelpButton('instructorchoiceacceptgrades', 'accept_grades', 'lti');
+            $mform->disabledIf('instructorchoiceacceptgrades', 'typeid', 'in', $toolproxy);
+        }
 
         // Add standard course module grading elements.
         $this->standard_grading_coursemodule_elements();
