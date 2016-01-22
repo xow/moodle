@@ -1095,6 +1095,7 @@ function lti_get_types_for_add_instance() {
 }
 
 function lti_get_configured_types() {
+    global $COURSE;
     $types = array();
     $admintypes = lti_get_lti_types_by_course();
 
@@ -1105,7 +1106,8 @@ function lti_get_configured_types() {
         $type->typestr  = $lti_type->name;
         $type->icon     = $lti_type->icon;
         $type->help     = $lti_type->description;
-        $type->params   = array('add' => 'lti', 'typeid' => $lti_type->id);
+        $type->link     = '/course/modedit.php';
+        $type->params   = array('add' => 'lti', 'return' => 0, 'course' => $COURSE->id, 'sr' => 0, 'typeid' => $lti_type->id);
         $types[] = $type;
     }
     return $types;

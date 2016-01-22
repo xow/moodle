@@ -96,6 +96,8 @@ class mod_lti_mod_form extends moodleform_mod {
 
         // Tool settings.
         $tooltypes = $mform->addElement('select', 'typeid', get_string('external_tool_type', 'lti'), array());
+        $typeid = optional_param('typeid', false, PARAM_INT);
+        $mform->getElement('typeid')->setValue($typeid);
         $mform->addHelpButton('typeid', 'external_tool_type', 'lti');
         $toolproxy = array();
 

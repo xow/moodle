@@ -1297,8 +1297,12 @@ function get_module_metadata($course, $modnames, $sectionreturn = null) {
                     $module = new stdClass();
                     $module->title = $type->typestr;
                     $module->name = preg_replace('/.*type=/', '', $type->type);
-                    if (!empty($type->params)) {
-                        $module->link = new moodle_url($urlbase, $type->params);
+                    if (!empty($type->link)) {
+                        $params = array();
+                        if (!empty($type->params)) {
+                            $params = $type->params;
+                        }
+                        $module->link = new moodle_url($type->link, $params);
                     } else {
                         $module->link = new moodle_url($urlbase, array('add' => $modname));
                     }
