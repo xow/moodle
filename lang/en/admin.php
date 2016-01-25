@@ -977,6 +977,7 @@ $string['sitepolicyoptionexternalurl'] = 'External URL';
 $string['sitepolicyoptiontext'] = 'Text';
 $string['sitepolicysource_help'] = 'Which source should be used as the site policy';
 $string['sitepolicysource'] = 'Source for site policy';
+$string['sitepolicysourceguest'] = 'Source for site policy for guests';
 $string['sitepolicytext'] = 'Site policy text';
 $string['sitepolicytextguest'] = 'Site policy text for guests';
 $string['sitepolicyurl_help'] = 'If you have an externally hosted site policy that all registered users must see and agree to before using this site, then specify the URL to it here. This setting can contain any public URL.';

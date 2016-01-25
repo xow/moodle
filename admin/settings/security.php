@@ -38,7 +38,7 @@ if ($hassiteconfig) { // speedup for non-admins, add all caps used on this page
     $temp->add(new admin_setting_heading('guestusers', new lang_string('guestusers', 'admin'), ''));
     $temp->add(new admin_setting_configselect(
         'sitepolicysourceguest',
-        new lang_string('sitepolicysource', 'admin'),
+        new lang_string('sitepolicysourceguest', 'admin'),
         new lang_string('sitepolicysource_help', 'admin'),
         0,
         $sitepolicyoptions));
