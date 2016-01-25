@@ -4849,5 +4849,16 @@ function xmldb_main_upgrade($oldversion) {
 
         upgrade_main_savepoint(true, 2016011901.00);
     }
+
+    if ($oldversion < 2016012100.01) {
+        if (!empty($CFG->sitepolicy)) {
+            set_config('sitepolicysourceloggedin', 1);
+        }
+        if (!empty($CFG->sitepolicyguest)) {
+            set_config('sitepolicysourceguest', 1);
+        }
+        upgrade_main_savepoint(true, 2016012100.01);
+    }
+
     return true;
 }

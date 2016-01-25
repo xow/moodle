@@ -557,6 +557,7 @@ $string['gravatardefaulturl_help'] = 'Gravatar needs a default image to display 
 $string['gradeexport'] = 'Primary grade export methods';
 $string['guestroleid'] = 'Role for guest';
 $string['guestroleid_help'] = 'This role is automatically assigned to the guest user. It is also temporarily assigned to not enrolled users that enter the course via guest enrolment plugin.';
+$string['guestusers'] = 'Guest users';
 $string['helpadminseesall'] = 'Do admins see all calendar events or just those that apply to themselves?';
 $string['helpcalendarcustomexport'] = 'Enable custom date range export option in calendar exports. Calendar exports must be enabled before this is effective.';
 $string['helpexportlookahead'] = 'How many days in the future does the calendar look for events during export for the custom export option?';
@@ -648,6 +649,7 @@ $string['lockoutthreshold_desc'] = 'Select number of failed login attempts that 
 $string['lockoutwindow'] = 'Account lockout observation window';
 $string['lockoutwindow_desc'] = 'Observation time for lockout threshold, if there are no failed attempts the threshold counter is reset after this time.';
 $string['log'] = 'Logs';
+$string['loggedinusers'] = 'Logged in users';
 $string['logguests'] = 'Log guest access';
 $string['logguests_help'] = 'This setting enables logging of actions by guest account and not logged in users. High profile sites may want to disable this logging for performance reasons. It is recommended to keep this setting enabled on production sites.';
 $string['loginhttps'] = 'Use HTTPS for logins';
@@ -970,10 +972,17 @@ $string['sitemaintenanceoncli'] = 'Your site is currently in CLI maintenance mod
 $string['sitemaintenancewarning'] = 'Your site is currently in maintenance mode (only admins can log in).  To return this site to normal operation, <a href="maintenance.php">disable maintenance mode</a>.';
 $string['sitemaintenancewarning2'] = 'Your site is currently in maintenance mode (only admins can log in).  To return this site to normal operation, <a href="{$a}">disable maintenance mode</a>.';
 $string['sitepolicies'] = 'Site policies';
-$string['sitepolicy'] = 'Site policy URL';
-$string['sitepolicy_help'] = 'If you have a site policy that all registered users must see and agree to before using this site, then specify the URL to it here, otherwise leave this field blank. This setting can contain any public URL.';
-$string['sitepolicyguest'] = 'Site policy URL for guests';
-$string['sitepolicyguest_help'] = 'If you have a site policy that all guests must see and agree to before using this site, then specify the URL to it here, otherwise leave this field blank. This setting can contain any public URL. Note: access of not-logged-in users may be prevented with forcelogin setting.';
+$string['sitepolicy'] = 'Site policy';
+$string['sitepolicyoptionexternalurl'] = 'External URL';
+$string['sitepolicyoptiontext'] = 'Text';
+$string['sitepolicysource_help'] = 'Which source should be used as the site policy';
+$string['sitepolicysource'] = 'Source for site policy';
+$string['sitepolicytext'] = 'Site policy text';
+$string['sitepolicytextguest'] = 'Site policy text for guests';
+$string['sitepolicyurl_help'] = 'If you have an externally hosted site policy that all registered users must see and agree to before using this site, then specify the URL to it here. This setting can contain any public URL.';
+$string['sitepolicyurl'] = 'External site policy URL';
+$string['sitepolicyurlguest_help'] = 'If you have an externally hosted site policy that all guests must see and agree to before using this site, then specify the URL to it here. This setting can contain any public URL. Note: access of not-logged-in users may be prevented with forcelogin setting.';
+$string['sitepolicyurlguest'] = 'External site policy URL for guests';
 $string['sitesectionhelp'] = 'If selected, a topic section will be displayed on the site\'s front page.';
 $string['slasharguments'] = 'Use slash arguments';
 $string['slashargumentswarning'] = 'It is recommended that the use of slash arguments is enabled. In future it will be required. For more details, see the documentation <a href="https://docs.moodle.org/en/admin/environment/slasharguments">Using slash arguments</a>.';

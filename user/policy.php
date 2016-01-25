@@ -36,20 +36,19 @@ if (!isloggedin()) {
 }
 
 if (isguestuser()) {
-    $sitepolicy = $CFG->sitepolicyguest;
+    $sitepolicyurl = get_config('core', 'sitepolicyguest');
+    $sitepolicytext = get_config('core', 'sitepolicyguest_text');
+    $sitesitepolicysource = get_config('core', 'sitepolicysourceguest');
 } else {
-    $sitepolicy = $CFG->sitepolicy;
+    $sitepolicyurl = get_config('core', 'sitepolicy');
+    $sitepolicytext = get_config('core', 'sitepolicy_text');
+    $sitesitepolicysource = get_config('core', 'sitepolicysourceloggedin');
 }
 
 if (!empty($SESSION->wantsurl)) {
     $return = $SESSION->wantsurl;
 } else {
     $return = $CFG->wwwroot.'/';
-}
-
-if (empty($sitepolicy)) {
-    // Nothing to agree to, sorry, hopefully we will not get to infinite loop.
-    redirect($return);
 }
 
 if ($agree and confirm_sesskey()) {    // User has agreed.
@@ -70,21 +69,39 @@ $PAGE->set_title($strpolicyagreement);
 $PAGE->set_heading($SITE->fullname);
 $PAGE->navbar->add($strpolicyagreement);
 
+switch ($sitesitepolicysource) {
+    case 0:
+        // Nothing to agree to, sorry, hopefully we will not get to infinite loop.
+        redirect($return);
+        break;
+    case 1:
+        if (empty($sitepolicyurl)) {
+            // Nothing to agree to, sorry, hopefully we will not get to infinite loop.
+            redirect($return);
+        }
+        $mimetype = mimeinfo('type', $sitepolicyurl);
+        if ($mimetype == 'document/unknown') {
+            // Fallback for missing index.php, index.html.
+            $mimetype = 'text/html';
+        }
+
+        // We can not use our popups here, because the url may be arbitrary, see MDL-9823.
+        $clicktoopen = '<a href="' . $sitepolicyurl . '" onclick="this.target=\'_blank\'">' . $strpolicyagreementclick . '</a>';
+        $sitepolicy = resourcelib_embed_general($sitepolicyurl, $strpolicyagreement, $clicktoopen, $mimetype);
+        break;
+    case 2:
+        if (empty($sitepolicytext)) {
+            // Nothing to agree to, sorry, hopefully we will not get to infinite loop.
+            redirect($return);
+        }
+        $sitepolicy = format_text($sitepolicytext);
+        break;
+}
+
 echo $OUTPUT->header();
 echo $OUTPUT->heading($strpolicyagreement);
 
-$mimetype = mimeinfo('type', $sitepolicy);
-if ($mimetype == 'document/unknown') {
-    // Fallback for missing index.php, index.html.
-    $mimetype = 'text/html';
-}
-
-// We can not use our popups here, because the url may be arbitrary, see MDL-9823.
-$clicktoopen = '<a href="'.$sitepolicy.'" onclick="this.target=\'_blank\'">'.$strpolicyagreementclick.'</a>';
-
-echo '<div class="noticebox">';
-echo resourcelib_embed_general($sitepolicy, $strpolicyagreement, $clicktoopen, $mimetype);
-echo '</div>';
+echo html_writer::div($sitepolicy, 'noticebox');
 
 $formcontinue = new single_button(new moodle_url('policy.php', array('agree' => 1)), get_string('yes'));
 $formcancel = new single_button(new moodle_url($CFG->wwwroot.'/login/logout.php', array('agree' => 0)), get_string('no'));
