@@ -40,7 +40,7 @@ define(['core/ajax', 'core/notification'], function(ajax, notification) {
         query: function(args) {
             var request = {
                 methodname: 'mod_lti_get_tool_types',
-                args: args
+                args: args || {}
             };
 
             var promise = ajax.call([request])[0];
