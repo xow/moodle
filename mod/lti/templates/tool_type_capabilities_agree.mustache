@@ -28,19 +28,15 @@
     Context variables required for this template:
     *
 
-    Example context (json):
-    {
-    }
-
 }}
 <div class="capabilities-container tool-type-{{id}}">
-    <p>This tool requires access to the following data in order to activate:</p>
+    <p>{{#str}} capabilitiesrequired, mod_lti {{/str}}</p>
     <ul>
         {{#capabilitygroups}}<li>{{.}}</li>{{/capabilitygroups}}
     </ul>
-    <p>Are you sure you'd like to activate this tool?</p>
-    <a class="yes btn btn-success" href="#">Yes</a>
-    <a class="no btn btn-danger" href="#">No</a>
+    <p>{{#str}} confirmtoolactivation, mod_lti {{/str}}</p>
+    <a class="yes btn btn-success" href="#">{{#str}} yes {{/str}}</a>
+    <a class="no btn btn-danger" href="#">{{#str}} no {{/str}}</a>
 </div>
 {{#js}}
     require(['jquery', 'mod_lti/events', 'mod_lti/keys'], function($, ltiEvents, KEYS) {
