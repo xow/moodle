@@ -30,8 +30,8 @@
  * @since      3.1
  */
 define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/events',
-        'mod_lti/tool_proxy', 'mod_lti/tool_type', 'mod_lti/keys'],
-        function($, ajax, notification, templates, ltiEvents, toolProxy, toolType, KEYS) {
+        'mod_lti/tool_proxy', 'mod_lti/tool_type', 'mod_lti/keys', 'core/str'],
+        function($, ajax, notification, templates, ltiEvents, toolProxy, toolType, KEYS, str) {
 
     var SELECTORS = {
         REGISTRATION_URL: '#external-registration-url',
@@ -282,6 +282,8 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
             var id = getToolProxyId();
             toolProxy.delete(id).done(function() {
                 promise.resolve();
+            }).fail(function (failure) {
+                promise.reject(failure);
             });
         } else {
             promise.resolve();
@@ -291,6 +293,19 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
             // Return to the original page.
             finishExternalRegistration();
             stopLoadingCancel();
+        }).fail(function (failure) {
+            notification.exception(failure);
+            finishExternalRegistration();
+            stopLoadingCancel();
+            str.get_strings([{key: 'error', component: 'moodle'},
+                             {key: 'failedtodeletetoolproxy', component: 'mod_lti'}]).done(function (s) {
+                var feedback = {
+                    status: s[0],
+                    message: s[1],
+                    error: true
+                };
+                $(document).trigger(ltiEvents.REGISTRATION_FEEDBACK, feedback);
+            }).fail(notification.exception);
         });
 
         return promise;
@@ -314,7 +329,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
 
             container.find('form').submit();
             showExternalRegistrationContent();
-        });
+        }).fail(notification.exception);
 
         return promise;
     };
@@ -378,11 +393,11 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
                 container.empty();
                 promise.resolve();
             });
-        });
+        }).fail(promise.reject);
 
         promise.done(function() {
             hideToolTypeCapabilitiesContainer();
-        });
+        }).fail(notification.exception);
 
         return promise;
     };
@@ -437,7 +452,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
                 cancelRegistration();
                 // Let the user know what the error is.
                 $(document).trigger(ltiEvents.REGISTRATION_FEEDBACK, {status: 'error', message: exception.message, error: true});
-                promise.fail(exception);
+                promise.reject(exception);
             });
         }
 
@@ -513,7 +528,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
                     finishExternalRegistration();
                     $(document).trigger(ltiEvents.REGISTRATION_FEEDBACK, feedback);
                     $(document).trigger(ltiEvents.NEW_TOOL_TYPE);
-                });
+                }).fail(notification.exception);
 
                 // We should have created a tool proxy by this point.
                 if (hasCreatedToolProxy()) {
@@ -554,7 +569,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
                     cancelRegistration().always(function() {
                         $(document).trigger(ltiEvents.REGISTRATION_FEEDBACK, feedback);
                     });
-                });
+                }).fail(notification.exception);
 
                 promise.resolve();
             }
