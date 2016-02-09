@@ -586,6 +586,10 @@ function lti_load_tool_if_cartridge($lti) {
  * @since Moodle 3.1
  */
 function lti_is_cartridge($url) {
+    // If it is empty, it's not a cartridge
+    if (empty($url)) {
+        return false;
+    }
     // If it has xml at the end of the url, it's a cartridge.
     if (preg_match('/\.xml$/', $url)) {
         return true;
