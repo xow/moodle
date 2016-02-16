@@ -24,6 +24,11 @@
 
 class block_settings_renderer extends plugin_renderer_base {
 
+    public function settings_link(moodle_url $link) {
+        $data = new stdClass();
+        $data->siteadminlink = $link->out();
+        return $this->render_from_template('block_settings/administration_link', $data);
+    }
     public function settings_tree(settings_navigation $navigation) {
         $count = 0;
         foreach ($navigation->children as &$child) {

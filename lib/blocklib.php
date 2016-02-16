@@ -1940,6 +1940,9 @@ function block_add_block_ui($page, $output) {
     if (!$page->user_is_editing() || !$page->user_can_edit_blocks()) {
         return null;
     }
+    if ($page->pagelayout !== 'mydashboard') {
+        return null;
+    }
 
     $bc = new block_contents();
     $bc->title = get_string('addblock');

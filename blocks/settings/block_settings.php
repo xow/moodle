@@ -110,6 +110,13 @@ class block_settings extends block_base {
      */
     function get_content() {
         global $CFG, $OUTPUT;
+        $this->content = new stdClass();
+        $renderer = $this->page->get_renderer('block_settings');
+        $this->content->text = $renderer->settings_link(new moodle_url('/admin/index.php'));
+        return true;
+    }
+    function old_get_content() {
+        global $CFG, $OUTPUT;
         // First check if we have already generated, don't waste cycles
         if ($this->contentgenerated === true) {
             return true;
