@@ -95,7 +95,7 @@ class lineitem extends \mod_lti\local\ltiservice\resource_base {
                     $this->get_request($response, $results, $item);
                     break;
                 case 'PUT':
-                    $this->put_request($response->get_request_data(), $item);
+                    $this->put_request($response->get_request_data(), $results, $item);
                     break;
                 case 'DELETE':
                     $this->delete_request($item);
@@ -145,7 +145,7 @@ class lineitem extends \mod_lti\local\ltiservice\resource_base {
      * @param string $body       PUT body
      * @param string $olditem    Grade item instance
      */
-    private function put_request($body, $olditem) {
+    private function put_request($body, $results, $olditem) {
 
         $json = json_decode($body);
         if (empty($json) || !isset($json->{"@type"}) || ($json->{"@type"} != 'LineItem')) {
@@ -175,6 +175,14 @@ class lineitem extends \mod_lti\local\ltiservice\resource_base {
                 $item->grademax = grade_floatval($json->scoreConstraints->$maximum);
                 $update = true;
             }
+        }
+        error_log('put request! ===============================');
+        if (!empty($results)) {
+            error_log('we have a result! ===============================');
+            $result = $json->{"result"};
+            $response->set_content_type($this->formats[1]);
+            outcomestwo::set_grade_item($olditem, $result, $result[0]->{"resultAgent"}->{"userId"});
+            $update = true;
         }
         if ($update) {
             if (!$item->update('mod/ltiservice_outcomestwo')) {
