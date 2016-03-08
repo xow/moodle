@@ -49,6 +49,10 @@ class tool_configure_page implements renderable, templatable {
 
         $url = new moodle_url('/mod/lti/typessettings.php', array('sesskey' => sesskey()));
         $data->configuremanualurl = $url->out();
+        $url = new moodle_url('/admin/settings.php?section=modsettinglti');
+        $data->managetoolsurl = $url->out();
+        $url = new moodle_url('/mod/lti/toolproxies.php');
+        $data->managetoolproxiesurl = $url->out();
 
         return $data;
     }
