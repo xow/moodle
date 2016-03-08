@@ -37,6 +37,9 @@
 <div id="tool-list-loader-container">
     {{> mod_lti/loader }}
 </div>
+{{^tools}}
+<div id="tool-notools-text" class="container-fluid">There are no external tools configured.</div>
+{{/tools}}
 <div id="tool-card-container" class="container-fluid">
     {{#tools}}
         {{> mod_lti/tool_card }}
