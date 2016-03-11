@@ -2269,21 +2269,16 @@ function get_tool_type_urls(stdClass $type) {
  * @param stdClass $type The tool type
  *
  * @return array An array with a text description of the state, and boolean for whether it is in each state:
- * pending, configured, rejected, any, unknown
+ * pending, configured, rejected, unknown
  */
 function get_tool_type_state_info(stdClass $type) {
     # TODO: lang strings.
     $state = '';
     $isconfigured = false;
     $ispending = false;
-    $isany = false;
     $isrejected = false;
     $isunknown = false;
     switch ($type->state) {
-        case LTI_TOOL_STATE_ANY:
-            $state = 'any';
-            $isany = true;
-            break;
         case LTI_TOOL_STATE_CONFIGURED:
             $state = 'active';
             $isconfigured = true;
@@ -2307,7 +2302,6 @@ function get_tool_type_state_info(stdClass $type) {
         'pending' => $ispending,
         'configured' => $isconfigured,
         'rejected' => $isrejected,
-        'any' => $isany,
         'unknown' => $isunknown
     );
 }

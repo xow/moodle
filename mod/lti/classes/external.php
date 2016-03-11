@@ -66,7 +66,6 @@ class mod_lti_external extends external_api {
                         'pending' => new external_value(PARAM_BOOL, 'Is the state pending'),
                         'configured' => new external_value(PARAM_BOOL, 'Is the state configured'),
                         'rejected' => new external_value(PARAM_BOOL, 'Is the state rejected'),
-                        'any' => new external_value(PARAM_BOOL, 'Is the state any'),
                         'unknown' => new external_value(PARAM_BOOL, 'Is the state unknown'),
                     )
                 ),
