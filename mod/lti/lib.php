@@ -665,7 +665,8 @@ function lti_load_cartridge($url, $map, $propertiesmap = array()) {
     $curl = new curl();
     $response = $curl->get($url);
     $document = new DOMDocument();
-    $document->loadXML($response);
+    // TODO Find a better way of supressing errors.
+    @$document->loadXML($response);
     $cartridge = new DomXpath($document);
     $errors = libxml_get_errors();
     foreach ($errors as $error) {
