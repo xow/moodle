@@ -450,7 +450,7 @@ function lti_get_lti_types() {
  * Returns available Basic LTI types that match the given
  * tool proxy id
  *
- * @param int Tool proxy id
+ * @param int $toolproxyid Tool proxy id
  * @return array of basicLTI types
  */
 function lti_get_lti_types_from_proxy_id($toolproxyid) {
@@ -581,12 +581,12 @@ function lti_load_tool_if_cartridge($lti) {
 /**
  * Determines if the given url is for a IMS basic cartridge
  *
- * @param  string $type    The tool type object to be filled in
+ * @param  string $url The url to be checked
  * @return True if the url is for a cartridge
  * @since Moodle 3.1
  */
 function lti_is_cartridge($url) {
-    // If it is empty, it's not a cartridge
+    // If it is empty, it's not a cartridge.
     if (empty($url)) {
         return false;
     }
@@ -625,7 +625,7 @@ function lti_load_type_from_cartridge($url, $type) {
             "icon_url" => "lti_icon"
         )
     );
-    foreach($toolinfo as $property => $value) {
+    foreach ($toolinfo as $property => $value) {
         $type->$property = $value;
     }
 }
@@ -645,7 +645,7 @@ function lti_load_tool_from_cartridge($url, $lti) {
             "title" => "name"
         )
     );
-    foreach($toolinfo as $property => $value) {
+    foreach ($toolinfo as $property => $value) {
         $lti->$property = $value;
     }
 }
@@ -653,9 +653,9 @@ function lti_load_tool_from_cartridge($url, $lti) {
 /**
  * Search for a tag within an XML DOMDocument
  *
- * @param  stdClass $tagName The name of the tag to search for
- * @param  array    $map The map of tags to keys in the return array
- * @param  array    $properties The map of properties to keys in the return array
+ * @param  string $url The url of the cartridge to be loaded
+ * @param  array  $map The map of tags to keys in the return array
+ * @param  array  $propertiesmap The map of properties to keys in the return array
  * @return array An associative array with the given keys and their values from the cartridge
  * @since Moodle 3.1
  */
@@ -682,7 +682,6 @@ function lti_load_cartridge($url, $map, $propertiesmap = array()) {
     if (!empty($propertiesmap)) {
         foreach ($propertiesmap as $property => $key) {
             $value = get_tag("property", $cartridge, $property);
-            error_log("\n\nProperty is: " . $value . "\n\n");
             if ($value) {
                 $toolinfo[$key] = $value;
             }
@@ -694,8 +693,10 @@ function lti_load_cartridge($url, $map, $propertiesmap = array()) {
 /**
  * Search for a tag within an XML DOMDocument
  *
- * @param  stdClass $tagName The name of the tag to search for
+ * @param  stdClass $tagname The name of the tag to search for
  * @param  XPath    $xpath   The XML to find the tag in
+ * @param  XPath    $attribute The attribute to search for (if we should search for a child node with the given
+ * value for the name attribute
  * @since Moodle 3.1
  */
 function get_tag($tagname, $xpath, $attribute = null) {

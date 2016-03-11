@@ -15,10 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * This page allows the configuration of external tools that meet the
- * LTI specification.
+ * This page allows the configuration of external tools that meet the LTI specification.
  *
- * @package mod_lti
+ * @package    mod_lti
  * @copyright  2015 Ryan Wyllie <ryan@moodle.com>
  * @author     Ryan Wyllie
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later

@@ -286,6 +286,13 @@ function lti_register($toolproxy) {
     echo $content;
 }
 
+
+/**
+ * Gets the parameters for the regirstration request
+ *
+ * @param object $toolproxy Tool Proxy instance object
+ * @return array Registration request parameters
+ */
 function lti_get_register_parameters($toolproxy) {
     $key = $toolproxy->guid;
     $secret = $toolproxy->secret;
@@ -1541,7 +1548,7 @@ function lti_get_tool_proxy_from_guid($toolproxyguid) {
  *
  * @param string $regurl Tool proxy registration URL
  *
- * @return array
+ * @return array The record of the tool proxy with this url
  */
 function lti_get_tool_proxies_from_registration_url($regurl) {
     global $DB;
@@ -1613,7 +1620,9 @@ function lti_add_tool_proxy($config) {
     if (isset($config->lti_services)) {
         $toolproxy->serviceoffered = implode("\n", $config->lti_services);
     } else {
-        $func = function($s) { return $s->get_id(); };
+        $func = function($s) {
+            return $s->get_id();
+        };
         $servicenames = array_map($func, lti_get_services());
         $toolproxy->serviceoffered = implode("\n", $servicenames);
     }
@@ -2179,6 +2188,13 @@ function lti_get_fqid($contexts, $id) {
 
 }
 
+/**
+ * Returns the icon for the given tool type
+ *
+ * @param stdClass $type The tool type
+ *
+ * @return string The url to the tool type's corresponding icon
+ */
 function get_tool_type_icon_url(stdClass $type) {
     global $OUTPUT;
 
@@ -2197,11 +2213,25 @@ function get_tool_type_icon_url(stdClass $type) {
     return $iconurl;
 }
 
+/**
+ * Returns the edit url for the given tool type
+ *
+ * @param stdClass $type The tool type
+ *
+ * @return string The url to edit the tool type
+ */
 function get_tool_type_edit_url(stdClass $type) {
     $url = new moodle_url('/mod/lti/typessettings.php', array('action' => 'update', 'id' => $type->id, 'sesskey' => sesskey()));
     return $url->out();
 }
 
+/**
+ * Returns the course url for the given tool type
+ *
+ * @param stdClass $type The tool type
+ *
+ * @return string|void The url to the course of the tool type, void if it is a site wide type
+ */
 function get_tool_type_course_url(stdClass $type) {
     if ($type->course == 1) {
         return;
@@ -2211,6 +2241,13 @@ function get_tool_type_course_url(stdClass $type) {
     }
 }
 
+/**
+ * Returns the icon and edit urls for the tool type and the course url if it is a course type.
+ *
+ * @param stdClass $type The tool type
+ *
+ * @return string The url to the course of the tool type
+ */
 function get_tool_type_urls(stdClass $type) {
     $courseurl = get_tool_type_course_url($type);
 
@@ -2226,6 +2263,14 @@ function get_tool_type_urls(stdClass $type) {
     return $urls;
 }
 
+/**
+ * Returns information on the current state of the tool type
+ *
+ * @param stdClass $type The tool type
+ *
+ * @return array An array with a text description of the state, and boolean for whether it is in each state:
+ * pending, configured, rejected, any, unknown
+ */
 function get_tool_type_state_info(stdClass $type) {
     # TODO: lang strings.
     $state = '';
@@ -2244,7 +2289,7 @@ function get_tool_type_state_info(stdClass $type) {
             $isconfigured = true;
             break;
         case LTI_TOOL_STATE_PENDING:
-           $state = 'pending';
+            $state = 'pending';
             $ispending = true;
             break;
         case LTI_TOOL_STATE_REJECTED:
@@ -2267,13 +2312,20 @@ function get_tool_type_state_info(stdClass $type) {
     );
 }
 
+/**
+ * Returns a summary of each LTI capability this tool type requires in plain language
+ *
+ * @param stdClass $type The tool type
+ *
+ * @return array An array of text descriptions of each of the capabilities this tool type requires
+ */
 function get_tool_type_capability_groups($type) {
     $capabilities = lti_get_enabled_capabilities($type);
     $groups = array();
-    $hasCourse = false;
-    $hasActivities = false;
-    $hasUserAccount = false;
-    $hasUserPersonal = false;
+    $hascourse = false;
+    $hasactivities = false;
+    $hasuseraccount = false;
+    $hasuserpersonal = false;
 
     # TODO: lang strings.
     foreach ($capabilities as $capability) {
@@ -2282,17 +2334,17 @@ function get_tool_type_capability_groups($type) {
             continue;
         }
 
-        if (!$hasCourse && preg_match('/^CourseSection/', $capability)) {
-            $hasCourse = true;
+        if (!$hascourse && preg_match('/^CourseSection/', $capability)) {
+            $hascourse = true;
             $groups[] = 'course information';
-        } else if (!$hasActivities && preg_match('/^ResourceLink/', $capability)) {
-            $hasActivities = true;
+        } else if (!$hasactivities && preg_match('/^ResourceLink/', $capability)) {
+            $hasactivities = true;
             $groups[] = 'course activities or resources';
-        } else if (!$hasUserAccount && preg_match('/^User/', $capability) || preg_match('/^Membership/', $capability)) {
-            $hasUserAccount = true;
+        } else if (!$hasuseraccount && preg_match('/^User/', $capability) || preg_match('/^Membership/', $capability)) {
+            $hasuseraccount = true;
             $groups[] = 'user account information';
-        } else if (!$hasUserPersonal && preg_match('/^Person/', $capability)) {
-            $hasUserPersonal = true;
+        } else if (!$hasuserpersonal && preg_match('/^Person/', $capability)) {
+            $hasuserpersonal = true;
             $groups[] = 'user personal information';
         }
     }
@@ -2300,12 +2352,27 @@ function get_tool_type_capability_groups($type) {
     return $groups;
 }
 
+
+/**
+ * Returns the ids of each instance of this tool type
+ *
+ * @param stdClass $type The tool type
+ *
+ * @return array An array of ids of the instances of this tool type
+ */
 function get_tool_type_instance_ids($type) {
     global $DB;
 
     return array_keys($DB->get_records('lti', array('typeid' => $type->id), '', 'id'));
 }
 
+/**
+ * Serialises this tool type
+ *
+ * @param stdClass $type The tool type
+ *
+ * @return array An array of values representing this type
+ */
 function serialise_tool_type(stdClass $type) {
     $capabilitygroups = get_tool_type_capability_groups($type);
     $instanceids = get_tool_type_instance_ids($type);
@@ -2314,7 +2381,8 @@ function serialise_tool_type(stdClass $type) {
     return array(
         'id' => $type->id,
         'name' => $type->name,
-        'description' => isset($type->description) ? $type->description : "Default tool description placeholder until we can code this in.",
+        'description' => isset($type->description) ? $type->description :
+                         "Default tool description placeholder until we can code this in.",
         'urls' => get_tool_type_urls($type),
         'state' => get_tool_type_state_info($type),
         'hascapabilitygroups' => !empty($capabilitygroups),

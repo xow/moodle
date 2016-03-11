@@ -42,6 +42,7 @@ class tool_configure_page implements renderable, templatable {
     /**
      * Export this data so it can be used as the context for a mustache template.
      *
+     * @param renderer_base $output The renderer
      * @return stdClass
      */
     public function export_for_template(renderer_base $output) {

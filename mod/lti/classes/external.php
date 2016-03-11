@@ -430,10 +430,13 @@ class mod_lti_external extends external_api {
     }
 
     /**
-     * Trigger the course module viewed event and update the module completion status.
+     * Creates a new tool proxy
      *
-     * @param int $ltiid the lti instance id
-     * @return array of warnings and status result
+     * @param string $name Tool proxy name
+     * @param string $registrationurl Registration url
+     * @param string[] $capabilityoffered List of capabilities this tool proxy should be offered
+     * @param string[] $serviceoffered List of services this tool proxy should be offered
+     * @return object The new tool proxy
      * @since Moodle 3.0
      * @throws moodle_exception
      */
@@ -509,8 +512,8 @@ class mod_lti_external extends external_api {
     /**
      * Trigger the course module viewed event and update the module completion status.
      *
-     * @param int $ltiid the lti instance id
-     * @return array of warnings and status result
+     * @param int $id the lti instance id
+     * @return object The tool proxy
      * @since Moodle 3.0
      * @throws moodle_exception
      */
@@ -615,6 +618,7 @@ class mod_lti_external extends external_api {
     /**
      * Returns the tool types.
      *
+     * @param int $toolproxyid The tool proxy id
      * @return array of tool types
      * @since Moodle 3.0
      * @throws moodle_exception
@@ -671,9 +675,12 @@ class mod_lti_external extends external_api {
     /**
      * Creates a tool type.
      *
+     * @param string $cartridgeurl Url of the xml cartridge representing the LTI tool
+     * @param string $key The consumer key to identify this consumer
+     * @param string $secret The secret
      * @return array created tool type
      * @since Moodle 3.0
-     * @throws moodle_exception
+     * @throws moodle_exception If the tool type could not be created
      */
     public static function create_tool_type($cartridgeurl, $key, $secret) {
         $params = self::validate_parameters(self::create_tool_type_parameters(),
@@ -747,7 +754,11 @@ class mod_lti_external extends external_api {
     /**
      * Update a tool type.
      *
-     * @return array created tool type
+     * @param int $id The id of the tool type to update
+     * @param string $name The name of the tool type
+     * @param string $description The name of the tool type
+     * @param int $state The state of the tool type
+     * @return array updated tool type
      * @since Moodle 3.0
      * @throws moodle_exception
      */
@@ -823,7 +834,8 @@ class mod_lti_external extends external_api {
     /**
      * Delete a tool type.
      *
-     * @return array created tool type
+     * @param int $id The id of the tool type to be deleted
+     * @return array deleted tool type
      * @since Moodle 3.0
      * @throws moodle_exception
      */
@@ -884,6 +896,7 @@ class mod_lti_external extends external_api {
     /**
      * Determine if the url to a tool is for a cartridge.
      *
+     * @param string $url Url that may or may not be an xml cartridge
      * @return bool True if the url is for a cartridge.
      * @since Moodle 3.0
      * @throws moodle_exception
