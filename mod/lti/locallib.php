@@ -2272,7 +2272,6 @@ function get_tool_type_urls(stdClass $type) {
  * pending, configured, rejected, unknown
  */
 function get_tool_type_state_info(stdClass $type) {
-    # TODO: lang strings.
     $state = '';
     $isconfigured = false;
     $ispending = false;
@@ -2280,19 +2279,19 @@ function get_tool_type_state_info(stdClass $type) {
     $isunknown = false;
     switch ($type->state) {
         case LTI_TOOL_STATE_CONFIGURED:
-            $state = 'active';
+            $state = get_string('active', 'mod_lti');
             $isconfigured = true;
             break;
         case LTI_TOOL_STATE_PENDING:
-            $state = 'pending';
+            $state = get_string('pending', 'mod_lti');
             $ispending = true;
             break;
         case LTI_TOOL_STATE_REJECTED:
-            $state = 'rejected';
+            $state = get_string('rejected', 'mod_lti');
             $isrejected = true;
             break;
         default:
-            $state = 'unknown state';
+            $state = get_string('unknownstate', 'mod_lti');
             $isunknown = true;
             break;
     }

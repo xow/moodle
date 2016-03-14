@@ -483,6 +483,7 @@ $string['typename'] = 'Tool name';
 $string['typename_help'] = 'The tool name is used to identify the tool provider within Moodle. The name entered will be visible
 to teachers when adding external tools within courses.';
 $string['types'] = 'Types';
+$string['unknownstate'] = 'Unknown state';
 $string['update'] = 'Update';
 $string['using_tool_configuration'] = 'Using tool configuration: ';
 $string['validurl'] = 'A valid URL must start with http(s)://';
