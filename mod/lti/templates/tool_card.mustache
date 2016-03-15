@@ -27,10 +27,33 @@
     * none
 
     Context variables required for this template:
-    *
+    * hascapabilitygroups
+    * state
+    ** pending|configured|rejected|unknown
+    ** text
+    * courseid
+    * urls
+    ** course
+    ** icon
+    * name
+    * description
+    * instancecount
 
     Example context (json):
     {
+        "hascapabilitygroups": 1,
+        "state": {
+            "active": 1,
+            "text": "active"
+        },
+        "courseid": 2,
+        "urls": {
+            "course": "http://example.com/moodle/course/view.php?id=2",
+            "icon": "http://example.com/icon.png"
+        },
+        "name": "Example tool",
+        "description": "This is an example tool",
+        "instancecount": 1
     }
 
 }}
