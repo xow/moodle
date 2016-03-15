@@ -2320,7 +2320,6 @@ function get_tool_type_capability_groups($type) {
     $hasuseraccount = false;
     $hasuserpersonal = false;
 
-    # TODO: lang strings.
     foreach ($capabilities as $capability) {
         // Bail out early if we've already found all groups.
         if (count($groups) >= 4) {
@@ -2329,16 +2328,16 @@ function get_tool_type_capability_groups($type) {
 
         if (!$hascourse && preg_match('/^CourseSection/', $capability)) {
             $hascourse = true;
-            $groups[] = 'course information';
+            $groups[] = get_string('courseinformation', 'mod_lti');
         } else if (!$hasactivities && preg_match('/^ResourceLink/', $capability)) {
             $hasactivities = true;
-            $groups[] = 'course activities or resources';
+            $groups[] = get_string('courseactivitiesorresources', 'mod_lti');
         } else if (!$hasuseraccount && preg_match('/^User/', $capability) || preg_match('/^Membership/', $capability)) {
             $hasuseraccount = true;
-            $groups[] = 'user account information';
+            $groups[] = get_string('useraccountinformation', 'mod_lti');
         } else if (!$hasuserpersonal && preg_match('/^Person/', $capability)) {
             $hasuserpersonal = true;
-            $groups[] = 'user personal information';
+            $groups[] = get_string('userpersonalinformation', 'mod_lti');
         }
     }
 
@@ -2370,12 +2369,10 @@ function serialise_tool_type(stdClass $type) {
     $capabilitygroups = get_tool_type_capability_groups($type);
     $instanceids = get_tool_type_instance_ids($type);
 
-    # TODO: lang strings.
     return array(
         'id' => $type->id,
         'name' => $type->name,
-        'description' => isset($type->description) ? $type->description :
-                         "Default tool description placeholder until we can code this in.",
+        'description' => isset($type->description) ? $type->description : get_string('editdescription', 'mod_lti'),
         'urls' => get_tool_type_urls($type),
         'state' => get_tool_type_state_info($type),
         'hascapabilitygroups' => !empty($capabilitygroups),

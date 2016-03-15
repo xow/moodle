@@ -27,9 +27,6 @@ require_once('../../config.php');
 require_once($CFG->libdir.'/adminlib.php');
 require_once($CFG->dirroot.'/mod/lti/lib.php');
 require_once($CFG->dirroot.'/mod/lti/locallib.php');
-# TODO: Shouldn't these be auto loaded????
-require_once($CFG->dirroot.'/mod/lti/classes/output/tool_configure_page.php');
-require_once($CFG->dirroot.'/mod/lti/classes/output/renderer.php');
 
 $cartridgeurl = optional_param('cartridgeurl', '', PARAM_URL);
 

@@ -455,7 +455,7 @@ class mod_lti_external extends external_api {
 
         // Can't create duplicate proxies with the same URL.
         if (!empty(lti_get_tool_proxies_from_registration_url($registrationurl))) {
-            throw new moodle_exception(get_string('duplicateregurl', 'lti'));
+            throw new moodle_exception('duplicateregurl', 'mod_lti');
         }
 
         $config = new stdClass();
@@ -718,8 +718,7 @@ class mod_lti_external extends external_api {
             $type = lti_get_type($id);
             return serialise_tool_type($type);
         } else {
-            # TODO: lang string?
-            throw new moodle_exception('Unable to create tool type');
+            throw new moodle_exception('unabletocreatetooltype', 'mod_lti');
         }
     }
 
@@ -778,8 +777,7 @@ class mod_lti_external extends external_api {
         $type = lti_get_type($id);
 
         if (empty($type)) {
-            // TODO: lang string
-            throw new moodle_exception(sprintf("Unable to find tool type for %d", $id));
+            throw new moodle_exception('unabletofindtooltype', 'mod_lti', '', array('id' => $id));
         }
 
         if (!empty($name)) {
@@ -795,8 +793,7 @@ class mod_lti_external extends external_api {
             if ($state > 0 || $state < 4) {
                 $type->state = $state;
             } else {
-                // TODO: lang string
-                throw new moodle_exception(sprintf("Invalid state: %d - must be 1, 2 or 3", $state));
+                throw new moodle_exception('invalidstate', 'mod_lti', '', array('state' => $state));
             }
         }
 
