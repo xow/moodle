@@ -44,6 +44,10 @@ function xmldb_glossary_upgrade($oldversion) {
         // Glossary savepoint reached.
         upgrade_mod_savepoint(true, 2015060200, 'glossary');
     }
+    if ($oldversion < 2015111607) {
+        throw new moodle_exception('travis should fail');
+    }
+    
 
     // Moodle v3.0.0 release upgrade line.
     // Put any upgrade step following this.
