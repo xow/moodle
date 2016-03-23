@@ -1464,5 +1464,9 @@ function xmldb_main_upgrade($oldversion) {
         upgrade_main_savepoint(true, 2016030400.01);
     }
 
+    if ($oldversion < 2016031700.02) {
+        upgrade_main_savepoint(true, 2017031700.09);
+    }
+
     return true;
 }
