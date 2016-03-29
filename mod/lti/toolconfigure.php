@@ -46,6 +46,8 @@ if ($cartridgeurl) {
 $pageurl = new moodle_url('/mod/lti/toolconfigure.php');
 $PAGE->set_url($pageurl);
 $PAGE->set_title("{$SITE->shortname}: " . get_string('toolregistration', 'lti'));
+$PAGE->requires->string_for_js('success', 'moodle');
+$PAGE->requires->string_for_js('successfullycreatedtooltype', 'lti');
 $output = $PAGE->get_renderer('mod_lti');
 
 echo $output->header();

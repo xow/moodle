@@ -26,8 +26,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @since      3.1
  */
-define(['jquery', 'core/ajax', 'core/notification', 'mod_lti/tool_type', 'mod_lti/events', 'mod_lti/keys'],
-        function($, ajax, notification, toolType, ltiEvents, KEYS) {
+define(['jquery', 'core/ajax', 'core/notification', 'mod_lti/tool_type', 'mod_lti/events', 'mod_lti/keys', 'core/str'],
+        function($, ajax, notification, toolType, ltiEvents, KEYS, str) {
 
     var SELECTORS = {
         CARTRIDGE_URL: '#cartridge-url',
@@ -153,12 +153,13 @@ define(['jquery', 'core/ajax', 'core/notification', 'mod_lti/tool_type', 'mod_lt
         var promise = toolType.create({cartridgeurl: url, key: consumerKey, secret: sharedSecret});
 
         promise.done(function() {
-            $(document).trigger(ltiEvents.NEW_TOOL_TYPE);
-            $(document).trigger(ltiEvents.STOP_CARTRIDGE_REGISTRATION);
-            // TODO: Language strings
-            $(document).trigger(ltiEvents.REGISTRATION_FEEDBACK, {
-                status: "Success",
-                message: "Successfully created new tool!"
+            str.get_strings([{key: 'success', component: 'moodle'}, {key: 'successfullycreatedtooltype', component: 'mod_lti'}]).done(function (s) {
+                $(document).trigger(ltiEvents.NEW_TOOL_TYPE);
+                $(document).trigger(ltiEvents.STOP_CARTRIDGE_REGISTRATION);
+                $(document).trigger(ltiEvents.REGISTRATION_FEEDBACK, {
+                    status: s[0],
+                    message: s[1]
+                });
             });
         }).always(function() { stopLoading(); });
 

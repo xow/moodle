@@ -265,6 +265,28 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
     };
 
     /**
+     * Show the loading animation
+     *
+     * @method startLoading
+     * @private
+     * @param object jQuery object
+     */
+    var startLoading = function(element) {
+        element.addClass("loading");
+    }
+
+    /**
+     * Hide the loading animation
+     *
+     * @method stopLoading
+     * @private
+     * @param object jQuery object
+     */
+    var stopLoading = function(element) {
+        element.removeClass("loading");
+    }
+
+    /**
      * Refresh the list of tool types and render the new ones.
      *
      * @method reloadToolList
@@ -272,7 +294,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
      */
     var reloadToolList = function() {
         var container = getToolListContainer();
-        container.addClass('loading');
+        startLoading(container);
 
         toolType.query().done(function(types) {
             templates.render('mod_lti/tool_list', {tools: types}).done(function(html, js) {
@@ -280,7 +302,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
                 container.append(html);
                 templates.runTemplateJS(js);
             });
-        }).always(function() { container.removeClass('loading'); });
+        }).always(function() { stopLoading(container); });
     };
 
     /**
@@ -299,11 +321,11 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
         }
 
         var toolButton = getToolCreateButton();
-        toolButton.addClass("loading"); // TODO: Function for this.
+        startLoading(toolButton);
 
         var promise = toolType.isCartridge(url);
 
-        promise.always(function() { toolButton.removeClass("loading"); }); // TODO: Function for this.
+        promise.always(function() { stopLoading(toolButton); });
 
         promise.done(function(result) {
             if (result.iscartridge) {

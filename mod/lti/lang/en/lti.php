@@ -431,6 +431,7 @@ $string['size'] = 'Size parameters';
 $string['submission'] = 'Submission';
 $string['submissions'] = 'Submissions';
 $string['submissionsfor'] = 'Submissions for {$a}';
+$string['successfullycreatedtooltype'] = 'Successfully created new tool type!';
 $string['subplugintype_ltiresource'] = 'LTI service resource';
 $string['subplugintype_ltiresource_plural'] = 'LTI service resources';
 $string['subplugintype_ltiservice'] = 'LTI service';

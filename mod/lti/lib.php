@@ -662,12 +662,15 @@ function lti_load_tool_from_cartridge($url, $lti) {
 function lti_load_cartridge($url, $map, $propertiesmap = array()) {
     global $CFG;
     require_once($CFG->libdir. "/filelib.php");
+
     $curl = new curl();
     $response = $curl->get($url);
+
     $document = new DOMDocument();
-    // TODO Find a better way of supressing errors.
     @$document->loadXML($response);
+
     $cartridge = new DomXpath($document);
+
     $errors = libxml_get_errors();
     foreach ($errors as $error) {
         print_error(sprintf("%s at line %d. ", trim($error->message, "\n\r\t ."), $error->line));

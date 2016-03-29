@@ -21,7 +21,7 @@ Feature: Configure tool types
 
   @javascript
   Scenario: Add a tool type from a cartridge URL
-    When I set the field "url" to local url "/mod/lti/tests/fixtures/cartridge.xml"
+    When I set the field "url" to local url "/mod/lti/tests/fixtures/ims_cartridge_basic_lti_link.xml"
     And I press "Add"
     Then I should see "Enter your consumer key and shared secret"
     And I press "Done"
