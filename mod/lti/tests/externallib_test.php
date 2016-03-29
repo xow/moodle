@@ -281,4 +281,67 @@ class mod_lti_external_testcase extends externallib_advanced_testcase {
 
     }
 
+    /*
+     * Test create tool type
+     */
+    public function test_mod_lti_create_tool_type() {
+        $type = mod_lti_external::create_tool_type($this->getExternalTestFileUrl('/ims_cartridge_basic_lti_link.xml'), '', '');
+        $this->assertEquals($type['name'], 'Example tool');
+        $this->assertEquals($type['description'], 'Example tool');
+        $this->assertEquals($type['urls']['icon'], 'http://download.moodle.org/unittest/test.jpg');
+    }
+
+    /*
+     * Test create tool type failure from non existant file
+     */
+    public function test_mod_lti_create_tool_type_nonexistant_file() {
+        $this->setExpectedException('moodle_exception');
+        $type = mod_lti_external::create_tool_type($this->getExternalTestFileUrl('/doesntexist.xml'), '', '');
+    }
+
+    /*
+     * Test create tool type failure from xml that is not a cartridge
+     */
+    public function test_mod_lti_create_tool_type_bad_file() {
+        $this->setExpectedException('moodle_exception');
+        $type = mod_lti_external::create_tool_type($this->getExternalTestFileUrl('/rsstest.xml'), '', '');
+    }
+
+    /*
+     * Test creating of tool types without sufficient capability
+     */
+    public function test_mod_lti_create_tool_type_without_capability() {
+        self::setUser($this->teacher);
+        $this->setExpectedException('required_capability_exception');
+        $type = mod_lti_external::create_tool_type($this->getExternalTestFileUrl('/ims_cartridge_basic_lti_link.xml'), '', '');
+    }
+
+    /*
+     * Test update tool type
+     */
+    public function test_mod_lti_update_tool_type() {
+        $type = mod_lti_external::create_tool_type($this->getExternalTestFileUrl('/ims_cartridge_basic_lti_link.xml'), '', '');
+        $type = mod_lti_external::update_tool_type($type['id'], 'New name', 'New description', LTI_TOOL_PROXY_STATE_PENDING);
+        $this->assertEquals($type['name'], 'New name');
+        $this->assertEquals($type['description'], 'New description');
+        $this->assertEquals($type['state']['text'], 'Pending');
+    }
+
+    /*
+     * Test get tool proxy registration request
+     */
+    public function test_mod_lti_delete_tool_type() {
+        $type = mod_lti_external::create_tool_type($this->getExternalTestFileUrl('/ims_cartridge_basic_lti_link.xml'), '', '');
+        $type = mod_lti_external::delete_tool_type($type['id']);
+    }
+
+    /*
+     * Test get tool proxy registration request
+     */
+    public function test_mod_lti_is_cartridge() {
+        $result = mod_lti_external::is_cartridge($this->getExternalTestFileUrl('/ims_cartridge_basic_lti_link.xml'));
+        $this->assertTrue($result['iscartridge']);
+        $result = mod_lti_external::is_cartridge('http://lti.tools/test/tp.php');
+        $this->assertFalse($result['iscartridge']);
+    }
 }

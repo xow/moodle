@@ -711,7 +711,11 @@ class mod_lti_external extends external_api {
             }
 
             lti_load_type_from_cartridge($cartridgeurl, $data);
-            $id = lti_add_type($type, $data);
+            if (empty($data->lti_toolurl)) {
+                throw new moodle_exception('unabletocreatetooltype', 'mod_lti');
+            } else {
+                $id = lti_add_type($type, $data);
+            }
         }
 
         if (!empty($id)) {
