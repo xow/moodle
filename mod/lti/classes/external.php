@@ -454,7 +454,8 @@ class mod_lti_external extends external_api {
         require_capability('mod/lti:manage', $context);
 
         // Can't create duplicate proxies with the same URL.
-        if (!empty(lti_get_tool_proxies_from_registration_url($registrationurl))) {
+        $duplicates = lti_get_tool_proxies_from_registration_url($registrationurl);
+        if (!empty($duplicates)) {
             throw new moodle_exception('duplicateregurl', 'mod_lti');
         }
 
@@ -857,7 +858,8 @@ class mod_lti_external extends external_api {
 
             // If this is the last type for this proxy then remove the proxy
             // as well so that it isn't orphaned.
-            if (empty(lti_get_lti_types_from_proxy_id($type->toolproxyid))) {
+            $types = lti_get_lti_types_from_proxy_id($type->toolproxyid);
+            if (empty($types)) {
                 lti_delete_tool_proxy($type->toolproxyid);
             }
         }
