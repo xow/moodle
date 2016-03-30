@@ -282,13 +282,84 @@ class mod_lti_external_testcase extends externallib_advanced_testcase {
     }
 
     /*
+     * Test create tool proxy
+     */
+    public function test_mod_lti_create_tool_proxy() {
+        $proxy = mod_lti_external::create_tool_proxy('Test proxy', $this->getExternalTestFileUrl('/test.html'), array(), array());
+        $this->assertEquals($proxy->name, 'Test proxy');
+        $this->assertEquals($proxy->regurl, $this->getExternalTestFileUrl('/test.html'));
+        $this->assertEquals($proxy->state, LTI_TOOL_PROXY_STATE_PENDING);
+    }
+
+    /*
+     * Test create tool proxy without sufficient capability
+     */
+    public function test_mod_lti_create_tool_proxy_without_capability() {
+        self::setUser($this->teacher);
+        $this->setExpectedException('required_capability_exception');
+        $proxy = mod_lti_external::create_tool_proxy('Test proxy', $this->getExternalTestFileUrl('/test.html'), array(), array());
+    }
+
+    /*
+     * Test delete tool proxy
+     */
+    public function test_mod_lti_delete_tool_proxy() {
+        $proxy = mod_lti_external::create_tool_proxy('Test proxy', $this->getExternalTestFileUrl('/test.html'), array(), array());
+        $this->assertNotEmpty(lti_get_tool_proxy($proxy->id));
+
+        $proxy = mod_lti_external::delete_tool_proxy($proxy->id);
+        $this->assertEquals($proxy->name, 'Test proxy');
+        $this->assertEquals($proxy->regurl, $this->getExternalTestFileUrl('/test.html'));
+        $this->assertEquals($proxy->state, LTI_TOOL_PROXY_STATE_PENDING);
+        $this->assertEmpty(lti_get_tool_proxy($proxy->id));
+    }
+
+    /*
+     * Test get tool proxy registration request
+     */
+    public function test_mod_lti_get_tool_proxy_registration_request() {
+        $proxy = mod_lti_external::create_tool_proxy('Test proxy', $this->getExternalTestFileUrl('/test.html'), array(), array());
+        $request = mod_lti_external::get_tool_proxy_registration_request($proxy->id);
+        $this->assertEquals($request['lti_message_type'], 'ToolProxyRegistrationRequest');
+        $this->assertEquals($request['lti_version'], 'LTI-2p0');
+    }
+
+    /*
+     * Test get tool types
+     */
+    public function test_mod_lti_get_tool_types() {
+        // Create a tool proxy.
+        $proxy = mod_lti_external::create_tool_proxy('Test proxy', $this->getExternalTestFileUrl('/test.html'), array(), array());
+
+        // Create a tool type, associated with that proxy.
+        $type = new stdClass();
+        $data = new stdClass();
+        $type->state = LTI_TOOL_STATE_CONFIGURED;
+        $type->name = "Test tool";
+        $type->description = "Example description";
+        $type->toolproxyid = $proxy->id;
+        $type->baseurl = $this->getExternalTestFileUrl('/test.html');
+        $typeid = lti_add_type($type, $data);
+
+        $type = lti_get_type($typeid);
+        $this->assertEquals($type->toolproxyid, $proxy->id);
+
+        $types = mod_lti_external::get_tool_types($proxy->id);
+        $this->assertEquals($type->name, 'Test tool');
+        $this->assertEquals($type->description, 'Example description');
+        $this->assertEquals($type->id, $type->id);
+    }
+
+    /*
      * Test create tool type
      */
     public function test_mod_lti_create_tool_type() {
         $type = mod_lti_external::create_tool_type($this->getExternalTestFileUrl('/ims_cartridge_basic_lti_link.xml'), '', '');
         $this->assertEquals($type['name'], 'Example tool');
         $this->assertEquals($type['description'], 'Example tool');
-        $this->assertEquals($type['urls']['icon'], 'http://download.moodle.org/unittest/test.jpg');
+        $this->assertEquals($type['urls']['icon'], $this->getExternalTestFileUrl('/test.jpg'));
+        $typeentry = lti_get_type($type['id']);
+        $this->assertEquals($typeentry->baseurl, "http://www.example.com/lti/provider.php");
     }
 
     /*
@@ -321,27 +392,29 @@ class mod_lti_external_testcase extends externallib_advanced_testcase {
      */
     public function test_mod_lti_update_tool_type() {
         $type = mod_lti_external::create_tool_type($this->getExternalTestFileUrl('/ims_cartridge_basic_lti_link.xml'), '', '');
-        $type = mod_lti_external::update_tool_type($type['id'], 'New name', 'New description', LTI_TOOL_PROXY_STATE_PENDING);
+        $type = mod_lti_external::update_tool_type($type['id'], 'New name', 'New description', LTI_TOOL_STATE_PENDING);
         $this->assertEquals($type['name'], 'New name');
         $this->assertEquals($type['description'], 'New description');
         $this->assertEquals($type['state']['text'], 'Pending');
     }
 
     /*
-     * Test get tool proxy registration request
+     * Test delete tool type
      */
     public function test_mod_lti_delete_tool_type() {
         $type = mod_lti_external::create_tool_type($this->getExternalTestFileUrl('/ims_cartridge_basic_lti_link.xml'), '', '');
+        $this->assertNotEmpty(lti_get_type($type['id']));
         $type = mod_lti_external::delete_tool_type($type['id']);
+        $this->assertEmpty(lti_get_type($type['id']));
     }
 
     /*
-     * Test get tool proxy registration request
+     * Test is cartridge
      */
     public function test_mod_lti_is_cartridge() {
         $result = mod_lti_external::is_cartridge($this->getExternalTestFileUrl('/ims_cartridge_basic_lti_link.xml'));
         $this->assertTrue($result['iscartridge']);
-        $result = mod_lti_external::is_cartridge('http://lti.tools/test/tp.php');
+        $result = mod_lti_external::is_cartridge($this->getExternalTestFileUrl('/test.html'));
         $this->assertFalse($result['iscartridge']);
     }
 }
