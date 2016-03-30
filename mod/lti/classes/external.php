@@ -451,7 +451,7 @@ class mod_lti_external extends external_api {
 
         $context = context_system::instance();
         self::validate_context($context);
-        require_capability('mod/lti:manage', $context);
+        require_capability('moodle/site:config', $context);
 
         // Can't create duplicate proxies with the same URL.
         $duplicates = lti_get_tool_proxies_from_registration_url($registrationurl);
@@ -526,7 +526,7 @@ class mod_lti_external extends external_api {
 
         $context = context_system::instance();
         self::validate_context($context);
-        require_capability('mod/lti:manage', $context);
+        require_capability('moodle/site:config', $context);
 
         $toolproxy = lti_get_tool_proxy($id);
 
@@ -576,7 +576,7 @@ class mod_lti_external extends external_api {
 
         $context = context_system::instance();
         self::validate_context($context);
-        require_capability('mod/lti:manage', $context);
+        require_capability('moodle/site:config', $context);
 
         $toolproxy = lti_get_tool_proxy($id);
         return lti_get_register_parameters($toolproxy);
@@ -633,7 +633,7 @@ class mod_lti_external extends external_api {
         $context = context_system::instance();
 
         self::validate_context($context);
-        require_capability('mod/lti:manage', $context);
+        require_capability('moodle/site:config', $context);
 
         if (!empty($toolproxyid)) {
             $types = lti_get_lti_types_from_proxy_id($toolproxyid);
@@ -693,7 +693,7 @@ class mod_lti_external extends external_api {
 
         $context = context_system::instance();
         self::validate_context($context);
-        require_capability('mod/lti:manage', $context);
+        require_capability('moodle/site:config', $context);
 
         $id = null;
 
@@ -777,7 +777,7 @@ class mod_lti_external extends external_api {
 
         $context = context_system::instance();
         self::validate_context($context);
-        require_capability('mod/lti:manage', $context);
+        require_capability('moodle/site:config', $context);
 
         $type = lti_get_type($id);
 
@@ -849,7 +849,7 @@ class mod_lti_external extends external_api {
 
         $context = context_system::instance();
         self::validate_context($context);
-        require_capability('mod/lti:manage', $context);
+        require_capability('moodle/site:config', $context);
 
         $type = lti_get_type($id);
 
@@ -912,7 +912,7 @@ class mod_lti_external extends external_api {
 
         $context = context_system::instance();
         self::validate_context($context);
-        require_capability('mod/lti:manage', $context);
+        require_capability('moodle/site:config', $context);
 
         $iscartridge = lti_is_cartridge($url);
 
