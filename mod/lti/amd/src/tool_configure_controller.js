@@ -34,6 +34,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
         EXTERNAL_REGISTRATION_PAGE_CONTAINER: '#external-registration-page-container',
         CARTRIDGE_REGISTRATION_CONTAINER: '#cartridge-registration-container',
         CARTRIDGE_REGISTRATION_FORM: '#cartridge-registration-form',
+        ADD_TOOL_FORM: '#add-tool-form',
         TOOL_LIST_CONTAINER: '#tool-list-container',
         TOOL_CREATE_BUTTON: '#tool-create-button',
         REGISTRATION_CHOICE_CONTAINER: '#registration-choice-container',
@@ -374,18 +375,10 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
             showRegistrationFeedback(data);
         });
 
-        var toolButton = getToolCreateButton();
-        toolButton.click(function(e) {
+        var form = $(SELECTORS.ADD_TOOL_FORM);
+        form.submit(function(e) {
             e.preventDefault();
             addTool();
-        });
-        toolButton.keypress(function(e) {
-            if (!e.metaKey && !e.shiftKey && !e.altKey && !e.ctrlKey) {
-                if (e.keyCode == KEYS.ENTER || e.keyCode == KEYS.SPACE) {
-                    addTool();
-                    e.preventDefault();
-                }
-            }
         });
 
         var feedbackContainer = getRegistrationFeedbackContainer();

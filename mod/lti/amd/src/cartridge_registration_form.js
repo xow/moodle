@@ -173,18 +173,10 @@ define(['jquery', 'core/ajax', 'core/notification', 'mod_lti/tool_type', 'mod_lt
      * @private
      */
     var registerEventListeners = function() {
-        var submitButton = getSubmitButton();
-        submitButton.click(function(e) {
+        var form = $(SELECTORS.REGISTRATION_FORM);
+        form.submit(function(e) {
             e.preventDefault();
             submitCartridgeURL();
-        });
-        submitButton.keypress(function(e) {
-            if (!e.metaKey && !e.shiftKey && !e.altKey && !e.ctrlKey) {
-                if (e.keyCode == KEYS.ENTER || e.keyCode == KEYS.SPACE) {
-                    e.preventDefault();
-                    submitButton.click();
-                }
-            }
         });
 
         var cancelButton = getCancelButton();
