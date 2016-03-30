@@ -356,7 +356,7 @@ class mod_lti_external_testcase extends externallib_advanced_testcase {
     public function test_mod_lti_create_tool_type() {
         $type = mod_lti_external::create_tool_type($this->getExternalTestFileUrl('/ims_cartridge_basic_lti_link.xml'), '', '');
         $this->assertEquals($type['name'], 'Example tool');
-        $this->assertEquals($type['description'], 'Example tool');
+        $this->assertEquals($type['description'], 'Example tool description');
         $this->assertEquals($type['urls']['icon'], $this->getExternalTestFileUrl('/test.jpg'));
         $typeentry = lti_get_type($type['id']);
         $this->assertEquals($typeentry->baseurl, "http://www.example.com/lti/provider.php");
