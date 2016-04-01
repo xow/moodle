@@ -62,6 +62,7 @@ Some tool providers support reporting grades back to Moodle based on actions tak
 
 Note that this setting may be overridden in the tool configuration.';
 $string['action'] = 'Action';
+$string['activate'] = 'Activate';
 $string['active'] = 'Active';
 $string['activity'] = 'Activity';
 $string['addnewapp'] = 'Enable external application';
@@ -72,6 +73,7 @@ $string['allowinstructorcustom'] = 'Allow teachers to add custom parameters';
 $string['allowsetting'] = 'Allow tool to store 8K of settings in Moodle';
 $string['always'] = 'Always';
 $string['automatic'] = 'Automatic, based on launch URL';
+$string['autoaddtype'] = 'Add tool';
 $string['baseurl'] = 'Base URL/tool registration name';
 $string['basiclti'] = 'LTI';
 $string['basiclti_base_string'] = 'LTI OAuth base string';
@@ -88,6 +90,7 @@ $string['cancelled'] = 'Cancelled';
 $string['cannot_delete'] = 'You may not delete this tool configuration.';
 $string['cannot_edit'] = 'You may not edit this tool configuration.';
 $string['capabilities'] = 'Capabilities';
+$string['capabilitiesrequired'] = 'This tool requires access to the following data in order to activate:';
 $string['capabilities_help'] = 'Select those capabilities which you wish to offer to the tool provider.  More than one capability can be selected.';
 $string['click_to_continue'] = '<a href="{$a->link}" target="_top">Click to continue</a>';
 $string['comment'] = 'Comment';
@@ -99,10 +102,12 @@ $string['configresourceurl'] = 'Default resource URL';
 $string['configtoolurl'] = 'Default remote tool URL';
 $string['configtypes'] = 'Enable LTI applications';
 $string['configured'] = 'Configured';
+$string['confirmtoolactivation'] = 'Are you sure you would like to activate this tool?';
 $string['courseactivitiesorresources'] = 'Course acitivities or resources';
 $string['course_tool_types'] = 'Course tool types';
 $string['courseid'] = 'Course ID number';
 $string['courseinformation'] = 'Course information';
+$string['courselink'] = 'Go to course';
 $string['coursemisconf'] = 'Course is misconfigured';
 $string['createdon'] = 'Created on';
 $string['curllibrarymissing'] = 'PHP Curl library must be installed to use LTI';
@@ -156,6 +161,7 @@ $string['embed'] = 'Embed';
 $string['embed_no_blocks'] = 'Embed, without blocks';
 $string['enableemailnotification'] = 'Send notification emails';
 $string['enableemailnotification_help'] = 'If enabled, students will receive email notification when their tool submissions are graded.';
+$string['enterkeyandsecret'] = 'Enter your consumer key and shared secret';
 $string['errormisconfig'] = 'Misconfigured tool. Please ask your Moodle administrator to fix the configuration of the tool.';
 $string['existing_window'] = 'Existing window';
 $string['extensions'] = 'LTI extension services';
@@ -182,6 +188,7 @@ Three icons are available after the External tool type dropdown list:
 * **Edit** - Select a course level tool type from the dropdown, then click this icon. The details of the tool configuration may be edited.
 * **Delete** - Remove the selected course level tool type.';
 $string['external_tool_types'] = 'External tool types';
+$string['fail'] = 'Fail';
 $string['failedtoconnect'] = 'Moodle was unable to communicate with the "{$a}" system';
 $string['filter_basiclti_configlink'] = 'Configure your preferred sites and their passwords';
 $string['filter_basiclti_password'] = 'Password is mandatory';
@@ -227,6 +234,7 @@ real estate to the tool, and others provide a more integrated feel with the Mood
         Depending on the browser, it will open in a new tab or a popup window.
         It is possible that browsers will prevent the new window from opening.';
 $string['launchoptions'] = 'Launch options';
+$string['leaveblank'] = 'Leave blank if you do not need them';
 $string['lti'] = 'LTI';
 $string['lti:addinstance'] = 'Add new external tool activities';
 $string['lti:addcoursetool'] = 'Add course-specific tool configurations';
@@ -261,9 +269,10 @@ Tool types listed on this page are separated into three categories:
         Teachers may still use tools from these providers if they have a consumer key and shared secret, or if none is required.
 * **Rejected** - These tools providers are flagged as ones which an administrator has no intention of making available to the entire
         Moodle instance. Teachers may still use tools from these providers if they have a consumer key and shared secret, or if none is required.';
-$string['manage_external_tools'] = 'Manage external tools';
+$string['manage_external_tools'] = 'Manage tools';
 $string['manage_tools'] = 'Manage external tool types';
 $string['manage_tool_proxies'] = 'Manage external tool registrations';
+$string['manuallyaddtype'] = 'alternatively, you can <a href="{$a}">configure a tool manually</a>.';
 $string['miscellaneous'] = 'Miscellaneous';
 $string['misconfiguredtools'] = 'Misconfigured tool instances were detected';
 $string['missingparameterserror'] = 'The page is misconfigured: "{$a}"';
@@ -287,6 +296,7 @@ $string['new_window'] = 'New window';
 $string['no_lti_configured'] = 'There are no active external tools configured.';
 $string['no_lti_pending'] = 'There are no pending external tools.';
 $string['no_lti_rejected'] = 'There are no rejected external tools.';
+$string['no_lti_tools'] = 'There are no external tools configured.';
 $string['no_tp_accepted'] = 'There are no accepted external tool registrations.';
 $string['no_tp_cancelled'] = 'There are no cancelled external tool registrations.';
 $string['no_tp_configured'] = 'There are no unregistered external tool registrations configured.';
@@ -445,6 +455,8 @@ $string['tooldescription'] = 'Tool description';
 $string['tooldescription_help'] = 'The description of the tool that will be displayed to teachers in the activity list.
 
 This should describe what the tool is for and what it does and any additional information the teacher may need to know.';
+$string['toolisbeingused'] = 'This tool is being used {$a} times';
+$string['toolisnotbeingused'] = 'This tool has not yet been used';
 $string['toolproxy'] = 'External tool registrations';
 $string['toolproxy_help'] = 'External tool registrations allow Moodle site administrators to configure external tools from a tool proxy obtained from a tool provider supporting LTI 2.0. A registration URL provided by the tool provider is all that is required to initiate the process. The capabilities and services offered to the tool provider are selected when configuring a new registration.
 
@@ -460,7 +472,9 @@ back to the \'Configured\' category so the registration process can be restarted
 $string['toolproxyregistration'] = 'External tool registration';
 $string['toolregistration'] = 'External tool registration';
 $string['toolsetup'] = 'External tool configuration';
+$string['tooltypes'] = 'Tools';
 $string['toolurl'] = 'Tool base URL';
+$string['toolurlplaceholder'] = 'Tool URL...';
 $string['toolurl_help'] = 'The tool base URL is used to match tool launch URLs to the correct tool configuration. Prefixing the URL with http(s) is optional.
 
 Additionally, the base URL is used as the launch URL if a launch URL is not specified in the external tool instance.

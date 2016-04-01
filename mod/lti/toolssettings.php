@@ -39,7 +39,6 @@ $returnto     = optional_param('returnto', '', PARAM_ALPHANUM);
 if ($returnto == 'toolconfigure') {
     $returnurl = new moodle_url($CFG->wwwroot . '/mod/lti/toolconfigure.php');
 }
-$returnurl = new moodle_url($CFG->wwwroot . '/mod/lti/toolconfigure.php');
 
 // No guest autologin.
 require_login(0, false);

@@ -2223,7 +2223,8 @@ function get_tool_type_icon_url(stdClass $type) {
  * @return string The url to edit the tool type
  */
 function get_tool_type_edit_url(stdClass $type) {
-    $url = new moodle_url('/mod/lti/typessettings.php', array('action' => 'update', 'id' => $type->id, 'sesskey' => sesskey(), 'returnto' => 'toolconfigure'));
+    $url = new moodle_url('/mod/lti/typessettings.php',
+                          array('action' => 'update', 'id' => $type->id, 'sesskey' => sesskey(), 'returnto' => 'toolconfigure'));
     return $url->out();
 }
 
