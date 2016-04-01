@@ -42,6 +42,10 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
     };
 
     var REGISTRATION_ALERT_TIMEOUT = 5000;
+    /**
+     * Holds the timeout for clearing feedback so we can abort it.
+     */
+    var clearFeedbackTimeout;
 
     /**
      * Get the tool create button element.
@@ -245,7 +249,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
             container.append(html);
             container.removeClass('hidden');
 
-            setTimeout(function() {
+            clearFeedbackTimeout = setTimeout(function() {
                 clearRegistrationFeedback();
             }, REGISTRATION_ALERT_TIMEOUT);
         });
@@ -261,6 +265,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
         var container = getRegistrationFeedbackContainer();
         container.empty();
         container.addClass('hidden');
+        clearTimeout(clearFeedbackTimeout);
 
         showRegistrationChoices();
     };
@@ -274,7 +279,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
      */
     var startLoading = function(element) {
         element.addClass("loading");
-    }
+    };
 
     /**
      * Hide the loading animation
@@ -285,7 +290,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
      */
     var stopLoading = function(element) {
         element.removeClass("loading");
-    }
+    };
 
     /**
      * Refresh the list of tool types and render the new ones.
