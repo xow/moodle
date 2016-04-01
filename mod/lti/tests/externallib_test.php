@@ -292,6 +292,15 @@ class mod_lti_external_testcase extends externallib_advanced_testcase {
     }
 
     /*
+     * Test create tool proxy with duplicate url
+     */
+    public function test_mod_lti_create_tool_proxy_duplicateurl() {
+        $this->setExpectedException('moodle_exception');
+        $proxy = mod_lti_external::create_tool_proxy('Test proxy 1', $this->getExternalTestFileUrl('/test.html'), array(), array());
+        $proxy = mod_lti_external::create_tool_proxy('Test proxy 2', $this->getExternalTestFileUrl('/test.html'), array(), array());
+    }
+
+    /*
      * Test create tool proxy without sufficient capability
      */
     public function test_mod_lti_create_tool_proxy_without_capability() {
