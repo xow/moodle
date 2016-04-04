@@ -179,6 +179,9 @@
                         automatchToolDisplay.set('innerHTML', '<img style="vertical-align:text-bottom" src="' + self.settings.warning_icon_url + '" />' + M.util.get_string('tool_config_not_found', 'lti'));
                     }
                 }
+                if (toolInfo.cartridge) {
+                    automatchToolDisplay.set('innerHTML',  '<img style="vertical-align:text-bottom" src="' + self.settings.green_check_icon_url + '" />' + M.util.get_string('using_tool_cartridge', 'lti'));
+                }
             };
 
             // Cache urls which have already been checked to increase performance
