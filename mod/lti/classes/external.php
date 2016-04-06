@@ -447,7 +447,6 @@ class mod_lti_external extends external_api {
                                                 'capabilityoffered' => $capabilityoffered,
                                                 'serviceoffered' => $serviceoffered
                                             ));
-        $warnings = array();
 
         $context = context_system::instance();
         self::validate_context($context);
@@ -522,7 +521,6 @@ class mod_lti_external extends external_api {
                                             array(
                                                 'id' => $id,
                                             ));
-        $warnings = array();
 
         $context = context_system::instance();
         self::validate_context($context);
@@ -563,7 +561,7 @@ class mod_lti_external extends external_api {
      * Returns the registration request for a tool proxy.
      *
      * @param int $id the lti instance id
-     * @return array of warnings and status result
+     * @return array of registration parameters
      * @since Moodle 3.0
      * @throws moodle_exception
      */
@@ -572,7 +570,6 @@ class mod_lti_external extends external_api {
                                             array(
                                                 'id' => $id,
                                             ));
-        $warnings = array();
 
         $context = context_system::instance();
         self::validate_context($context);
@@ -691,7 +688,6 @@ class mod_lti_external extends external_api {
                                                 'key' => $key,
                                                 'secret' => $secret
                                             ));
-        $warnings = array();
 
         $context = context_system::instance();
         self::validate_context($context);
@@ -704,6 +700,10 @@ class mod_lti_external extends external_api {
             $data = new stdClass();
             $type->state = LTI_TOOL_STATE_CONFIGURED;
             $data->lti_coursevisible = 1;
+            $data->lti_sendname = LTI_SETTING_DELEGATE;
+            $data->lti_sendemailaddr = LTI_SETTING_DELEGATE;
+            $data->lti_acceptgrades = LTI_SETTING_DELEGATE;
+            $data->lti_forcessl = 0;
 
             if (!empty($key)) {
                 $data->lti_resourcekey = $key;
@@ -775,7 +775,6 @@ class mod_lti_external extends external_api {
                                                 'description' => $description,
                                                 'state' => $state,
                                             ));
-        $warnings = array();
 
         $context = context_system::instance();
         self::validate_context($context);
@@ -804,8 +803,7 @@ class mod_lti_external extends external_api {
             }
         }
 
-        $config = lti_get_type_config($id);
-        lti_update_type($type, $config);
+        lti_update_type($type, new stdClass());
 
         return serialise_tool_type($type);
     }
@@ -847,7 +845,6 @@ class mod_lti_external extends external_api {
                                             array(
                                                 'id' => $id,
                                             ));
-        $warnings = array();
 
         $context = context_system::instance();
         self::validate_context($context);
@@ -910,7 +907,6 @@ class mod_lti_external extends external_api {
                                             array(
                                                 'url' => $url,
                                             ));
-        $warnings = array();
 
         $context = context_system::instance();
         self::validate_context($context);

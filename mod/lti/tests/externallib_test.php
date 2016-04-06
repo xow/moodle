@@ -369,6 +369,11 @@ class mod_lti_external_testcase extends externallib_advanced_testcase {
         $this->assertEquals($type['urls']['icon'], $this->getExternalTestFileUrl('/test.jpg'));
         $typeentry = lti_get_type($type['id']);
         $this->assertEquals($typeentry->baseurl, "http://www.example.com/lti/provider.php");
+        $config = lti_get_type_config($type['id']);
+        $this->assertTrue(isset($config['sendname']));
+        $this->assertTrue(isset($config['sendemailaddr']));
+        $this->assertTrue(isset($config['acceptgrades']));
+        $this->assertTrue(isset($config['forcessl']));
     }
 
     /*
@@ -415,6 +420,17 @@ class mod_lti_external_testcase extends externallib_advanced_testcase {
         $this->assertNotEmpty(lti_get_type($type['id']));
         $type = mod_lti_external::delete_tool_type($type['id']);
         $this->assertEmpty(lti_get_type($type['id']));
+    }
+
+    /*
+     * Test delete tool type without sufficient capability
+     */
+    public function test_mod_lti_delete_tool_type_without_capability() {
+        $type = mod_lti_external::create_tool_type($this->getExternalTestFileUrl('/ims_cartridge_basic_lti_link.xml'), '', '');
+        $this->assertNotEmpty(lti_get_type($type['id']));
+        $this->setExpectedException('required_capability_exception');
+        self::setUser($this->teacher);
+        $type = mod_lti_external::delete_tool_type($type['id']);
     }
 
     /*
