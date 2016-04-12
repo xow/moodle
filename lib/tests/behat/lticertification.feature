@@ -6,25 +6,33 @@ Feature: IMS LTI Certification
 
   @javascript
   Scenario: Go to the certification site
-    Given I log in as "admin"
+    Given I go to url "https://www.imsglobal.org/lti/cert/index.php"
+    And I press "Process for Tool Consumers"
+    And I set the field "Username" to "MartinDougiamas"
+    And I set the field "Password" to "moodle123!"
+    And I press "Log in"
+    And I press "Go to Configuration »"
+    And I set the field "name" to "Moodle"
+    And I set the field "version" to "3.1"
+    And I press "Save settings"
+    And I press "Go to Results »"
+    When I log in as "admin"
     And I navigate to "Manage external tool registrations" node in "Site administration > Plugins > Activity modules > LTI"
     And I follow "Configure a new external tool registration"
+    And I set the following fields to these values:
       | Tool provider name | IMS LTI Certification Registration |
       | Registration URL   | https://www.imsglobal.org/lti/cert/tc_tool.php |
-    And I set the field "Capabilities" to multiline
-    """
-    basic-lti-launch-request
-    Context.id
-    """
-    And I set the field "Services" to multiline
-    """
-    Memberships
-    Tool Consumer Profile
-    Tool Proxy
-    Tool Settings
-    """
-    And I pause
+      | Capabilities | basic-lti-launch-request,Context.id,CourseSection.label,CourseSection.longDescription,CourseSection.sourcedId,CourseSection.timeFrame.begin,CourseSection.title,Membership.role,Person.address.country,Person.address.locality,Person.address.street1,Person.address.timezone,Person.email.primary,Person.name.family,Person.name.full,Person.name.given,Person.name.middle,Person.phone.mobile,Person.phone.primary,Person.sourcedId,Person.webaddress,ResourceLink.description,ResourceLink.id,ResourceLink.title,Result.autocreate,Result.sourcedId,User.id,User.username |
+      | Services     | Memberships,Tool Consumer Profile,Tool Proxy,Tool Settings |
     And I press "Save changes"
+    And I follow "Register"
+    And I switch to "contentframe" iframe
+    And I should not see "Failed"
+    And I go to url "https://www.imsglobal.org/lti/cert/index.php"
+    And I press "Run test"
+    And I should not see "Failed"
+    And I pause
+    And I go home
     And I navigate to "Manage external tool types" node in "Site administration > Plugins > Activity modules > LTI"
     And I follow "Add external tool configuration"
     And I set the following fields to these values:
@@ -41,14 +49,3 @@ Feature: IMS LTI Certification
     tc_profile_url=$ToolConsumerProfile.url
     """
     And I press "Save changes"
-    And I go to url "https://www.imsglobal.org/lti/cert/index.php"
-    And I press "Process for Tool Consumers"
-    And I set the field "Username" to "MartinDougiamas"
-    And I set the field "Password" to "moodle123!"
-    And I press "Log in"
-    And I press "Go to Configuration »"
-    And I set the field "name" to "Moodle"
-    And I set the field "version" to "3.1"
-    And I press "Save settings"
-    And I press "Go to Results »"
-    And I pause

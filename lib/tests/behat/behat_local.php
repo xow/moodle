@@ -47,6 +47,7 @@ class behat_local extends behat_base {
     public function i_go_home() {
         $session = $this->getSession();
         $session->visit($this->locate_path('/?redirect=0'));
+        #$session->visit('https://ef6aa769.ngrok.io/new_development/?redirect=0');
     }
     /**
      * Sets the specified value to the field.
