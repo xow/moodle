@@ -32,7 +32,7 @@
 }}
 <div id="external-registration-page-container">
     <button id="cancel-external-registration" class="btn btn-danger">
-        <span class="btn-text">{{#str}} cancel{{/str}}</span>
+        <span class="btn-text">{{#str}} cancel {{/str}}</span>
         <div class="btn-loader">
             {{> mod_lti/loader }}
         </div>
@@ -45,7 +45,7 @@
         {{> mod_lti/loader }}
         <p>{{#str}} loading, admin {{/str}}</p>
     </div>
-    <div id="tool-type-capabilities-template-container"></div>
+    <div id="tool-type-capabilities-template-container" aria-live="polite"></div>
 </div>
 {{#js}}
     require(['mod_lti/external_registration'], function(registration) {

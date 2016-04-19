@@ -369,9 +369,9 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
             var container = getToolTypeCapabilitiesTemplateContainer();
 
             hideExternalRegistrationContent();
+            showToolTypeCapabilitiesContainer();
 
             templates.replaceNodeContents(container, html, js);
-            showToolTypeCapabilitiesContainer();
 
             var choiceContainer = container.find(SELECTORS.CAPABILITIES_AGREE_CONTAINER);
 

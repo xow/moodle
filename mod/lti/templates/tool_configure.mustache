@@ -33,7 +33,7 @@
 <h2>{{#str}} manage_external_tools, mod_lti {{/str}}</h2>
 <div class="container-fluid">
     <div id="main-content-container">
-        <div id="registration-form-container" aria-live="assertive">
+        <div id="registration-form-container" aria-live="polite">
             <div id="registration-choice-container" class="centered-menu">
                 <div class="well">
                     <p class="lead">{{#str}} autoaddtype, mod_lti {{/str}}</p>
@@ -57,11 +57,11 @@
                     <p><a href="{{{ managetoolsurl }}}">{{#str}} manage_tools, mod_lti {{/str}}</a><br/><a href="{{{ managetoolproxiesurl}}}">{{#str}} manage_tool_proxies, mod_lti {{/str}}</a></p>
                 </div>
             </div>
-            <div id="registration-feedback-container" class="hidden"></div>
-            <div id="cartridge-registration-container" class="hidden">
+            <div id="registration-feedback-container" aria-live="polite"></div>
+            <div id="cartridge-registration-container" aria-live="polite" class="hidden">
                 {{> mod_lti/cartridge_registration_form }}
             </div>
-            <div id="external-registration-container" class="hidden">
+            <div id="external-registration-container" aria-live="polite" class="hidden">
                 {{> mod_lti/external_registration }}
             </div>
         </div>

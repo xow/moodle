@@ -41,12 +41,6 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
         TOOL_URL: '#tool-url'
     };
 
-    var REGISTRATION_ALERT_TIMEOUT = 5000;
-    /**
-     * Holds the timeout for clearing feedback so we can abort it.
-     */
-    var clearFeedbackTimeout;
-
     /**
      * Get the tool create button element.
      *
@@ -166,6 +160,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
         hideRegistrationChoices();
         getExternalRegistrationContainer().removeClass('hidden');
         getExternalRegistrationContainer().find(SELECTORS.EXTERNAL_REGISTRATION_PAGE_CONTAINER).attr('data-registration-url', url);
+        screenReaderAnnounce(getExternalRegistrationContainer());
     };
 
     /**
@@ -180,6 +175,21 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
         hideRegistrationChoices();
         getCartridgeRegistrationContainer().removeClass('hidden');
         getCartridgeRegistrationContainer().find(SELECTORS.CARTRIDGE_REGISTRATION_FORM).attr('data-cartridge-url', url);
+        screenReaderAnnounce(getCartridgeRegistrationContainer());
+    };
+
+    /**
+     * JAWS does not notice visibility changes with aria-live.
+     * Remove and add the content back to force it to read it out.
+     * This function can be removed once JAWS supports visibility.
+     *
+     * @method screenReaderAnnounce
+     * @private
+     */
+    var screenReaderAnnounce = function(element) {
+        var childClones = element.children().clone(true, true);
+        element.empty();
+        element.append(childClones);
     };
 
     /**
@@ -200,6 +210,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
         hideExternalRegistration();
         hideCartridgeRegistration();
         getRegistrationChoiceContainer().removeClass('hidden');
+        screenReaderAnnounce(getRegistrationChoiceContainer());
     };
 
     /**
@@ -230,7 +241,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
      * @return bool
      */
     var isRegistrationFeedbackVisible = function() {
-        return getRegistrationFeedbackContainer().hasClass('hidden') ? false : true;
+        return $.trim(getRegistrationFeedbackContainer().html());
     };
 
     /**
@@ -240,18 +251,13 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
      * @private
      */
     var showRegistrationFeedback = function(data) {
-        hideExternalRegistration();
-        hideCartridgeRegistration();
-        hideRegistrationChoices();
-
         templates.render('mod_lti/registration_feedback', data).done(function(html) {
+            hideExternalRegistration();
+            hideCartridgeRegistration();
+            hideRegistrationChoices();
+
             var container = getRegistrationFeedbackContainer();
             container.append(html);
-            container.removeClass('hidden');
-
-            clearFeedbackTimeout = setTimeout(function() {
-                clearRegistrationFeedback();
-            }, REGISTRATION_ALERT_TIMEOUT);
         }).fail(notification.exception);
     };
 
@@ -264,8 +270,6 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
     var clearRegistrationFeedback = function() {
         var container = getRegistrationFeedbackContainer();
         container.empty();
-        container.addClass('hidden');
-        clearTimeout(clearFeedbackTimeout);
 
         showRegistrationChoices();
     };
