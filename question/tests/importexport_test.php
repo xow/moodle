@@ -65,7 +65,7 @@ class qformat_default_test extends advanced_testcase {
             '/ and one that starts with one',
             '<span lang="en" class="multilang">Matematically</span> <span lang="sv" class="multilang">Matematiskt (svenska)</span>'
         );
-        $this->assertEquals('$course$/Tim\'s questions/Tricky things like // //// and so on/Category name ending in // / // and one that starts with one/<span lang="en" class="multilang">Matematically<//span> <span lang="sv" class="multilang">Matematiskt (svenska)<//span>',
+        $this->assertEquals('\$course\$/Tim\'s questions/Tricky things like // //// and so on/Category name ending in // / // and one that starts with one/<span lang="en" class="multilang">Matematically<//span> <span lang="sv" class="multilang">Matematiskt (svenska)<//span>',
                 $format->assemble_category_path($pathsections));
     }
 
