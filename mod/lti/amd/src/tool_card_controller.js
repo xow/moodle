@@ -159,6 +159,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/t
     var startLoading = function(element) {
         clearAllAnnouncements(element);
         element.addClass('announcement loading');
+        screenReaderAnnounce(element);
     };
 
     /**
@@ -186,6 +187,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/t
 
         clearAllAnnouncements(element);
         element.addClass('announcement success');
+        screenReaderAnnounce(element);
         setTimeout(function() {
             element.removeClass('announcement success');
             promise.resolve();
@@ -208,6 +210,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/t
 
         clearAllAnnouncements(element);
         element.addClass('announcement fail');
+        screenReaderAnnounce(element);
         setTimeout(function() {
             element.removeClass('announcement fail');
             promise.resolve();
@@ -466,6 +469,21 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/t
      */
     var displayCapabilitiesApproval = function(element) {
         element.addClass('announcement capabilities');
+        screenReaderAnnounce(element);
+    };
+
+    /**
+     * JAWS does not notice visibility changes with aria-live.
+     * Remove and add the content back to force it to read it out.
+     * This function can be removed once JAWS supports visibility.
+     *
+     * @method screenReaderAnnounce
+     * @private
+     */
+    var screenReaderAnnounce = function(element) {
+        var childClones = element.children().clone(true, true);
+        element.empty();
+        element.append(childClones);
     };
 
     /**

@@ -41,11 +41,11 @@
 
 }}
 <div class="tool-card" data-type-id="{{id}}">
-    <div class="overlay-container">
+    <div class="overlay-container" aria-live="assertive">
         <div class="img-container">
             {{> mod_lti/loader }}
-            <div class="success-icon-container">{{#pix}} i/valid, core, {{#str}} success {{/str}}{{/pix}}</div>
-            <div class="fail-icon-container">{{#pix}} i/invalid, core, {{#str}} error {{/str}}{{/pix}}</div>
+            <div class="success-icon-container">{{#pix}} i/valid, core, {{#str}} success {{/str}}{{/pix}}<span class="accesshide">{{#str}}success{{/str}}</span></div>
+            <div class="fail-icon-container">{{#pix}} i/invalid, core, {{#str}} error {{/str}}{{/pix}}<span class="accesshide">{{#str}}error{{/str}}</span></div>
         </div>
         {{#hascapabilitygroups}}
             {{> mod_lti/tool_type_capabilities_agree }}

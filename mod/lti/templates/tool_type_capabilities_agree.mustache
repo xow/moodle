@@ -45,6 +45,7 @@
         var noButton = container.find('button.no');
 
         yesButton.click(function(e) {
+            var container = $('.capabilities-container.tool-type-{{id}}');
             e.preventDefault();
             container.trigger(ltiEvents.CAPABILITIES_AGREE);
         });
@@ -58,6 +59,7 @@
         });
 
         noButton.click(function(e) {
+            var container = $('.capabilities-container.tool-type-{{id}}');
             e.preventDefault();
             container.trigger(ltiEvents.CAPABILITIES_DECLINE);
         });
