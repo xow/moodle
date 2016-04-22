@@ -521,7 +521,11 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
             };
 
             if (data.status == "success") {
-                feedback.message = data.message;
+                str.get_strings([{key: 'success', component: 'moodle'},
+                                 {key: 'successfullycreatedtooltype', component: 'mod_lti'}]).done(function (s) {
+                    feedback.status = s[0];
+                    feedback.message = s[1];
+                }).fail(notification.exception);
 
                 // Trigger appropriate events when we've completed the necessary requests.
                 promise.done(function() {
