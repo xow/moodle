@@ -509,6 +509,8 @@ class qformat_default {
 
         // Now create any categories that need to be created.
         foreach ($catnames as $catname) {
+            // Unescaping $s on import to avoid mistaking category name as context.
+            $catname = str_replace ('\$', '$', $catname);
             if ($category = $DB->get_record('question_categories',
                     array('name' => $catname, 'contextid' => $context->id, 'parent' => $parent))) {
                 $parent = $category->id;
@@ -882,6 +884,8 @@ class qformat_default {
         $escapednames = array();
         foreach ($names as $name) {
             $escapedname = str_replace('/', '//', $name);
+            // Escaping $'s on export to avoid mistaking category name as context.
+            $escapedname = str_replace('$', '\$', $escapedname);
             if (substr($escapedname, 0, 1) == '/') {
                 $escapedname = ' ' . $escapedname;
             }
