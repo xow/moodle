@@ -279,7 +279,7 @@ function lti_register($toolproxy) {
     $toolproxy->state = LTI_TOOL_PROXY_STATE_PENDING;
     lti_update_tool_proxy($toolproxy);
 
-    $requestparams = lti_get_register_parameters($toolproxy);
+    $requestparams = lti_build_registration_request($toolproxy);
 
     $content = lti_post_launch_html($requestparams, $endpoint, false);
 
@@ -293,7 +293,7 @@ function lti_register($toolproxy) {
  * @param object $toolproxy Tool Proxy instance object
  * @return array Registration request parameters
  */
-function lti_get_register_parameters($toolproxy) {
+function lti_build_registration_request($toolproxy) {
     $key = $toolproxy->guid;
     $secret = $toolproxy->secret;
 
@@ -2399,7 +2399,7 @@ function get_tool_type_capability_groups($type) {
 function get_tool_type_instance_ids($type) {
     global $DB;
 
-    return array_keys($DB->get_records('lti', array('typeid' => $type->id), '', 'id'));
+    return array_keys($DB->get_fieldset_select('lti', 'id', 'typeid = ?', array($type->id)));
 }
 
 /**
@@ -2469,13 +2469,17 @@ function lti_is_cartridge($url) {
         return true;
     }
     // Even if it doesn't have .xml, load the url to check if it's a cartridge..
-    $toolinfo = lti_load_cartridge($url,
-        array(
-            "launch_url" => "launchurl"
-        )
-    );
-    if (!empty($toolinfo['launchurl'])) {
-        return true;
+    try {
+        $toolinfo = lti_load_cartridge($url,
+            array(
+                "launch_url" => "launchurl"
+            )
+        );
+        if (!empty($toolinfo['launchurl'])) {
+            return true;
+        }
+    } catch (moodle_exception $e) {
+        return false; // Error loading the xml, so it's not a cartridge.
     }
     return false;
 }
@@ -2485,6 +2489,7 @@ function lti_is_cartridge($url) {
  *
  * @param  string   $url     The URL to the cartridge
  * @param  stdClass $type    The tool type object to be filled in
+ * @throws moodle_exception if the cartridge could not be loaded correctly
  * @since Moodle 3.1
  */
 function lti_load_type_from_cartridge($url, $type) {
@@ -2509,6 +2514,7 @@ function lti_load_type_from_cartridge($url, $type) {
  *
  * @param  string   $url    The URL to the cartridge
  * @param  stdClass $lti    LTI object
+ * @throws moodle_exception if the cartridge could not be loaded correctly
  * @since Moodle 3.1
  */
 function lti_load_tool_from_cartridge($url, $lti) {
@@ -2536,6 +2542,7 @@ function lti_load_tool_from_cartridge($url, $lti) {
  * @param  array  $map The map of tags to keys in the return array
  * @param  array  $propertiesmap The map of properties to keys in the return array
  * @return array An associative array with the given keys and their values from the cartridge
+ * @throws moodle_exception if the cartridge could not be loaded correctly
  * @since Moodle 3.1
  */
 function lti_load_cartridge($url, $map, $propertiesmap = array()) {
@@ -2553,8 +2560,12 @@ function lti_load_cartridge($url, $map, $propertiesmap = array()) {
     $cartridge = new DomXpath($document);
 
     $errors = libxml_get_errors();
-    foreach ($errors as $error) {
-        print_error(sprintf("%s at line %d. ", trim($error->message, "\n\r\t ."), $error->line));
+    if (count($errors) > 0) {
+        $message = 'Failed to load cartridge.';
+        foreach ($errors as $error) {
+            $message .= "\n" . trim($error->message, "\n\r\t .") . " at line " . $error->line;
+        }
+        throw new moodle_exception($message);
     }
 
     $toolinfo = array();

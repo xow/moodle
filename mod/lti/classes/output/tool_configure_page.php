@@ -30,7 +30,6 @@ use renderable;
 use templatable;
 use renderer_base;
 use stdClass;
-use core_plugin_manager;
 
 /**
  * Class containing data for tool_configure page

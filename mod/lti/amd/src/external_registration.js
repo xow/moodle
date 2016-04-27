@@ -24,7 +24,7 @@
  *
  * @module     mod_lti/external_registration
  * @class      external_registration
- * @package    core
+ * @package    mod_lti
  * @copyright  2015 Ryan Wyllie <ryan@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @since      3.1
@@ -521,7 +521,11 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
             };
 
             if (data.status == "success") {
-                feedback.message = data.message;
+                str.get_strings([{key: 'success', component: 'moodle'},
+                                 {key: 'successfullycreatedtooltype', component: 'mod_lti'}]).done(function (s) {
+                    feedback.status = s[0];
+                    feedback.message = s[1];
+                }).fail(notification.exception);
 
                 // Trigger appropriate events when we've completed the necessary requests.
                 promise.done(function() {

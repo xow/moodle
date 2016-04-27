@@ -163,6 +163,10 @@
     display: block;
 }
 
+.loading #tool-notools-text {
+    display: none;
+}
+
 .tool-card {
     display: inline-block;
     width: 250px;

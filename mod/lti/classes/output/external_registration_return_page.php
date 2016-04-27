@@ -25,12 +25,10 @@ namespace mod_lti\output;
 
 require_once($CFG->dirroot.'/mod/lti/locallib.php');
 
-use moodle_url;
 use renderable;
 use templatable;
 use renderer_base;
 use stdClass;
-use core_plugin_manager;
 
 /**
  * Class containing data for tool_configure page
