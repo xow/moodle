@@ -25,8 +25,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @since      3.1
  */
-define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/events', 'mod_lti/keys', 'mod_lti/tool_type'],
-        function($, ajax, notification, templates, ltiEvents, KEYS, toolType) {
+define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/events', 'mod_lti/keys', 'mod_lti/tool_type', 'core/str'],
+        function($, ajax, notification, templates, ltiEvents, KEYS, toolType, str) {
 
     var SELECTORS = {
         REGISTRATION_FEEDBACK_CONTAINER: '#registration-feedback-container',
@@ -349,7 +349,12 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
             }
         });
 
-        promise.fail(notification.exception);
+        promise.fail(function () {
+            str.get_strings([{key: 'error', component: 'moodle'},
+                             {key: 'errorbadurl', component: 'mod_lti'}]).done(function (s) {
+                $(document).trigger(ltiEvents.REGISTRATION_FEEDBACK, {status: s[0], message: s[1], error: true});
+            }).fail(notification.exception);
+        });
 
         return promise;
     };

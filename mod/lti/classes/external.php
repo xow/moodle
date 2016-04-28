@@ -42,12 +42,12 @@ require_once($CFG->dirroot . '/mod/lti/locallib.php');
 class mod_lti_external extends external_api {
 
     /**
-     * Returns description of a tool type
+     * Returns structure be used for returning a tool type from a web service
      *
      * @return external_function_parameters
      * @since Moodle 3.1
      */
-    private static function get_tool_type_return_parameters() {
+    private static function tool_type_return_structure() {
         return new external_single_structure(
             array(
                 'id' => new external_value(PARAM_INT, 'Tool type id'),
@@ -658,7 +658,7 @@ class mod_lti_external extends external_api {
      */
     public static function get_tool_types_returns() {
         return new external_multiple_structure(
-            self::get_tool_type_return_parameters()
+            self::tool_type_return_structure()
         );
     }
 
@@ -746,7 +746,7 @@ class mod_lti_external extends external_api {
      * @since Moodle 3.1
      */
     public static function create_tool_type_returns() {
-        return self::get_tool_type_return_parameters();
+        return self::tool_type_return_structure();
     }
 
     /**
@@ -829,7 +829,7 @@ class mod_lti_external extends external_api {
      * @since Moodle 3.1
      */
     public static function update_tool_type_returns() {
-        return self::get_tool_type_return_parameters();
+        return self::tool_type_return_structure();
     }
 
     /**
