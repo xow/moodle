@@ -54,6 +54,15 @@ $functions = array(
         'services'      => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
     ),
 
+    'mod_lti_get_tool_proxies' => array(
+        'classname'     => 'mod_lti_external',
+        'methodname'    => 'get_tool_proxies',
+        'description'   => 'Get a list of the tool proxies',
+        'type'          => 'read',
+        'capabilities'  => 'moodle/site:config',
+        'ajax'          => true
+    ),
+
     'mod_lti_create_tool_proxy' => array(
         'classname'     => 'mod_lti_external',
         'methodname'    => 'create_tool_proxy',

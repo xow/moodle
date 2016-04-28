@@ -44,17 +44,6 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
     };
 
     /**
-     * Return the URL the user entered for the registration.
-     *
-     * @method getRegistrationURL
-     * @private
-     * @return string
-     */
-    var getRegistrationURL = function() {
-        return $(SELECTORS.EXTERNAL_REGISTRATION_CONTAINER).attr('data-registration-url');
-    };
-
-    /**
      * Return the external registration cancel button element. This button is
      * the cancel button that appears while the iframe is rendered.
      *
@@ -414,13 +403,16 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
      *
      * @method submitExternalRegistration
      * @private
+     * @param url Optional url to register a tool for
+     * @param id Optional proxy id to register instead of a url
      * @return object jQuery Deferred object
      */
-    var submitExternalRegistration = function() {
+    var submitExternalRegistration = function(url, id) {
         var promise = $.Deferred();
-        var url = getRegistrationURL();
 
-        if (url === "") {
+        if (id) {
+            registerProxy(id, promise);
+        } else if (!url || url === "") {
             // No URL has been input so do nothing.
             promise.resolve();
         } else {
@@ -428,25 +420,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
             // the external page sends requests back to Moodle for information that is stored
             // in the proxy.
             toolProxy.create({regurl: url}).done(function(result) {
-                var id = result.id;
-                var regURL = result.regurl;
-
-                // Save the id on the DOM to cleanup later.
-                setToolProxyId(id);
-
-                // There is a specific set of data needed to send to the external registration page
-                // in a form, so let's get it from our server.
-                getRegistrationRequest(id).done(function(registrationRequest) {
-
-                    registrationRequest.reg_url = regURL;
-                    renderExternalRegistrationWindow(registrationRequest).done(function() {
-
-                        promise.resolve();
-
-                    }).fail(promise.fail);
-
-                }).fail(promise.fail);
-
+                registerProxy(result.id, promise);
             }).fail(function(exception) {
                 // Clean up.
                 cancelRegistration();
@@ -457,6 +431,33 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
         }
 
         return promise;
+    };
+
+    /**
+     * Given a tool proxy id and URL, registers
+     *
+     * @method registerProxy Loads the window to register a proxy, given an ID
+     * @private
+     * @param id Proxy id to register
+     * @param promise jQuery Deferred object to fail or resolve
+     * @return void
+     */
+
+    var registerProxy = function(id, promise) {
+        // Save the id on the DOM to cleanup later.
+        setToolProxyId(id);
+
+        // There is a specific set of data needed to send to the external registration page
+        // in a form, so let's get it from our server.
+        getRegistrationRequest(id).done(function(registrationRequest) {
+
+            renderExternalRegistrationWindow(registrationRequest).done(function() {
+
+                promise.resolve();
+
+            }).fail(promise.fail);
+
+        }).fail(promise.fail);
     };
 
     /**
@@ -486,8 +487,17 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
      */
     var registerEventListeners = function() {
 
-        $(document).on(ltiEvents.START_EXTERNAL_REGISTRATION, function() {
-            submitExternalRegistration();
+        $(document).on(ltiEvents.START_EXTERNAL_REGISTRATION, function(event, data) {
+            if (!data) {
+                data = {};
+            }
+            if (!data.url) {
+                data.url = null;
+            }
+            if (!data.proxyid) {
+                data.proxyid = null;
+            }
+            submitExternalRegistration(data.url, data.proxyid);
         });
 
         var cancelExternalRegistrationButton = getExternalRegistrationCancelButton();

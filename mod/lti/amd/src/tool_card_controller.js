@@ -26,8 +26,9 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @since      3.1
  */
-define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/tool_type', 'mod_lti/events', 'mod_lti/keys'],
-        function($, ajax, notification, templates, toolType, ltiEvents, KEYS) {
+define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/tool_type', 'mod_lti/events', 'mod_lti/keys',
+        'core/str'],
+        function($, ajax, notification, templates, toolType, ltiEvents, KEYS, str) {
 
     var SELECTORS = {
         DELETE_BUTTON: '.delete',
@@ -226,23 +227,36 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/t
      * @return object jQuery Deferred object
      */
     var deleteType = function(element) {
+        var promise = $.Deferred();
         var typeId = getTypeId(element);
 
         if (typeId === "") {
             return $.Deferred().resolve();
         }
 
-        startLoading(element);
-        var promise = toolType.delete(typeId);
-
-        promise.done(function() {
-            stopLoading(element);
-            announceSuccess(element).done(function() {
-                element.remove();
-            }).fail(notification.exception);
+        str.get_strings([
+            { key: 'delete', component: 'mod_lti' },
+            { key: 'delete_confirmation', component: 'mod_lti' },
+            { key: 'delete', component: 'mod_lti' },
+            { key: 'cancel', component: 'core' },
+        ]).done(function(strs) {
+            notification.confirm(strs[0], strs[1], strs[2], strs[3], function() {
+                startLoading(element);
+                toolType.delete(typeId).done(function() {
+                    stopLoading(element);
+                    announceSuccess(element).done(function() {
+                        element.remove();
+                        promise.resolve();
+                    }).fail(notification.exception);
+                }).fail(function(error) {
+                    announceFailure(element);
+                    promise.reject(error);
+                });
+            });
+        }).fail(function(error) {
+            notification.exception(error);
+            promise.reject(error);
         });
-
-        promise.fail(function() { announceFailure(element); });
 
         return promise;
     };

@@ -70,7 +70,11 @@
 }
 
 #registration-form-container {
-    min-height: 230px;
+    min-height: 260px;
+}
+
+#registration-form-container .alert {
+    margin-bottom: 0px;
 }
 
 #registration-form-container .well {
@@ -325,6 +329,7 @@
 
 .tool-card-body .description {
     max-height: 100px;
+    word-wrap: break-word;
 }
 
 .tool-card-footer {

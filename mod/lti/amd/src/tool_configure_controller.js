@@ -25,8 +25,9 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @since      3.1
  */
-define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/events', 'mod_lti/keys', 'mod_lti/tool_type'],
-        function($, ajax, notification, templates, ltiEvents, KEYS, toolType) {
+define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/events', 'mod_lti/keys', 'mod_lti/tool_type',
+        'mod_lti/tool_proxy', 'core/str'],
+        function($, ajax, notification, templates, ltiEvents, KEYS, toolType, toolProxy, str) {
 
     var SELECTORS = {
         REGISTRATION_FEEDBACK_CONTAINER: '#registration-feedback-container',
@@ -155,11 +156,10 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
      * @method showExternalRegistration
      * @private
      */
-    var showExternalRegistration = function(url) {
+    var showExternalRegistration = function() {
         hideCartridgeRegistration();
         hideRegistrationChoices();
         getExternalRegistrationContainer().removeClass('hidden');
-        getExternalRegistrationContainer().find(SELECTORS.EXTERNAL_REGISTRATION_PAGE_CONTAINER).attr('data-registration-url', url);
         screenReaderAnnounce(getExternalRegistrationContainer());
     };
 
@@ -307,10 +307,12 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
         startLoading(container);
 
         toolType.query().done(function(types) {
-            templates.render('mod_lti/tool_list', {tools: types}).done(function(html, js) {
-                container.empty();
-                container.append(html);
-                templates.runTemplateJS(js);
+            toolProxy.query({'orphanedonly': true}).done(function (proxies) {
+                templates.render('mod_lti/tool_list', {tools: types, proxies: proxies}).done(function(html, js) {
+                    container.empty();
+                    container.append(html);
+                    templates.runTemplateJS(js);
+                }).fail(notification.exception);
             }).fail(notification.exception);
         }).fail(notification.exception).always(function() { stopLoading(container); });
     };
@@ -342,14 +344,16 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
                 $(SELECTORS.TOOL_URL).val('');
                 $(document).trigger(ltiEvents.START_CARTRIDGE_REGISTRATION, url);
             } else {
-                showExternalRegistration(url);
-                $(SELECTORS.TOOL_URL).val('');
-                $(document).trigger(ltiEvents.START_EXTERNAL_REGISTRATION);
-                hideToolList();
+                $(document).trigger(ltiEvents.START_EXTERNAL_REGISTRATION, {url: url});
             }
         });
 
-        promise.fail(notification.exception);
+        promise.fail(function () {
+            str.get_strings([{key: 'error', component: 'moodle'},
+                             {key: 'errorbadurl', component: 'mod_lti'}]).done(function (s) {
+                $(document).trigger(ltiEvents.REGISTRATION_FEEDBACK, {status: s[0], message: s[1], error: true});
+            }).fail(notification.exception);
+        });
 
         return promise;
     };
@@ -368,9 +372,16 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
             reloadToolList();
         });
 
+        $(document).on(ltiEvents.START_EXTERNAL_REGISTRATION, function() {
+            showExternalRegistration();
+            $(SELECTORS.TOOL_URL).val('');
+            hideToolList();
+        });
+
         $(document).on(ltiEvents.STOP_EXTERNAL_REGISTRATION, function() {
             showToolList();
             showRegistrationChoices();
+            reloadToolList();
         });
 
         $(document).on(ltiEvents.START_CARTRIDGE_REGISTRATION, function(event, url) {
