@@ -252,10 +252,6 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
      */
     var showRegistrationFeedback = function(data) {
         templates.render('mod_lti/registration_feedback', data).done(function(html) {
-            hideExternalRegistration();
-            hideCartridgeRegistration();
-            hideRegistrationChoices();
-
             var container = getRegistrationFeedbackContainer();
             container.append(html);
         }).fail(notification.exception);
