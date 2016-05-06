@@ -30,7 +30,6 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
         function($, ajax, notification, templates, ltiEvents, KEYS, toolType, toolProxy, str) {
 
     var SELECTORS = {
-        REGISTRATION_FEEDBACK_CONTAINER: '#registration-feedback-container',
         EXTERNAL_REGISTRATION_CONTAINER: '#external-registration-container',
         EXTERNAL_REGISTRATION_PAGE_CONTAINER: '#external-registration-page-container',
         CARTRIDGE_REGISTRATION_CONTAINER: '#cartridge-registration-container',
@@ -51,17 +50,6 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
      */
     var getToolCreateButton = function() {
         return $(SELECTORS.TOOL_CREATE_BUTTON);
-    };
-
-    /**
-     * Get the registration feedback container element.
-     *
-     * @method getRegistrationFeedbackContainer
-     * @private
-     * @return object jQuery object
-     */
-    var getRegistrationFeedbackContainer = function() {
-        return $(SELECTORS.REGISTRATION_FEEDBACK_CONTAINER);
     };
 
     /**
@@ -200,13 +188,6 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
      * @private
      */
     var showRegistrationChoices = function() {
-        if (isRegistrationFeedbackVisible()) {
-            // If the registration feedback is visible then we don't need
-            // to do anything because it will display this content when it's
-            // closed.
-            return;
-        }
-
         hideExternalRegistration();
         hideCartridgeRegistration();
         getRegistrationChoiceContainer().removeClass('hidden');
@@ -234,40 +215,17 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
     };
 
     /**
-     * Check if the registration feedback is being displayed.
-     *
-     * @method isRegistrationFeedbackVisible
-     * @private
-     * @return bool
-     */
-    var isRegistrationFeedbackVisible = function() {
-        return $.trim(getRegistrationFeedbackContainer().html());
-    };
-
-    /**
      * Display the registration feedback alert and hide the other panels.
      *
      * @method showRegistrationFeedback
      * @private
      */
     var showRegistrationFeedback = function(data) {
-        templates.render('mod_lti/registration_feedback', data).done(function(html) {
-            var container = getRegistrationFeedbackContainer();
-            container.append(html);
-        }).fail(notification.exception);
-    };
-
-    /**
-     * Hide the registration feedback alert and restore the choices panel.
-     *
-     * @method showRegistrationFeedback
-     * @private
-     */
-    var clearRegistrationFeedback = function() {
-        var container = getRegistrationFeedbackContainer();
-        container.empty();
-
-        showRegistrationChoices();
+        var type = data.error ? 'error' : 'success';
+        notification.addNotification({
+            message: '<h4>' + data.status + '</h4><p>' + data.message + '</p>',
+            type: type
+        });
     };
 
     /**
@@ -399,19 +357,6 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
             addTool();
         });
 
-        var feedbackContainer = getRegistrationFeedbackContainer();
-        feedbackContainer.click(function(e) {
-            e.preventDefault();
-            clearRegistrationFeedback();
-        });
-        feedbackContainer.keypress(function(e) {
-            if (!e.metaKey && !e.shiftKey && !e.altKey && !e.ctrlKey) {
-                if (e.keyCode == KEYS.ENTER || e.keyCode == KEYS.SPACE) {
-                    e.preventDefault();
-                    clearRegistrationFeedback();
-                }
-            }
-        });
     };
 
     return /** @alias module:mod_lti/cartridge_registration_form */ {

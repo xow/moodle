@@ -93,14 +93,6 @@
     margin-top: 20px;
 }
 
-#registration-feedback-container {
-    cursor: pointer;
-}
-
-#registration-feedback-container h4 {
-    text-transform: capitalize;
-}
-
 #tool-type-capabilities-container .registration-loading-container {
     display: none;
 }

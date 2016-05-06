@@ -425,7 +425,14 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
                 // Clean up.
                 cancelRegistration();
                 // Let the user know what the error is.
-                $(document).trigger(ltiEvents.REGISTRATION_FEEDBACK, {status: 'error', message: exception.message, error: true});
+                str.get_string('error', 'moodle').done(function (s) {
+                    var feedback = {
+                        status: s,
+                        message: exception.message,
+                        error: true
+                    };
+                    $(document).trigger(ltiEvents.REGISTRATION_FEEDBACK, feedback);
+                }).fail(notification.exception);
                 promise.reject(exception);
             });
         }
