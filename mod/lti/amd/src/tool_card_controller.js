@@ -229,6 +229,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/t
     var deleteType = function(element) {
         var promise = $.Deferred();
         var typeId = getTypeId(element);
+        startLoading(element);
 
         if (typeId === "") {
             return $.Deferred().resolve();
@@ -241,7 +242,6 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/t
             { key: 'cancel', component: 'core' },
         ]).done(function(strs) {
             notification.confirm(strs[0], strs[1], strs[2], strs[3], function() {
-                startLoading(element);
                 toolType.delete(typeId).done(function() {
                     stopLoading(element);
                     announceSuccess(element).done(function() {
@@ -252,8 +252,12 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/t
                     announceFailure(element);
                     promise.reject(error);
                 });
+            }, function () {
+                stopLoading(element);
+                promise.resolve();
             });
         }).fail(function(error) {
+            stopLoading(element);
             notification.exception(error);
             promise.reject(error);
         });
