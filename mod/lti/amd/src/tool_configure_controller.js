@@ -257,18 +257,22 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/templates', 'mod_lti/e
      * @private
      */
     var reloadToolList = function() {
+        var promise = $.Deferred();
         var container = getToolListContainer();
         startLoading(container);
 
-        toolType.query().done(function(types) {
-            toolProxy.query({'orphanedonly': true}).done(function (proxies) {
-                templates.render('mod_lti/tool_list', {tools: types, proxies: proxies}).done(function(html, js) {
-                    container.empty();
-                    container.append(html);
-                    templates.runTemplateJS(js);
-                }).fail(notification.exception);
-            }).fail(notification.exception);
-        }).fail(notification.exception).always(function() { stopLoading(container); });
+        $.when(toolType.query(), toolProxy.query({'orphanedonly': true})).done(function(types, proxies) {
+            templates.render('mod_lti/tool_list', {tools: types, proxies: proxies}).done(function(html, js) {
+                container.empty();
+                container.append(html);
+                templates.runTemplateJS(js);
+                promise.resolve();
+            }).fail(promise.reject);
+        }).fail(promise.reject);
+
+        promise.fail(notification.exception).always(function () {
+            stopLoading(container);
+        });
     };
 
     /**
