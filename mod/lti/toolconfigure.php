@@ -50,11 +50,8 @@ $PAGE->requires->string_for_js('success', 'moodle');
 $PAGE->requires->string_for_js('error', 'moodle');
 $PAGE->requires->string_for_js('successfullycreatedtooltype', 'mod_lti');
 $PAGE->requires->string_for_js('failedtocreatetooltype', 'mod_lti');
-$output = $PAGE->get_renderer('mod_lti');
 
 echo $output->header();
 
-$page = new \mod_lti\output\tool_configure_page();
-echo $output->render($page);
 
 echo $output->footer();
