@@ -248,6 +248,103 @@ class enrol_lti_helper_testcase extends advanced_testcase {
     }
 
     /**
+     * Test getting the launch url of a tool
+     */
+    public function test_get_launch_url() {
+        $course1 = $this->getDataGenerator()->create_course();
+        $data = new stdClass();
+        $data->courseid = $course1->id;
+        $tool1 = $this->create_tool($data);
+
+        $id = $tool1->id;
+        $launchurl = \enrol_lti\helper::get_launch_url($id);
+        $this->assertEquals('http://www.example.com/moodle/enrol/lti/tool.php?id=' . $id, $launchurl->out());
+    }
+
+    /**
+     * Test getting the cartridge url of a tool
+     */
+    public function test_get_cartridge_url() {
+        global $CFG;
+
+        $slasharguments = $CFG->slasharguments;
+
+        $CFG->slasharguments = false;
+
+        $course1 = $this->getDataGenerator()->create_course();
+        $data = new stdClass();
+        $data->courseid = $course1->id;
+        $tool1 = $this->create_tool($data);
+
+        $id = $tool1->id;
+        $token = \enrol_lti\helper::generate_tool_token($id);
+        $launchurl = \enrol_lti\helper::get_cartridge_url($tool1);
+        $this->assertEquals('http://www.example.com/moodle/enrol/lti/cartridge.php?id=' . $id . '&amp;token=' . $token,
+                            $launchurl->out());
+
+        $CFG->slasharguments = true;
+
+        $launchurl = \enrol_lti\helper::get_cartridge_url($tool1);
+        $this->assertEquals('http://www.example.com/moodle/enrol/lti/cartridge.php/' . $id . '/' . $token . '/cartridge.xml',
+                            $launchurl->out());
+
+        $CFG->slasharguments = $slasharguments;
+    }
+
+    /**
+     * Test getting the name of a tool
+     */
+    public function test_get_name() {
+        $course1 = $this->getDataGenerator()->create_course();
+        $data = new stdClass();
+        $data->courseid = $course1->id;
+        $tool1 = $this->create_tool($data);
+
+        $name = \enrol_lti\helper::get_name($tool1);
+        $this->assertEquals('Course: Test course 1', $name);
+
+        $tool1->name = 'Shared course';
+        $name = \enrol_lti\helper::get_name($tool1);
+        $this->assertEquals('Shared course', $name);
+    }
+
+    /**
+     * Test getting the description of a tool
+     */
+    public function test_get_description() {
+        $course1 = $this->getDataGenerator()->create_course();
+        $data = new stdClass();
+        $data->courseid = $course1->id;
+        $tool1 = $this->create_tool($data);
+
+        $description = \enrol_lti\helper::get_description($tool1);
+        $this->assertContains('Test course 1 Lorem ipsum dolor sit amet', $description);
+
+        $module1 = $this->getDataGenerator()->create_module('assign', array(
+                'course' => $course1->id
+            ));
+        $data = new stdClass();
+        $data->cmid = $module1->cmid;
+        $tool2 = $this->create_tool($data);
+        $description = \enrol_lti\helper::get_description($tool2);
+        $this->assertContains('Test assign 1', $description);
+    }
+
+    /**
+     * Test verifying a tool token.
+     */
+    public function test_verify_tool_token() {
+        $course1 = $this->getDataGenerator()->create_course();
+        $data = new stdClass();
+        $data->courseid = $course1->id;
+        $tool1 = $this->create_tool($data);
+
+        $token = \enrol_lti\helper::generate_tool_token($tool1->id);
+        $this->assertTrue(\enrol_lti\helper::verify_tool_token($tool1->id, $token));
+        $this->assertFalse(\enrol_lti\helper::verify_tool_token($tool1->id, 'incorrect token!'));
+    }
+
+    /**
      * Helper function used to create a tool.
      *
      * @param array $data
@@ -267,6 +364,12 @@ class enrol_lti_helper_testcase extends advanced_testcase {
             $course = get_course($data->courseid);
         }
 
+        if (!empty($data->cmid)) {
+            $data->contextid = context_module::instance($data->cmid)->id;
+        } else {
+            $data->contextid = context_course::instance($data->courseid)->id;
+        }
+
         // Set it to enabled if no status was specified.
         if (!isset($data->status)) {
             $data->status = ENROL_INSTANCE_ENABLED;
@@ -274,7 +377,6 @@ class enrol_lti_helper_testcase extends advanced_testcase {
 
         // Add some extra necessary fields to the data.
         $data->name = 'Test LTI';
-        $data->contextid = context_course::instance($data->courseid)->id;
         $data->roleinstructor = $studentrole->id;
         $data->rolelearner = $teacherrole->id;
 
