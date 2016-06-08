@@ -15,15 +15,17 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * The main entry point for the external system.
+ * The endpoint for a tool consumer requesting a tool proxy.
  *
  * @package    enrol_lti
- * @copyright  2016 Mark Nelson <markn@moodle.com>
+ * @copyright  2016 John Okely <john@moodle.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require_once(dirname(__FILE__) . '/../../config.php');
 require_once($CFG->dirroot . '/enrol/lti/ims-blti/blti.php');
+require_once($CFG->dirroot . '/enrol/lti/ims-blti/OAuthBody.php');
+require_once($CFG->libdir. "/filelib.php");
 
 $filearguments = get_file_argument();
 $arguments = explode('/', trim($filearguments, '/'));
@@ -34,25 +36,68 @@ if (count($arguments) == 2) { // Can put cartridge.xml at the end, or anything r
 $toolid = optional_param('id', $toolid, PARAM_INT);
 $token = optional_param('token', $token, PARAM_BASE64);
 
+$messagetype = required_param('lti_message_type', PARAM_TEXT);
+$userid = optional_param('user_id', null, PARAM_INT);
+$roles = optional_param('roles', null, PARAM_TEXT);
+$tcprofileurl = required_param('tc_profile_url', PARAM_URL);
+$regkey = required_param('reg_key', PARAM_URL);
+$regpassword = required_param('reg_password', PARAM_URL);
+$launchpresentationreturnurl = required_param('launch_presentation_return_url', PARAM_URL); // TODO This is optional in spec.
+
 // Only show the cartridge if the token parameter is correct.
 // If we do not compare with a shared secret, someone could very easily
 // guess an id for the enrolment.
 \enrol_lti\helper::verify_tool_token($toolid, $token);
 
-$tool = \enrol_lti\helper::get_lti_tool($toolid);
-$name = \enrol_lti\helper::get_name($tool);
-$description = \enrol_lti\helper::get_description($tool);
-$secret = $tool->secret;
-$vendorurl = new \moodle_url('/');
-$vendorname = $SITE->fullname;
-$vendorshortname = $SITE->shortname;
-$vendordescription = trim(html_to_text($SITE->summary));
-$guid = "TODO";
+// TODO As per the spec, don't we need to add this?
+/*$query = http_build_query(array(
+         'lti_version' => 'LTI-2p0'
+    ));
+$tcprofilerequest = $tcprofileurl . '?' . $query;*/
 
-$toolproxy = <<<EOF
+$curl = new curl();
+$response = $curl->get($tcprofileurl);
+$consumerprofile = json_decode($response);
+
+switch ($messagetype) {
+    case 'ToolProxyRegistrationRequest':
+        $services = $consumerprofile->service_offered;
+        foreach ($services as $service) {
+            if (in_array('application/vnd.ims.lti.v2.toolproxy+json', $service->format)) {
+                $endpoint = $service->endpoint;
+                $response = sendOAuthBodyPOST('POST', $endpoint, $regkey, $regpassword, 'application/vnd.ims.lti.v2.toolproxy+json', get_proxy($toolid));
+                print_object($consumerprofile);
+                print_object(get_proxy($toolid));
+                print_object($response);
+                print_object('hooray right');
+            }
+        }
+        break;
+    default:
+        throw new moodle_exception('unnsupported message type');
+        break;
+}
+
+// Redirect to $launchpresentationreturnurl);
+
+function get_proxy($toolid) {
+    global $SITE;
+    $tool = \enrol_lti\helper::get_lti_tool($toolid);
+    $name = \enrol_lti\helper::get_name($tool);
+    $toolurl = \enrol_lti\helper::get_proxy_url($tool);
+    $description = \enrol_lti\helper::get_description($tool);
+    $secret = $tool->secret;
+    $vendorurl = new \moodle_url('/');
+    $vendorname = $SITE->fullname;
+    $vendorshortname = $SITE->shortname;
+    $vendordescription = trim(html_to_text($SITE->summary));
+    $guid = "TODO";
+
+    $toolproxy = <<<EOF
 {
   "@context": "http://purl.imsglobal.org/ctx/lti/v2/ToolProxy",
   "@type": "ToolProxy",
+  "@id": "$toolurl",
   "lti_version": "LTI-2p0",
   "tool_profile": {
     "product_instance": {
@@ -61,7 +106,7 @@ $toolproxy = <<<EOF
         "product_name": {
           "default_value": "$name"
         },
-        "product_version": "1.0"
+        "product_version": "1.0",
         "description": {
           "default_value": "$description"
         },
@@ -82,7 +127,7 @@ $toolproxy = <<<EOF
       },
       "support": {
         "email": "support@moodle.org"
-      },
+      }
     },
     "lti_version": "LTI-2p0",
     "message": [
@@ -192,15 +237,9 @@ $toolproxy = <<<EOF
   "security_contract": {
     "shared_secret": "$secret",
     "tool_service": [
-      {
-        "@type": "RestService",
-        "@id": "ltitcp:ToolProxy.collection",
-        "service": "__TODOFROM_ID_INTC_PROFILE__http://localhost:4000/tools",
-        "action": "POST",
-        "format": "application/vnd.ims.lti.v2.ToolProxy+json"
-      }
     ]
   }
 }
 EOF;
-echo $toolproxy;
+    return $toolproxy;
+}
