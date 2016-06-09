@@ -132,10 +132,11 @@ function get_proxy($toolid, $guid) {
     "resource_handler": [
       {
         "resource_type": {
-            "code" : "__REPLACE__urn:lti:ResourceType:acme.example.com/nitrolab/homework"
+            "code" : "$name"
         },
         "message": [
           {
+            "message_type": "basic-lti-launch-request",
             "path": "$launchpath",
             "parameter": [
               {
@@ -183,8 +184,35 @@ function get_proxy($toolid, $guid) {
                 "variable": "Membership.role"
               }
             ],
-            "message_type": "basic-lti-launch-request",
-            "enabled_capability" : [ "User.id" ]
+            "enabled_capability" : [
+              "Context.id",
+              "CourseSection.title",
+              "CourseSection.label",
+              "CourseSection.sourcedId",
+              "CourseSection.longDescription",
+              "CourseSection.timeFrame.begin",
+              "ResourceLink.id",
+              "ResourceLink.title",
+              "ResourceLink.description",
+              "User.id",
+              "User.username",
+              "Person.name.full",
+              "Person.name.given",
+              "Person.name.family",
+              "Person.email.primary",
+              "Person.sourcedId",
+              "Person.name.middle",
+              "Person.address.street1",
+              "Person.address.locality",
+              "Person.address.country",
+              "Person.address.timezone",
+              "Person.phone.primary",
+              "Person.phone.mobile",
+              "Person.webaddress",
+              "Membership.role",
+              "Result.sourcedId",
+              "Result.autocreate"
+            ]
           }
         ],
         "name": {
