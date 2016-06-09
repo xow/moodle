@@ -36,13 +36,13 @@ if (count($arguments) == 2) { // Can put cartridge.xml at the end, or anything r
 $toolid = optional_param('id', $toolid, PARAM_INT);
 $token = optional_param('token', $token, PARAM_BASE64);
 
-$messagetype = required_param('lti_message_type', PARAM_TEXT);
+$messagetype = optional_param('lti_message_type', '', PARAM_TEXT);
 $userid = optional_param('user_id', null, PARAM_INT);
 $roles = optional_param('roles', null, PARAM_TEXT);
-$tcprofileurl = required_param('tc_profile_url', PARAM_URL);
-$regkey = required_param('reg_key', PARAM_URL);
-$regpassword = required_param('reg_password', PARAM_URL);
-$launchpresentationreturnurl = required_param('launch_presentation_return_url', PARAM_URL); // TODO This is optional in spec.
+$tcprofileurl = optional_param('tc_profile_url', '', PARAM_URL);
+$regkey = optional_param('reg_key', '', PARAM_URL);
+$regpassword = optional_param('reg_password', '', PARAM_URL);
+$launchpresentationreturnurl = optional_param('launch_presentation_return_url', '', PARAM_URL);
 
 // Only show the cartridge if the token parameter is correct.
 // If we do not compare with a shared secret, someone could very easily
@@ -66,15 +66,13 @@ switch ($messagetype) {
             if (in_array('application/vnd.ims.lti.v2.toolproxy+json', $service->format)) {
                 $endpoint = $service->endpoint;
                 $response = sendOAuthBodyPOST('POST', $endpoint, $regkey, $regpassword, 'application/vnd.ims.lti.v2.toolproxy+json', get_proxy($toolid));
-                print_object($consumerprofile);
-                print_object(get_proxy($toolid));
-                print_object($response);
-                print_object('hooray right');
+                echo '<a href="' . $launchpresentationreturnurl . '">Register</a>';
             }
         }
         break;
     default:
-        throw new moodle_exception('unnsupported message type');
+        #throw new moodle_exception("Unsupported message type '$messagetype'");
+        echo "Unsupported message type '$messagetype'";
         break;
 }
 
@@ -84,7 +82,8 @@ function get_proxy($toolid) {
     global $SITE;
     $tool = \enrol_lti\helper::get_lti_tool($toolid);
     $name = \enrol_lti\helper::get_name($tool);
-    $toolurl = \enrol_lti\helper::get_proxy_url($tool);
+    $launchpath = \enrol_lti\helper::get_launch_url($toolid)->out_as_local_url();
+    $proxyurl = \enrol_lti\helper::get_proxy_url($tool);
     $description = \enrol_lti\helper::get_description($tool);
     $secret = $tool->secret;
     $vendorurl = new \moodle_url('/');
@@ -97,8 +96,9 @@ function get_proxy($toolid) {
 {
   "@context": "http://purl.imsglobal.org/ctx/lti/v2/ToolProxy",
   "@type": "ToolProxy",
-  "@id": "$toolurl",
+  "@id": "$proxyurl",
   "lti_version": "LTI-2p0",
+  "tool_proxy_guid": "$guid",
   "tool_profile": {
     "product_instance": {
       "guid": "$guid",
@@ -124,27 +124,8 @@ function get_proxy($toolid) {
             }
           }
         }
-      },
-      "support": {
-        "email": "support@moodle.org"
       }
     },
-    "lti_version": "LTI-2p0",
-    "message": [
-      {
-        "message_type": [
-          "ToolProxyRegistrationRequest",
-          "ToolProxyReregistrationRequest"
-        ],
-        "path": "__LAUNCH_REGISTRATION__",
-        "parameter": [
-          {
-            "variable": "ToolConsumerProfile.url",
-            "name": "tc_profile_url"
-          }
-        ]
-      }
-    ],
     "resource_handler": [
       {
         "resource_type": {
@@ -152,12 +133,8 @@ function get_proxy($toolid) {
         },
         "message": [
           {
-            "path": "__LAUNCH_PATH__",
+            "path": "$launchpath",
             "parameter": [
-              {
-                "name": "theanswer",
-                "fixed": "42"
-              },
               {
                 "name": "ltilink_custom_url",
                 "variable": "LtiLink.custom.url"
