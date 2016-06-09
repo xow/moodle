@@ -65,8 +65,10 @@ switch ($messagetype) {
         foreach ($services as $service) {
             if (in_array('application/vnd.ims.lti.v2.toolproxy+json', $service->format)) {
                 $endpoint = $service->endpoint;
-                $response = sendOAuthBodyPOST('POST', $endpoint, $regkey, $regpassword, 'application/vnd.ims.lti.v2.toolproxy+json', get_proxy($toolid));
-                echo '<a href="' . $launchpresentationreturnurl . '">Register</a>';
+                $guid = "TODO";
+                $response = sendOAuthBodyPOST('POST', $endpoint, $regkey, $regpassword, 'application/vnd.ims.lti.v2.toolproxy+json', get_proxy($toolid, $guid));
+                echo '<a href="' . $launchpresentationreturnurl . '&status=success&guid=' . $guid . '">Register</a>'; // TODO what if no get params are specified?
+                print_object($launchpresentationreturnurl);
             }
         }
         break;
@@ -78,7 +80,7 @@ switch ($messagetype) {
 
 // Redirect to $launchpresentationreturnurl);
 
-function get_proxy($toolid) {
+function get_proxy($toolid, $guid) {
     global $SITE;
     $tool = \enrol_lti\helper::get_lti_tool($toolid);
     $name = \enrol_lti\helper::get_name($tool);
@@ -90,11 +92,12 @@ function get_proxy($toolid) {
     $vendorname = $SITE->fullname;
     $vendorshortname = $SITE->shortname;
     $vendordescription = trim(html_to_text($SITE->summary));
-    $guid = "TODO";
 
     $toolproxy = <<<EOF
 {
-  "@context": "http://purl.imsglobal.org/ctx/lti/v2/ToolProxy",
+  "@context": [
+    "http://purl.imsglobal.org/ctx/lti/v2/ToolProxy"
+  ],
   "@type": "ToolProxy",
   "@id": "$proxyurl",
   "lti_version": "LTI-2p0",
@@ -185,6 +188,10 @@ function get_proxy($toolid) {
           }
         ],
         "name": {
+          "default_value": "$name",
+          "key": "resource.name"
+        },
+        "resource_name": {
           "default_value": "$name",
           "key": "resource.name"
         },
