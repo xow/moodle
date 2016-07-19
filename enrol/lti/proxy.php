@@ -44,6 +44,8 @@ $regkey = optional_param('reg_key', '', PARAM_URL);
 $regpassword = optional_param('reg_password', '', PARAM_URL);
 $launchpresentationreturnurl = optional_param('launch_presentation_return_url', '', PARAM_URL);
 
+$PAGE->set_context(context_system::instance());
+
 // Only show the cartridge if the token parameter is correct.
 // If we do not compare with a shared secret, someone could very easily
 // guess an id for the enrolment.
@@ -68,7 +70,6 @@ switch ($messagetype) {
                 $guid = "TODO";
                 $response = sendOAuthBodyPOST('POST', $endpoint, $regkey, $regpassword, 'application/vnd.ims.lti.v2.toolproxy+json', get_proxy($toolid, $guid));
                 echo '<a href="' . $launchpresentationreturnurl . '&status=success&guid=' . $guid . '">Register</a>'; // TODO what if no get params are specified?
-                print_object($launchpresentationreturnurl);
             }
         }
         break;
@@ -88,7 +89,8 @@ function get_proxy($toolid, $guid) {
     $proxyurl = \enrol_lti\helper::get_proxy_url($tool);
     $description = \enrol_lti\helper::get_description($tool);
     $secret = $tool->secret;
-    $vendorurl = new \moodle_url('/');
+    $baseurl = new \moodle_url("/");
+    $baseurl = rtrim($baseurl, "/");
     $vendorname = $SITE->fullname;
     $vendorshortname = $SITE->shortname;
     $vendordescription = trim(html_to_text($SITE->summary));
@@ -114,7 +116,7 @@ function get_proxy($toolid, $guid) {
           "default_value": "$description"
         },
         "product_family": {
-          "@id": "$vendorurl",
+          "@id": "$baseurl",
           "code": "$vendorshortname",
           "vendor": {
             "code": "$vendorshortname",
@@ -241,8 +243,8 @@ function get_proxy($toolid, $guid) {
             "MessageHandler"
           ]
         },
-        "secure_base_url": "$vendorurl",
-        "default_base_url": "$vendorurl"
+        "secure_base_url": "$baseurl",
+        "default_base_url": "$baseurl"
       }
     ]
   },
