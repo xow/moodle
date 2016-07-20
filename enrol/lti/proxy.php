@@ -64,12 +64,18 @@ $consumerprofile = json_decode($response);
 switch ($messagetype) {
     case 'ToolProxyRegistrationRequest':
         $services = $consumerprofile->service_offered;
+        $guid = $consumerprofile->guid;
         foreach ($services as $service) {
             if (in_array('application/vnd.ims.lti.v2.toolproxy+json', $service->format)) {
                 $endpoint = $service->endpoint;
-                $guid = "TODO";
-                $response = sendOAuthBodyPOST('POST', $endpoint, $regkey, $regpassword, 'application/vnd.ims.lti.v2.toolproxy+json', get_proxy($toolid, $guid));
-                echo '<a href="' . $launchpresentationreturnurl . '&status=success&guid=' . $guid . '">Register</a>'; // TODO what if no get params are specified?
+                $proxy = get_proxy($toolid, $guid);
+                $response = sendOAuthBodyPOST('POST', $endpoint, $regkey, $regpassword, 'application/vnd.ims.lti.v2.toolproxy+json', $proxy);
+                if (strpos($launchpresentationreturnurl, '?') !== false) { # TODO, do this better
+                    $url = $launchpresentationreturnurl . '&status=success&guid=' . $guid;
+                } else {
+                    $url = $launchpresentationreturnurl . '?status=success&guid=' . $guid;
+                }
+                echo '<a href="' . $url .  '">Register</a>';
             }
         }
         break;
