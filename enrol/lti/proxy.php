@@ -71,10 +71,12 @@ switch ($messagetype) {
                 $proxy = get_proxy($toolid, $guid);
                 $response = sendOAuthBodyPOST('POST', $endpoint, $regkey, $regpassword, 'application/vnd.ims.lti.v2.toolproxy+json', $proxy);
                 if (strpos($launchpresentationreturnurl, '?') !== false) { # TODO, do this better
-                    $url = $launchpresentationreturnurl . '&status=success&guid=' . $guid;
+                    $url = $launchpresentationreturnurl . '&';
                 } else {
-                    $url = $launchpresentationreturnurl . '?status=success&guid=' . $guid;
+                    $url = $launchpresentationreturnurl . '?';
                 }
+                $url .= 'status=success';
+                $url .= '&guid=' . urlencode($guid);
                 echo '<a href="' . $url .  '">Register</a>';
             }
         }
