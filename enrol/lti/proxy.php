@@ -68,7 +68,7 @@ switch ($messagetype) {
         foreach ($services as $service) {
             if (in_array('application/vnd.ims.lti.v2.toolproxy+json', $service->format)) {
                 $endpoint = $service->endpoint;
-                $proxy = get_proxy($toolid, $guid);
+                $proxy = \enrol_lti\helper::get_proxy($toolid, $guid, $tcprofileurl);
                 $response = sendOAuthBodyPOST('POST', $endpoint, $regkey, $regpassword, 'application/vnd.ims.lti.v2.toolproxy+json', $proxy);
                 if (strpos($launchpresentationreturnurl, '?') !== false) { # TODO, do this better
                     $url = $launchpresentationreturnurl . '&';

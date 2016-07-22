@@ -617,4 +617,184 @@ class helper {
 
         return $cartridge->saveXML();
     }
+
+    /**
+     * Returns the tool proxy json for the given tool.
+     *
+     * @param int $toolid The id of the shared tool
+     * @param string $guid
+     * @param string $tcprofileurl The url to the tool consumer's profile
+     * @return string representing the generated tool proxy json
+     * @since Moodle 3.2
+     */
+    public static function get_proxy($toolid, $guid, $tcprofileurl) {
+        global $SITE;
+        $tool = self::get_lti_tool($toolid);
+        $name = self::get_name($tool);
+        $launchpath = self::get_launch_url($toolid)->out_as_local_url();
+        $proxyurl = self::get_proxy_url($tool);
+        $proxyurl = $proxyurl->out();
+        $description = self::get_description($tool);
+        $secret = $tool->secret;
+        $baseurl = new \moodle_url("/");
+        $baseurl = rtrim($baseurl, "/");
+        $vendorname = $SITE->fullname;
+        $vendorshortname = $SITE->shortname;
+        $vendordescription = trim(html_to_text($SITE->summary));
+
+        $toolproxy = array(
+            "@context" => array("http://purl.imsglobal.org/ctx/lti/v2/ToolProxy"),
+            "@type" => "ToolProxy",
+            "@id" => $proxyurl,
+            "lti_version" => "LTI-2p0",
+            "tool_proxy_guid" => $guid,
+            "tool_consumer_profile" => $tcprofileurl,
+            "tool_profile" => array(
+                "product_instance" => array(
+                    "guid" => $guid,
+                    "product_info" => array(
+                        "product_name" => array(
+                            "default_value" => $name
+                        ),
+                        "product_version" => "1.0",
+                        "description" => array(
+                            "default_value" => $description
+                        ),
+                        "product_family" => array(
+                            "@id" => $baseurl,
+                            "code" => $vendorshortname,
+                            "vendor" => array(
+                                "code" => $vendorshortname,
+                                "timestamp" => "2016-05-30T15:28:16+08:00",
+                                "vendor_name" => array("default_value" => $vendorname),
+                                "description" => array("default_value" => $vendordescription)
+                            )
+                        )
+                    )
+                ),
+                "resource_handler" => array(
+                    array(
+                        "resource_type" => array("code" => $name),
+                        "message" => array(
+                            array(
+                                "message_type" => "basic-lti-launch-request",
+                                "path" => $launchpath,
+                                "parameter" => array(
+                                    array(
+                                        "name" => "ltilink_customurl",
+                                        "variable" => "LtiLink.custom.url"
+                                    ),
+                                    array(
+                                      "name" => "toolproxy_custom_url",
+                                      "variable" => "ToolProxy.custom.url"
+                                    ),
+                                    array(
+                                      "name" => "toolproxybinding_custom_url",
+                                      "variable" => "ToolProxyBinding.custom.url"
+                                    ),
+                                    array(
+                                      "name" => "result_url",
+                                      "variable" => "Result.url"
+                                    ),
+                                    array(
+                                      "name" => "person_email_primary",
+                                      "variable" => "Person.email.primary"
+                                    ),
+                                    array(
+                                      "name" => "person_name_full",
+                                      "variable" => "Person.name.full"
+                                    ),
+                                    array(
+                                      "name" => "person_name_given",
+                                      "variable" => "Person.name.given"
+                                    ),
+                                    array(
+                                      "name" => "person_name_family",
+                                      "variable" => "Person.name.family"
+                                    ),
+                                    array(
+                                      "name" => "user_id",
+                                      "variable" => "User.id"
+                                    ),
+                                    array(
+                                      "name" => "user_image",
+                                      "variable" => "User.image"
+                                    ),
+                                    array(
+                                      "name" => "membership_role",
+                                      "variable" => "Membership.role"
+                                    )
+                                ),
+                                "enabled_capability" => array(
+                                    "Context.id",
+                                    "CourseSection.title",
+                                    "CourseSection.label",
+                                    "CourseSection.sourcedId",
+                                    "CourseSection.longDescription",
+                                    "CourseSection.timeFrame.begin",
+                                    "ResourceLink.id",
+                                    "ResourceLink.title",
+                                    "ResourceLink.description",
+                                    "User.id",
+                                    "User.username",
+                                    "Person.name.full",
+                                    "Person.name.given",
+                                    "Person.name.family",
+                                    "Person.email.primary",
+                                    "Person.sourcedId",
+                                    "Person.name.middle",
+                                    "Person.address.street1",
+                                    "Person.address.locality",
+                                    "Person.address.country",
+                                    "Person.address.timezone",
+                                    "Person.phone.primary",
+                                    "Person.phone.mobile",
+                                    "Person.webaddress",
+                                    "Membership.role",
+                                    "Result.sourcedId",
+                                    "Result.autocreate"
+                                )
+                            )
+                        ),
+                        "name" => array(
+                            "default_value" => $name,
+                            "key" => "resource.name"
+                        ),
+                        "resource_name" => array(
+                            "default_value" => $name,
+                            "key" => "resource.name"
+                        ),
+                        "short_name" => array(
+                            "default_value" => $name,
+                            "key" => "resource.name"
+                        ),
+                        "description" => array(
+                            "default_value" => $description,
+                            "key" => "resource.description"
+                        )
+                    )
+                ),
+                "base_url_choice" => array(
+                    array(
+                        "selector" => array(
+                            "applies_to" => array(
+                                "IconEndpoint",
+                                "MessageHandler"
+                            )
+                        ),
+                        "secure_base_url" => $baseurl,
+                        "default_base_url" => $baseurl
+                    )
+                )
+            ),
+            "security_contract" => array(
+                "shared_secret" => $secret,
+                "tool_service" => array()
+            )
+        );
+
+        $json = json_encode($toolproxy, JSON_UNESCAPED_SLASHES);
+
+        return $json;
+    }
 }
