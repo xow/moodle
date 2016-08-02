@@ -1044,6 +1044,7 @@ $string['timezone'] = 'Default timezone';
 $string['timezoneforced'] = 'This is forced by the site administrator';
 $string['timezoneisforcedto'] = 'Force all users to use';
 $string['timezonenotforced'] = 'Users can choose their own timezone';
+$string['tlswarning'] = 'No PHP/cURL extension with TLSv1.2 support has been detected. Some services may not work. It is strongly recommentd that you upgrade your TLS libraries.';
 $string['tokenizerrecommended'] = 'Installing the optional PHP Tokenizer extension is recommended -- it improves Moodle Networking functionality.';
 $string['tools'] = 'Admin tools';
 $string['toolsmanage'] = 'Manage admin tools';
