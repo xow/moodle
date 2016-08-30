@@ -29,6 +29,7 @@ defined('MOODLE_INTERNAL') || die;
 use IMSGlobal\LTI\Profile;
 use IMSGlobal\LTI\ToolProvider;
 use IMSGlobal\LTI\ToolProvider\DataConnector;
+use IMSGlobal\LTI\ToolProvider\MediaType;
 require_once($CFG->dirroot . '/user/lib.php');
 
 /**
@@ -170,7 +171,23 @@ class tool_provider extends ToolProvider\ToolProvider {
      * @return void
      */
     protected function onLaunch() {
-        global $DB, $SESSION, $CFG;
+        global $DB, $SESSION, $CFG, $PAGE;
+
+        $good = false;
+        $proxy = json_decode($this->consumer->toolProxy);
+        $handlers = $proxy->tool_profile->resource_handler;
+        foreach ($handlers as $handler) {
+            foreach ($handler->message as $message) {
+                if ($message->message_type == "basic-lti-launch-request" && $message->path = $PAGE->url){
+                    $good = true;
+                }
+            }
+        }
+        if (!$good) {
+            $this->ok = false;
+            $this->message = 'It seems you\'ve been hacking your launch urls. Tsk tsk';
+            return;
+        }
 
         // Before we do anything check that the context is valid.
         $tool = $this->tool;
@@ -353,5 +370,29 @@ class tool_provider extends ToolProvider\ToolProvider {
             $couldnotestablish = get_string('couldnotestablishproxy', 'enrol_lti');
             $this->message = get_string('failedregistration', 'enrol_lti', array('reason' => $couldnotestablish));
         }
+    }
+
+    /**
+     * Send the tool proxy to the Tool Consumer
+     *
+     * @return boolean True if the tool proxy was accepted
+     */
+    public function doToolProxyService() {
+
+        // Create tool proxy
+        $toolProxyService = $this->findService('application/vnd.ims.lti.v2.toolproxy+json', array('POST'));
+        $secret = DataConnector\DataConnector::getRandomString(12);
+        $toolProxy = new MediaType\ToolProxy($this, $toolProxyService, $secret);
+        $http = $this->consumer->doServiceRequest($toolProxyService, 'POST', 'application/vnd.ims.lti.v2.toolproxy+json', json_encode($toolProxy));
+        $ok = $http->ok && ($http->status == 201) && isset($http->responseJson->tool_proxy_guid) && (strlen($http->responseJson->tool_proxy_guid) > 0);
+        if ($ok) {
+            $this->consumer->setKey($http->responseJson->tool_proxy_guid);
+            $this->consumer->secret = $toolProxy->security_contract->shared_secret;
+            $this->consumer->toolProxy = json_encode($toolProxy);
+            $this->consumer->save();
+        }
+
+        return $ok;
+
     }
 }
