@@ -372,27 +372,4 @@ class tool_provider extends ToolProvider\ToolProvider {
         }
     }
 
-    /**
-     * Send the tool proxy to the Tool Consumer
-     *
-     * @return boolean True if the tool proxy was accepted
-     */
-    public function doToolProxyService() {
-
-        // Create tool proxy
-        $toolProxyService = $this->findService('application/vnd.ims.lti.v2.toolproxy+json', array('POST'));
-        $secret = DataConnector\DataConnector::getRandomString(12);
-        $toolProxy = new MediaType\ToolProxy($this, $toolProxyService, $secret);
-        $http = $this->consumer->doServiceRequest($toolProxyService, 'POST', 'application/vnd.ims.lti.v2.toolproxy+json', json_encode($toolProxy));
-        $ok = $http->ok && ($http->status == 201) && isset($http->responseJson->tool_proxy_guid) && (strlen($http->responseJson->tool_proxy_guid) > 0);
-        if ($ok) {
-            $this->consumer->setKey($http->responseJson->tool_proxy_guid);
-            $this->consumer->secret = $toolProxy->security_contract->shared_secret;
-            $this->consumer->toolProxy = json_encode($toolProxy);
-            $this->consumer->save();
-        }
-
-        return $ok;
-
-    }
 }
