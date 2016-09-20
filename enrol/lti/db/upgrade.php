@@ -96,31 +96,6 @@ function xmldb_enrol_lti_upgrade($oldversion) {
             $dbman->create_table($table);
         }
 
-        // Define table enrol_lti_item to be created.
-        $table = new xmldb_table('enrol_lti_item');
-
-        // Adding fields to table enrol_lti_item.
-        $table->add_field('item_pk', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
-        $table->add_field('resource_link_pk', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, null);
-        $table->add_field('item_title', XMLDB_TYPE_CHAR, '200', null, XMLDB_NOTNULL, null, null);
-        $table->add_field('item_text', XMLDB_TYPE_TEXT, null, null, null, null, null);
-        $table->add_field('item_url', XMLDB_TYPE_CHAR, '200', null, null, null, null);
-        $table->add_field('max_rating', XMLDB_TYPE_INTEGER, '2', null, XMLDB_NOTNULL, null, '5');
-        $table->add_field('step', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '1');
-        $table->add_field('visible', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0');
-        $table->add_field('created', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
-        $table->add_field('updated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
-
-        // Adding keys to table enrol_lti_item.
-        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('item_pk'));
-        $table->add_key('resource_link_pk', XMLDB_KEY_FOREIGN, array('resource_link_pk'), 'enrol_lti_lti2_resource_link',
-            array('resource_link_pk'));
-
-        // Conditionally launch create table for enrol_lti_item.
-        if (!$dbman->table_exists($table)) {
-            $dbman->create_table($table);
-        }
-
         // Define table enrol_lti_lti2_context to be created.
         $table = new xmldb_table('enrol_lti_lti2_context');
 
