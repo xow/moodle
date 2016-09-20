@@ -2,7 +2,8 @@
 
 namespace IMSGlobal\LTI\ToolProvider;
 
-use IMSGlobal\LTI\ToolProvider\DataConnector;
+use IMSGlobal\LTI\Profile\Item;
+use IMSGlobal\LTI\ToolProvider\DataConnector\DataConnector;
 use IMSGlobal\LTI\ToolProvider\MediaType;
 use IMSGlobal\LTI\Profile;
 use IMSGlobal\LTI\HTTPMessage;
@@ -14,7 +15,7 @@ use IMSGlobal\LTI\OAuth;
  * @author  Stephen P Vickers <svickers@imsglobal.org>
  * @copyright  IMS Global Learning Consortium Inc
  * @date  2016
- * @version  3.0.0
+ * @version  3.0.2
  * @license  GNU Lesser General Public License, version 3 (<http://www.gnu.org/licenses/lgpl.html>)
  */
 class ToolProvider
@@ -424,13 +425,14 @@ class ToolProvider
 
 // Create tool proxy
         $toolProxyService = $this->findService('application/vnd.ims.lti.v2.toolproxy+json', array('POST'));
-        $secret = DataConnector\DataConnector::getRandomString(12);
+        $secret = DataConnector::getRandomString(12);
         $toolProxy = new MediaType\ToolProxy($this, $toolProxyService, $secret);
         $http = $this->consumer->doServiceRequest($toolProxyService, 'POST', 'application/vnd.ims.lti.v2.toolproxy+json', json_encode($toolProxy));
         $ok = $http->ok && ($http->status == 201) && isset($http->responseJson->tool_proxy_guid) && (strlen($http->responseJson->tool_proxy_guid) > 0);
         if ($ok) {
             $this->consumer->setKey($http->responseJson->tool_proxy_guid);
             $this->consumer->secret = $toolProxy->security_contract->shared_secret;
+            $this->consumer->toolProxy = json_encode($toolProxy);
             $this->consumer->save();
         }
 
@@ -469,9 +471,10 @@ class ToolProvider
 /**
  * Generate a web page containing an auto-submitted form of parameters.
  *
- * @param string $url         URL to which the form should be submitted
- * @param array    $params    Array of form parameters
- * @param string $target    Name of target (optional)
+ * @param string $url URL to which the form should be submitted
+ * @param array $params Array of form parameters
+ * @param string $target Name of target (optional)
+ * @return string
  */
     public static function sendForm($url, $params, $target = '')
     {
@@ -1071,6 +1074,11 @@ EOD;
             $email = (isset($_POST['lis_person_contact_email_primary'])) ? $_POST['lis_person_contact_email_primary'] : '';
             $this->user->setEmail($email, $this->defaultEmail);
 
+// Set the user image URI
+            if (isset($_POST['user_image'])) {
+                $this->user->image = $_POST['user_image'];
+            }
+
 // Set the user roles
             if (isset($_POST['roles'])) {
                 $this->user->roles = self::parseRoles($_POST['roles']);
@@ -1180,7 +1188,7 @@ EOD;
             } else {
 // Check if this is a new share key
                 $shareKey = new ResourceLinkShareKey($this->resourceLink, $_POST['custom_share_key']);
-                if (!is_null($shareKey->primaryConsumerKey) && !is_null($share_key->primaryResourceLinkId)) {
+                if (!is_null($shareKey->primaryConsumerKey) && !is_null($shareKey->primaryResourceLinkId)) {
 // Update resource link with sharing primary resource link details
                     $key = $shareKey->primaryConsumerKey;
                     $id = $shareKey->primaryResourceLinkId;

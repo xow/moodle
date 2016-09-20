@@ -1,6 +1,7 @@
 <?php
 
 namespace IMSGlobal\LTI\ToolProvider;
+use IMSGlobal\LTI\ToolProvider\DataConnector\DataConnector;
 
 /**
  * Class to represent a tool consumer user
@@ -8,7 +9,7 @@ namespace IMSGlobal\LTI\ToolProvider;
  * @author  Stephen P Vickers <svickers@imsglobal.org>
  * @copyright  IMS Global Learning Consortium Inc
  * @date  2016
- * @version 3.0.0
+ * @version 3.0.2
  * @license http://www.apache.org/licenses/LICENSE-2.0 Apache License, Version 2.0
  */
 class User
@@ -38,6 +39,12 @@ class User
  * @var string $email
  */
     public $email = '';
+/**
+ * User's image URI.
+ *
+ * @var string $image
+ */
+    public $image = '';
 /**
  * Roles for user.
  *
@@ -120,6 +127,7 @@ class User
         $this->lastname = '';
         $this->fullname = '';
         $this->email = '';
+        $this->image = '';
         $this->roles = array();
         $this->groups = array();
         $this->ltiResultSourcedId = null;
@@ -175,7 +183,7 @@ class User
 /**
  * Get resource link.
  *
- * @return LTIResourceLink Resource link object
+ * @return ResourceLink Resource link object
  */
     public function getResourceLink()
     {
@@ -398,8 +406,9 @@ class User
 /**
  * Class constructor from resource link.
  *
- * @param ResourceLink $resourceLink   Resource_Link object
- * @param string       $ltiUserId      User ID value
+ * @param ResourceLink $resourceLink Resource_Link object
+ * @param string $ltiUserId User ID value
+ * @return User
  */
     public static function fromResourceLink($resourceLink, $ltiUserId)
     {
@@ -455,9 +464,10 @@ class User
         $this->id = $id;
         $dataConnector = $this->getDataConnector();
         if (!is_null($dataConnector)) {
-            $dataConnector->loadUser($this);
+            return $dataConnector->loadUser($this);
         }
 
+        return false;
     }
 
 }
