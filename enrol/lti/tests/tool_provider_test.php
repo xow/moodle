@@ -148,7 +148,7 @@ class tool_provider_testcase extends advanced_testcase {
         // Assert that a notification has been added.
         $this->assertCount(1, $SESSION->notifications);
         $notification = $SESSION->notifications[0];
-        $errormessage = get_string('failedregistration', 'enrol_lti', ['reason' => $message]);
+        $errormessage = get_string('failedrequest', 'enrol_lti', ['reason' => $message]);
         $this->assertEquals($errormessage, $notification->message);
         $this->assertEquals('error', $notification->type);
     }
