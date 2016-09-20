@@ -275,11 +275,11 @@ class tool_provider extends ToolProvider {
         }
 
         // Update user image.
-        // Using custom_user_image is the new standard.
-        $image = $this->resourceLink->getSetting('custom_user_image');
-        if (empty($image)) {
-            // Support user_image for backwards compatibility.
-            $image = optional_param('user_image', false, PARAM_URL);
+        if (isset($this->user) && isset($this->user->image) && !empty($this->user->image)) {
+            $image = $this->user->image;
+        } else {
+            // Use custom_user_image parameter as a fallback.
+            $image = $this->resourceLink->getSetting('custom_user_image');
         }
 
         // Check if there is an image to process.
