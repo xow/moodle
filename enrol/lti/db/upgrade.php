@@ -49,7 +49,7 @@ function xmldb_enrol_lti_upgrade($oldversion) {
         // Adding fields to table enrol_lti_lti2_consumer.
         $table->add_field('consumer_pk', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
         $table->add_field('name', XMLDB_TYPE_CHAR, '50', null, XMLDB_NOTNULL, null, null);
-        $table->add_field('consumer_key256', XMLDB_TYPE_CHAR, '256', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('consumer_key256', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
         $table->add_field('consumer_key', XMLDB_TYPE_TEXT, null, null, null, null, null);
         $table->add_field('secret', XMLDB_TYPE_CHAR, '1024', null, XMLDB_NOTNULL, null, null);
         $table->add_field('lti_version', XMLDB_TYPE_CHAR, '10', null, null, null, null);
@@ -69,6 +69,9 @@ function xmldb_enrol_lti_upgrade($oldversion) {
 
         // Adding keys to table enrol_lti_lti2_consumer.
         $table->add_key('primary', XMLDB_KEY_PRIMARY, array('consumer_pk'));
+
+        // Adding indexes to table enrol_lti_lti2_consumer.
+        $table->add_index('consumer_key256_uniq', XMLDB_INDEX_UNIQUE, array('consumer_key256'));
 
         // Conditionally launch create table for enrol_lti_lti2_consumer.
         if (!$dbman->table_exists($table)) {
@@ -152,9 +155,7 @@ function xmldb_enrol_lti_upgrade($oldversion) {
         $table->add_key('context_pk', XMLDB_KEY_FOREIGN, array('context_pk'), 'enrol_lti_lti2_context', array('context_pk'));
         $table->add_key('primary_resource_link_pk', XMLDB_KEY_FOREIGN, array('primary_resource_link_pk'),
             'enrol_lti_lti2_resource_link', array('resource_link_pk'));
-
-        // Adding indexes to table enrol_lti_lti2_resource_link.
-        $table->add_index('consumer_pk', XMLDB_INDEX_NOTUNIQUE, array('consumer_pk'));
+        $table->add_key('consumer_pk', XMLDB_KEY_FOREIGN, array('consumer_pk'), 'enrol_lti_lti2_consumer', array('consumer_pk'));
 
         // Conditionally launch create table for enrol_lti_lti2_resource_link.
         if (!$dbman->table_exists($table)) {

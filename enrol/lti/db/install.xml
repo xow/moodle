@@ -53,11 +53,11 @@
         <KEY NAME="toolid" TYPE="foreign" FIELDS="toolid" REFTABLE="enrol_lti_tools" REFFIELDS="id"/>
       </KEYS>
     </TABLE>
-    <TABLE NAME="enrol_lti_lti2_consumer" COMMENT="TODO">
+    <TABLE NAME="enrol_lti_lti2_consumer" COMMENT="LTI consumers interacting with moodle">
       <FIELDS>
         <FIELD NAME="consumer_pk" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="name" TYPE="char" LENGTH="50" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="consumer_key256" TYPE="char" LENGTH="256" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="consumer_key256" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="consumer_key" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="secret" TYPE="char" LENGTH="1024" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="lti_version" TYPE="char" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
@@ -77,10 +77,12 @@
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="consumer_pk"/>
-        <!-- <KEY NAME="consumer_key256_uniq" TYPE="unique" FIELDS="consumer_key256"/> TODO We can't have unique 256... either no unique or 255 length -->
       </KEYS>
+      <INDEXES>
+        <INDEX NAME="consumer_key256_uniq" UNIQUE="true" FIELDS="consumer_key256"/>
+      </INDEXES>
     </TABLE>
-    <TABLE NAME="enrol_lti_lti2_tool_proxy" COMMENT="TODO">
+    <TABLE NAME="enrol_lti_lti2_tool_proxy" COMMENT="A tool proxy between moodle and a consumer">
       <FIELDS>
         <FIELD NAME="tool_proxy_pk" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="tool_proxy_id" TYPE="char" LENGTH="32" NOTNULL="true" SEQUENCE="false"/>
@@ -95,7 +97,7 @@
         <KEY NAME="consumer_pk" TYPE="foreign" FIELDS="consumer_pk" REFTABLE="enrol_lti_lti2_consumer" REFFIELDS="consumer_pk"/>
       </KEYS>
     </TABLE>
-    <TABLE NAME="enrol_lti_lti2_context" COMMENT="TODO">
+    <TABLE NAME="enrol_lti_lti2_context" COMMENT="Information about a specific LTI contexts from the consumers">
       <FIELDS>
         <FIELD NAME="context_pk" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="consumer_pk" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
@@ -109,7 +111,7 @@
         <KEY NAME="consumer_pk" TYPE="foreign" FIELDS="consumer_pk" REFTABLE="enrol_lti_lti2_consumer" REFFIELDS="consumer_pk"/>
       </KEYS>
     </TABLE>
-    <TABLE NAME="enrol_lti_lti2_nonce" COMMENT="TODO">
+    <TABLE NAME="enrol_lti_lti2_nonce" COMMENT="Nonce used for authentication between moodle and a consumer">
       <FIELDS>
         <FIELD NAME="consumer_pk" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="value" TYPE="char" LENGTH="32" NOTNULL="true" SEQUENCE="false"/>
@@ -120,7 +122,7 @@
         <KEY NAME="consumer_pk" TYPE="foreign" FIELDS="consumer_pk" REFTABLE="enrol_lti_lti2_consumer" REFFIELDS="consumer_pk"/>
       </KEYS>
     </TABLE>
-    <TABLE NAME="enrol_lti_lti2_resource_link" COMMENT="TODO">
+    <TABLE NAME="enrol_lti_lti2_resource_link" COMMENT="Link from the consumer to the tool">
       <FIELDS>
         <FIELD NAME="resource_link_pk" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="context_pk" TYPE="int" LENGTH="11" NOTNULL="false" SEQUENCE="false"/>
@@ -136,12 +138,10 @@
         <KEY NAME="primary" TYPE="primary" FIELDS="resource_link_pk"/>
         <KEY NAME="context_pk" TYPE="foreign" FIELDS="context_pk" REFTABLE="enrol_lti_lti2_context" REFFIELDS="context_pk"/>
         <KEY NAME="primary_resource_link_pk" TYPE="foreign" FIELDS="primary_resource_link_pk" REFTABLE="enrol_lti_lti2_resource_link" REFFIELDS="resource_link_pk"/>
+        <KEY NAME="consumer_pk" TYPE="foreign" FIELDS="consumer_pk" REFTABLE="enrol_lti_lti2_consumer" REFFIELDS="consumer_pk"/>
       </KEYS>
-      <INDEXES>
-        <INDEX NAME="consumer_pk" UNIQUE="false" FIELDS="consumer_pk"/> <!-- TODO shouldn't this be foreign?? -->
-      </INDEXES>
     </TABLE>
-    <TABLE NAME="enrol_lti_lti2_share_key" COMMENT="TODO">
+    <TABLE NAME="enrol_lti_lti2_share_key" COMMENT="Resource link share key">
       <FIELDS>
         <FIELD NAME="share_key_id" TYPE="char" LENGTH="32" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="resource_link_pk" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
@@ -153,7 +153,7 @@
         <KEY NAME="resource_link_pk" TYPE="foreign" FIELDS="resource_link_pk" REFTABLE="enrol_lti_lti2_resource_link" REFFIELDS="resource_link_pk"/>
       </KEYS>
     </TABLE>
-    <TABLE NAME="enrol_lti_lti2_user_result" COMMENT="TODO">
+    <TABLE NAME="enrol_lti_lti2_user_result" COMMENT="Results for each user for each resource link">
       <FIELDS>
         <FIELD NAME="user_pk" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="resource_link_pk" TYPE="int" LENGTH="11" NOTNULL="true" SEQUENCE="false"/>
