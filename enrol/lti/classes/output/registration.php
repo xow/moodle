@@ -23,6 +23,8 @@
  */
 namespace enrol_lti\output;
 
+defined('MOODLE_INTERNAL') || die;
+
 use renderable;
 use renderer_base;
 use templatable;

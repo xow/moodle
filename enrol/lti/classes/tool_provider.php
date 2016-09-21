@@ -291,7 +291,6 @@ class tool_provider extends ToolProvider {
             // May still be set from previous session, so unset it.
             unset($SESSION->forcepagelayout);
         } else if ($context->contextlevel == CONTEXT_MODULE) {
-            $cmid = $context->instanceid;
             $cm = get_coursemodule_from_id(false, $context->instanceid, 0, false, MUST_EXIST);
             $urltogo = new moodle_url('/mod/' . $cm->modname . '/view.php', ['id' => $cm->id]);
 

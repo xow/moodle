@@ -37,7 +37,7 @@
  * @return boolean
  */
 function xmldb_enrol_lti_upgrade($oldversion) {
-    global $CFG, $DB;
+    global $DB;
 
     $dbman = $DB->get_manager();
 

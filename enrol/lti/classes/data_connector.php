@@ -701,8 +701,8 @@ class data_connector extends DataConnector {
         }
 
         // The subquery.
-        $subsql = "SELECT resource_link_pk 
-                     FROM {{$resourcelinktable}} 
+        $subsql = "SELECT resource_link_pk
+                     FROM {{$resourcelinktable}}
                     WHERE {$subwhere}";
 
         // Our main where clause.

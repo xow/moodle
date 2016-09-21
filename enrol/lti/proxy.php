@@ -45,7 +45,7 @@ $PAGE->set_title(get_string('registration', 'enrol_lti'));
 // If we do not compare with a shared secret, someone could very easily
 // guess an id for the enrolment.
 if (!\enrol_lti\helper::verify_proxy_token($toolid, $token)) {
-    throw new \moodle_exception('incorrecttoken', 'enrol_lti'); // TODO can we do an LTI error? Not really important as this bug will only occur if the url is wrong.
+    throw new \moodle_exception('incorrecttoken', 'enrol_lti');
 }
 $tool = \enrol_lti\helper::get_lti_tool($toolid);
 
