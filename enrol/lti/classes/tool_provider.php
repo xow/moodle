@@ -157,12 +157,6 @@ class tool_provider extends ToolProvider {
         );
 
         $this->requiredServices[] = new ServiceDefinition(['application/vnd.ims.lti.v2.toolproxy+json'], ['POST']);
-
-        $this->setParameterConstraint('oauth_consumer_key', true, 50, ['basic-lti-launch-request']);
-        $this->setParameterConstraint('resource_link_id', true, 50, ['basic-lti-launch-request']);
-        $this->setParameterConstraint('user_id', true, 50, ['basic-lti-launch-request']);
-        $this->setParameterConstraint('roles', true, null, ['basic-lti-launch-request']);
-
     }
 
     /**
