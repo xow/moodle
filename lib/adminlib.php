@@ -10510,6 +10510,34 @@ class admin_setting_scsscode extends admin_setting_configtextarea {
 class admin_setting_filetypes extends admin_setting {
 
     /**
+     * @var array The system selected file type choices.
+     */
+    private $filetypes = [];
+
+    /**
+     * @var bool Allow selection of 'All file types' (will be stored as '*').
+     */
+    private $allowall = true;
+
+    /**
+     * Constructor
+     * @param string $name unique ascii name, either 'mysetting' for settings that in config,
+     *                     or 'myplugin/mysetting' for ones in config_plugins.
+     * @param string $visiblename localised name
+     * @param string $description localised long description
+     * @param mixed $defaultsetting string or array depending on implementation
+     * @param array $filetypes list of allowed file types to select from, for example ['web_image', '.pdf'], empty means no restriction
+     * @param bool $allowall allow to select "All file types", N/A if $filetypes was specified
+     */
+    public function __construct($name, $visiblename, $description, $defaultsetting, $filetypes = null, $allowall = true) {
+        parent::__construct($name, $visiblename, $description, $defaultsetting);
+        if (is_array($filetypes)) {
+            $this->filetypes = $filetypes;
+        }
+        $this->allowall = (bool)$allowall;
+    }
+
+    /**
      * Return the current setting(s)
      *
      * @return string Current setting
@@ -10547,7 +10575,7 @@ class admin_setting_filetypes extends admin_setting {
             return true;
         }
 
-        $types = new core_form\filetypes();
+        $types = new core_form\filetypes($this->filetypes, $this->allowall);
         $alltypes = $types->get_alltypes();
         $typegroups = $types->get_typegroups();
 
@@ -10599,7 +10627,8 @@ class admin_setting_filetypes extends admin_setting {
             array(
                 $this->get_id(),
                 $this->visiblename,
-                array()
+                $this->filetypes,
+                $this->allowall
             )
         );
 
@@ -10616,7 +10645,7 @@ class admin_setting_filetypes extends admin_setting {
     private function render_label($value) {
         global $OUTPUT;
 
-        $types = new core_form\filetypes();
+        $types = new core_form\filetypes($this->filetypes, $this->allowall);
         $typegroups = $types->get_typegroups();
         $alltypes = $types->get_alltypes();
         $tplcontext = array('items' => array());
