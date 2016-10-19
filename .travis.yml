@@ -225,7 +225,7 @@ script:
     - >
       if [ "$TASK" = 'PHPUNIT' ];
       then
-        vendor/bin/phpunit;
+        vendor/bin/phpunit --verbose lib/tests/session_redis_test.php --stop-on-skipped;
       fi
 
     - >
