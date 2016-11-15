@@ -493,6 +493,7 @@ function quiz_user_complete($course, $user, $mod, $quiz) {
     global $DB, $CFG, $OUTPUT;
     require_once($CFG->libdir . '/gradelib.php');
     require_once($CFG->dirroot . '/mod/quiz/locallib.php');
+    require_once($CFG->dirroot . '/mod/quiz/attemptlib.php');
 
     $grades = grade_get_grades($course->id, 'mod', 'quiz', $quiz->id, $user->id);
     if (!empty($grades->items[0]->grades)) {
@@ -516,7 +517,10 @@ function quiz_user_complete($course, $user, $mod, $quiz) {
             array('userid' => $user->id, 'quiz' => $quiz->id), 'attempt')) {
         foreach ($attempts as $attempt) {
             echo get_string('attempt', 'quiz', $attempt->attempt) . ': ';
-            if ($attempt->state != quiz_attempt::FINISHED) {
+            $attemptobj = quiz_attempt::create($attempt->id);
+            $attemptoptions = $attemptobj->get_display_options(true);
+            $showmarks = $attemptoptions->marks >= question_display_options::MARK_AND_MAX;
+            if ($attempt->state != quiz_attempt::FINISHED || !$showmarks) {
                 echo quiz_attempt_state_name($attempt->state);
             } else {
                 echo quiz_format_grade($quiz, $attempt->sumgrades) . '/' .
