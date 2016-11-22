@@ -2342,7 +2342,7 @@ function lti_get_launch_container($lti, $toolconfig) {
     }
 
     if (empty($launchcontainer) || $launchcontainer == LTI_LAUNCH_CONTAINER_DEFAULT) {
-        $launchcontainer = LTI_LAUNCH_CONTAINER_EMBED_NO_BLOCKS;
+        $launchcontainer = LTI_LAUNCH_CONTAINER_EMBED;
     }
 
     $devicetype = core_useragent::get_device_type();
