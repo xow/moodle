@@ -2705,17 +2705,22 @@ function lti_load_cartridge($url, $map, $propertiesmap = array()) {
     $response = $curl->get($url);
 
     // TODO MDL-46023 Replace this code with a call to the new library.
+    // Use internal errors rather than stopping PHP execution.
     $origerrors = libxml_use_internal_errors(true);
+    // Disable the entity loader so that we do not attempt to load and verify XML schema.
     $origentity = libxml_disable_entity_loader(true);
-    libxml_clear_errors();
 
     $document = new DOMDocument();
-    @$document->loadXML($response, LIBXML_DTDLOAD | LIBXML_DTDATTR);
+    $document->loadXML($response, LIBXML_DTDLOAD | LIBXML_DTDATTR);
+    // Clear errors, we don't need to report problems in loading the xml.
+    libxml_clear_errors();
 
     $cartridge = new DomXpath($document);
 
+    // Get any errors in the DOM, to be reported if debugging is on.
     $errors = libxml_get_errors();
 
+    // Clear errors and return libxml internal errors and disabled entity loader to original states.
     libxml_clear_errors();
     libxml_use_internal_errors($origerrors);
     libxml_disable_entity_loader($origentity);
