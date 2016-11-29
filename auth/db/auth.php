@@ -87,7 +87,7 @@ class auth_plugin_db extends auth_plugin_base {
                                      WHERE {$this->config->fielduser} = '".$this->ext_addslashes($extusername)."'");
             if (!$rs) {
                 $authdb->Close();
-                debugging(get_string('auth_dbcantconnect','auth_db'));
+                debugging(get_string('auth_dbcantconnect', 'auth_db'));
                 return false;
             }
 
@@ -115,7 +115,7 @@ class auth_plugin_db extends auth_plugin_base {
                                      WHERE {$this->config->fielduser} = '".$this->ext_addslashes($extusername)."'");
             if (!$rs) {
                 $authdb->Close();
-                debugging(get_string('auth_dbcantconnect','auth_db'));
+                debugging(get_string('auth_dbcantconnect', 'auth_db'));
                 return false;
             }
 
@@ -301,17 +301,17 @@ class auth_plugin_db extends auth_plugin_base {
 
             // Find obsolete users.
             if (count($userlist)) {
-                $remove_users = array();
-                // All the drivers can cope with chunks of 10,000. See line 4491 of lib/dml/tests/dml_est.php
-                $userlistchunks = array_chunk($userlist , 10000);
-                foreach($userlistchunks as $userlistchunk) {
-                    list($notin_sql, $params) = $DB->get_in_or_equal($userlistchunk, SQL_PARAMS_NAMED, 'u', false);
-                    $params['authtype'] = $this->authtype;
-                    $sql = "SELECT u.id, u.username
-                          FROM {user} u
-                         WHERE u.auth=:authtype AND u.deleted=0 AND u.mnethostid=:mnethostid $suspendselect AND u.username $notin_sql";
-                    $params['mnethostid'] = $CFG->mnet_localhost_id;
-                    $remove_users = $remove_users + $DB->get_records_sql($sql, $params);
+                $removeusers = array();
+                  $params['authtype'] = $this->authtype;
+                  $sql = "SELECT u.id, u.username
+                        FROM {user} u
+                       WHERE u.auth=:authtype AND u.deleted=0 AND u.mnethostid=:mnethostid $suspendselect";
+                  $params['mnethostid'] = $CFG->mnet_localhost_id;
+                  $internalusers = $DB->get_records_sql($sql, $params);
+                foreach ($internalusers as $internaluser) {
+                    if (!in_array($internaluser->username, $userlist)) {
+                        $removeusers[] = $internaluser;
+                    }
                 }
             } else {
                 $sql = "SELECT u.id, u.username
@@ -320,13 +320,13 @@ class auth_plugin_db extends auth_plugin_base {
                 $params = array();
                 $params['authtype'] = $this->authtype;
                 $params['mnethostid'] = $CFG->mnet_localhost_id;
-                $remove_users = $DB->get_records_sql($sql, $params);
+                $removeusers = $DB->get_records_sql($sql, $params);
             }
 
-            if (!empty($remove_users)) {
-                $trace->output(get_string('auth_dbuserstoremove','auth_db', count($remove_users)));
+            if (!empty($removeusers)) {
+                $trace->output(get_string('auth_dbuserstoremove', 'auth_db', count($removeusers)));
 
-                foreach ($remove_users as $user) {
+                foreach ($removeusers as $user) {
                     if ($this->config->removeuser == AUTH_REMOVEUSER_FULLDELETE) {
                         delete_user($user);
                         $trace->output(get_string('auth_dbdeleteuser', 'auth_db', array('name'=>$user->username, 'id'=>$user->id)), 1);
@@ -339,7 +339,7 @@ class auth_plugin_db extends auth_plugin_base {
                     }
                 }
             }
-            unset($remove_users);
+            unset($removeusers);
         }
 
         if (!count($userlist)) {
@@ -414,13 +414,13 @@ class auth_plugin_db extends auth_plugin_base {
             unset($users);
         }
 
-        $add_users = array_diff($userlist, $usernames);
+        $addusers = array_diff($userlist, $usernames);
         unset($usernames);
 
-        if (!empty($add_users)) {
-            $trace->output(get_string('auth_dbuserstoadd','auth_db',count($add_users)));
+        if (!empty($addusers)) {
+            $trace->output(get_string('auth_dbuserstoadd', 'auth_db', count($addusers)));
             // Do not use transactions around this foreach, we want to skip problematic users, not revert everything.
-            foreach($add_users as $user) {
+            foreach ($addusers as $user) {
                 $username = $user;
                 if ($this->config->removeuser == AUTH_REMOVEUSER_SUSPEND) {
                     if ($olduser = $DB->get_record('user', array('username' => $username, 'deleted' => 0, 'suspended' => 1,
@@ -465,7 +465,7 @@ class auth_plugin_db extends auth_plugin_base {
                 // Make sure user context is present.
                 context_user::instance($id);
             }
-            unset($add_users);
+            unset($addusers);
         }
         $trace->finished();
         return 0;
@@ -485,7 +485,7 @@ class auth_plugin_db extends auth_plugin_base {
                                  WHERE {$this->config->fielduser} = '".$this->ext_addslashes($extusername)."' ");
 
         if (!$rs) {
-            print_error('auth_dbcantconnect','auth_db');
+            print_error('auth_dbcantconnect', 'auth_db');
         } else if (!$rs->EOF) {
             // User exists externally.
             $result = true;
@@ -508,7 +508,7 @@ class auth_plugin_db extends auth_plugin_base {
                                   FROM {$this->config->table} ");
 
         if (!$rs) {
-            print_error('auth_dbcantconnect','auth_db');
+            print_error('auth_dbcantconnect', 'auth_db');
         } else if (!$rs->EOF) {
             while ($rec = $rs->FetchRow()) {
                 $rec = array_change_key_case((array)$rec, CASE_LOWER);
@@ -557,7 +557,7 @@ class auth_plugin_db extends auth_plugin_base {
         $user = $DB->get_record('user', array('username'=>$username, 'mnethostid'=>$CFG->mnet_localhost_id));
         if (empty($user)) { // trouble
             error_log("Cannot update non-existent user: $username");
-            print_error('auth_dbusernotexist','auth_db',$username);
+            print_error('auth_dbusernotexist', 'auth_db', $username);
             die;
         }
 
@@ -648,7 +648,7 @@ class auth_plugin_db extends auth_plugin_base {
         }
         if (!empty($update)) {
             $authdb->Execute("UPDATE {$this->config->table}
-                                 SET ".implode(',', $update)."
+                                 SET ".implode(', ', $update)."
                                WHERE {$this->config->fielduser}='".$this->ext_addslashes($extusername)."'");
         }
         $authdb->Close();
@@ -933,5 +933,3 @@ class auth_plugin_db extends auth_plugin_base {
         return core_user::clean_data($user);
     }
 }
-
-
