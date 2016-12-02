@@ -87,7 +87,7 @@ class auth_plugin_db extends auth_plugin_base {
                                      WHERE {$this->config->fielduser} = '".$this->ext_addslashes($extusername)."'");
             if (!$rs) {
                 $authdb->Close();
-                debugging(get_string('auth_dbcantconnect', 'auth_db'));
+                debugging(get_string('auth_dbcantconnect','auth_db'));
                 return false;
             }
 
@@ -115,7 +115,7 @@ class auth_plugin_db extends auth_plugin_base {
                                      WHERE {$this->config->fielduser} = '".$this->ext_addslashes($extusername)."'");
             if (!$rs) {
                 $authdb->Close();
-                debugging(get_string('auth_dbcantconnect', 'auth_db'));
+                debugging(get_string('auth_dbcantconnect','auth_db'));
                 return false;
             }
 
@@ -414,13 +414,13 @@ class auth_plugin_db extends auth_plugin_base {
             unset($users);
         }
 
-        $addusers = array_diff($userlist, $usernames);
+        $add_users = array_diff($userlist, $usernames);
         unset($usernames);
 
-        if (!empty($addusers)) {
-            $trace->output(get_string('auth_dbuserstoadd', 'auth_db', count($addusers)));
+        if (!empty($add_users)) {
+            $trace->output(get_string('auth_dbuserstoadd','auth_db',count($add_users)));
             // Do not use transactions around this foreach, we want to skip problematic users, not revert everything.
-            foreach ($addusers as $user) {
+            foreach($add_users as $user) {
                 $username = $user;
                 if ($this->config->removeuser == AUTH_REMOVEUSER_SUSPEND) {
                     if ($olduser = $DB->get_record('user', array('username' => $username, 'deleted' => 0, 'suspended' => 1,
@@ -465,7 +465,7 @@ class auth_plugin_db extends auth_plugin_base {
                 // Make sure user context is present.
                 context_user::instance($id);
             }
-            unset($addusers);
+            unset($add_users);
         }
         $trace->finished();
         return 0;
@@ -485,7 +485,7 @@ class auth_plugin_db extends auth_plugin_base {
                                  WHERE {$this->config->fielduser} = '".$this->ext_addslashes($extusername)."' ");
 
         if (!$rs) {
-            print_error('auth_dbcantconnect', 'auth_db');
+            print_error('auth_dbcantconnect','auth_db');
         } else if (!$rs->EOF) {
             // User exists externally.
             $result = true;
@@ -508,7 +508,7 @@ class auth_plugin_db extends auth_plugin_base {
                                   FROM {$this->config->table} ");
 
         if (!$rs) {
-            print_error('auth_dbcantconnect', 'auth_db');
+            print_error('auth_dbcantconnect','auth_db');
         } else if (!$rs->EOF) {
             while ($rec = $rs->FetchRow()) {
                 $rec = array_change_key_case((array)$rec, CASE_LOWER);
@@ -557,7 +557,7 @@ class auth_plugin_db extends auth_plugin_base {
         $user = $DB->get_record('user', array('username'=>$username, 'mnethostid'=>$CFG->mnet_localhost_id));
         if (empty($user)) { // trouble
             error_log("Cannot update non-existent user: $username");
-            print_error('auth_dbusernotexist', 'auth_db', $username);
+            print_error('auth_dbusernotexist','auth_db',$username);
             die;
         }
 
@@ -648,7 +648,7 @@ class auth_plugin_db extends auth_plugin_base {
         }
         if (!empty($update)) {
             $authdb->Execute("UPDATE {$this->config->table}
-                                 SET ".implode(', ', $update)."
+                                 SET ".implode(',', $update)."
                                WHERE {$this->config->fielduser}='".$this->ext_addslashes($extusername)."'");
         }
         $authdb->Close();
