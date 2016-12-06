@@ -6161,8 +6161,7 @@ function send_confirmation_email($user, $confirmationurl = null) {
 
     $subject = get_string('emailconfirmationsubject', '', format_string($site->fullname));
 
-    $username = urlencode($user->username);
-    $username = str_replace('.', '%2E', $username); // Prevent problems with trailing dots.
+    $username = $user->username;
     if (empty($confirmationurl)) {
         $confirmationurl = '/login/confirm.php';
     }
