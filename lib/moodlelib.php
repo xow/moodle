@@ -6166,8 +6166,7 @@ function send_confirmation_email($user, $confirmationurl = null) {
     if (empty($confirmationurl)) {
         $confirmationurl = '/login/confirm.php';
     }
-    $confirmationurl = new moodle_url($confirmationurl, array('data' => $user->secret .'/'. $username));
-    $data->link = $confirmationurl->out(false);
+    $data->link = $CFG->wwwroot . $confirmationurl . '?data='. $user->secret . '/' . $username;
 
     $message     = get_string('emailconfirmation', '', $data);
     $messagehtml = text_to_html(get_string('emailconfirmation', '', $data), false, false, true);
