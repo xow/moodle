@@ -6161,13 +6161,12 @@ function send_confirmation_email($user, $confirmationurl = null) {
 
     $subject = get_string('emailconfirmationsubject', '', format_string($site->fullname));
 
-    $username = urlencode($user->username);
-    $username = str_replace('.', '%2E', $username); // Prevent problems with trailing dots.
+    $username = str_replace('.', '%2E', $user->username);
     if (empty($confirmationurl)) {
         $confirmationurl = '/login/confirm.php';
     }
-    $confirmationurl = new moodle_url($confirmationurl, array('data' => $user->secret .'/'. $username));
-    $data->link = $confirmationurl->out(false);
+    $confirmationurl = new moodle_url($confirmationurl, array('data' => $user->secret));
+    $data->link = $confirmationurl->out(false) . '/' . $username;
 
     $message     = get_string('emailconfirmation', '', $data);
     $messagehtml = text_to_html(get_string('emailconfirmation', '', $data), false, false, true);
