@@ -6158,16 +6158,9 @@ function send_confirmation_email($user, $confirmationurl = null) {
     $data->firstname = fullname($user);
     $data->sitename  = format_string($site->fullname);
     $data->admin     = generate_email_signoff();
+    $data->link      = generate_confirmation_link($user, $confirmationurl);
 
     $subject = get_string('emailconfirmationsubject', '', format_string($site->fullname));
-
-    $username = urlencode($user->username);
-    $username = str_replace('.', '%2E', $username); // Prevent problems with trailing dots.
-    if (empty($confirmationurl)) {
-        $confirmationurl = '/login/confirm.php';
-    }
-    $confirmationurl = new moodle_url($confirmationurl, array('data' => $user->secret .'/'. $username));
-    $data->link = $confirmationurl->out(false);
 
     $message     = get_string('emailconfirmation', '', $data);
     $messagehtml = text_to_html(get_string('emailconfirmation', '', $data), false, false, true);
@@ -6176,6 +6169,26 @@ function send_confirmation_email($user, $confirmationurl = null) {
 
     // Directly email rather than using the messaging system to ensure its not routed to a popup or jabber.
     return email_to_user($user, $supportuser, $subject, $message, $messagehtml);
+}
+
+/**
+ * Returns the link to confirm the given new user
+ *
+ * @param stdClass $user A {@link $USER} object
+ * @param string $confirmationurl user confirmation URL
+ * @return string Returns the confirmation link as a string (to allow for custom encoding).
+ */
+function generate_confirmation_link($user, $confirmationurl = null) {
+    $username = urlencode($user->username);
+    $username = str_replace('.', '%2E', $username); // Prevent problems with trailing dots.
+    if (empty($confirmationurl)) {
+        $confirmationurl = '/login/confirm.php';
+    }
+    $confirmationurl = new moodle_url($confirmationurl);
+    $confirmationpath = $confirmationurl->out(false);
+
+    $hasquerystring = strpos($confirmationpath, '?') !== false;
+    return $confirmationpath . ( $hasquerystring ? '&' : '?') . 'data='. $user->secret .'/'. $username;
 }
 
 /**
