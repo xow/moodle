@@ -76,7 +76,7 @@ define(['jquery', 'core/ajax', 'core/templates', 'core/notification', 'core/cust
         Messages.prototype._numMessagesDisplayed = 0;
 
         /** @type {array} the messages displayed or about to be displayed on the page */
-        Messages.prototype._messages = [];
+        Messages.prototype._messageQueue = [];
 
         /** @type {int} the number of messages to retrieve */
         Messages.prototype._numMessagesToRetrieve = 20;
@@ -299,38 +299,7 @@ define(['jquery', 'core/ajax', 'core/templates', 'core/notification', 'core/cust
             // Keep track of the number of messages received.
             var numberreceived = 0;
             return this._getMessages(this._getUserId(), true).then(function(data) {
-                // Filter out any messages already rendered.
-                var messagesArea = this.messageArea.find(SELECTORS.MESSAGES);
-                data.messages = data.messages.filter(function(message) {
-                    var id = "" + message.id + message.isread;
-                    var result = messagesArea.find(SELECTORS.MESSAGE + '[data-id="' + id + '"]');
-                    this._messages.filter(function(existingmessage) {
-                        return existingmessage.id == message.id && existingmessage.isread == message.isread;;
-                    }.bind(this));
-                    return !result.length;
-                }.bind(this));
-                numberreceived = data.messages.length;
-                // We have the data - lets render the template with it.
-                this._messages = this._messages.concat(data.messages);
-                return Templates.render('core_message/message_area_messages', data);
-            }.bind(this)).then(function(html, js) {
-                // Check if we got something to do.
-                if (numberreceived > 0) {
-                    var newHtml = $('<div>' + html + '</div>');
-                    if (this._hasMatchingBlockTime(this.messageArea.node, newHtml, false)) {
-                        newHtml.find(SELECTORS.BLOCKTIME + ':first').remove();
-                    }
-                    // Show the new content.
-                    Templates.appendNodeContents(this.messageArea.find(SELECTORS.MESSAGES), newHtml, js);
-                    // Scroll the new message into view.
-                    if (shouldScrollBottom) {
-                        this._scrollBottom();
-                    }
-                    // Increment the number of messages displayed.
-                    this._numMessagesDisplayed += numberreceived;
-                    // Reset the poll timer because the user may be active.
-                    this._backoffTimer.restart();
-                }
+                return this._addMessagesToDom(data, shouldScrollBottom);
             }.bind(this)).always(function() {
                 // Mark that we are no longer busy loading data.
                 this._isLoadingMessages = false;
@@ -628,6 +597,70 @@ define(['jquery', 'core/ajax', 'core/templates', 'core/notification', 'core/cust
             this.messageArea.trigger(Events.CANCELDELETEMESSAGES);
         };
 
+        /**
+         * Handles adding messages to the DOM.
+         *
+         * @param {array} messages The promise resolved when the message has been added to the DOM.
+         * @return {Promise} The promise resolved when the messages have been added to the DOM.
+         * @private
+         */
+        Messages.prototype._addMessagesToDom = function(messages, shouldScrollBottom) {
+            if (messages.length > 1) {
+                var messagesArea = this.messageArea.find(SELECTORS.MESSAGES);
+                data.messages = data.messages.filter(function(message) {
+                    var id = "" + message.id + message.isread;
+                    // If the message is already queued to be rendered, remove from the list of messages.
+                    if (this._messageQueue[id]) {
+                        return false;
+                    }
+                    // Filter out any messages already rendered.
+                    var result = messagesArea.find(SELECTORS.MESSAGE + '[data-id="' + id + '"]');
+                    // Any message we are rendering should go in the messageQueue.
+                    if (!result.length) {
+                        this._messageQueue[id] = true;
+                    }
+                    return !result.length;
+                }.bind(this));
+                numberreceived = data.messages.length;
+                // We have the data - lets render the template with it.
+                Templates.render('core_message/message_area_messages', data).then(function(html, js) {
+                    // Check if we got something to do.
+                    if (numberreceived > 0) {
+                        var newHtml = $('<div>' + html + '</div>');
+                        if (this._hasMatchingBlockTime(this.messageArea.node, newHtml, false)) {
+                            newHtml.find(SELECTORS.BLOCKTIME + ':first').remove();
+                        }
+                        // Show the new content.
+                        Templates.appendNodeContents(this.messageArea.find(SELECTORS.MESSAGES), newHtml, js);
+                        // Scroll the new message into view.
+                        if (shouldScrollBottom) {
+                            this._scrollBottom();
+                        }
+                        // Increment the number of messages displayed.
+                        this._numMessagesDisplayed += numberreceived;
+                        // Reset the poll timer because the user may be active.
+                        this._backoffTimer.restart();
+                    }
+                }.bind(this));
+            } else if (messages.length > 0) {
+                var message = messages[0];
+                var id = "" + message.id + message.isread;
+                // Detect if the message is already queued to be rendered.
+                if (this._messageQueue[id]) {
+                    return $.Deferred().resolve();
+                } else {
+                    this._messageQueue[id] = true;
+                }
+                // Add the message.
+                return Templates.render('core_message/message_area_message', message).then(function(html, js) {
+                    Templates.appendNodeContents(this.messageArea.find(SELECTORS.MESSAGES), html, js);
+                    // Empty the response text area.
+                    this.messageArea.find(SELECTORS.SENDMESSAGETEXT).val('').trigger('input');
+                    // Scroll down.
+                    this._scrollBottom();
+                }.bind(this));
+            }
+        };
 
         /**
          * Handles adding the last message to the DOM.
@@ -647,24 +680,8 @@ define(['jquery', 'core/ajax', 'core/templates', 'core/notification', 'core/cust
 
             // Add the message.
             return promises[0].then(function(data) {
-                var messagesAlreadyExisting = this._messages.filter(function (message) {
-                    return message.id == data.id && message.isread == data.isread;
-                });
-                if (messagesAlreadyExisting.length) {
-                    return $.Deferred().resolve();
-                } else {
-                    this._messages.push(data);
-                    return Templates.render('core_message/message_area_message', data).then(function(html, js) {
-                        Templates.appendNodeContents(this.messageArea.find(SELECTORS.MESSAGES), html, js);
-                        return $.Deferred().resolve();
-                    }.bind(this)).fail(Notification.exception);
-                }
-            }.bind(this)).always(function () {
-                // Empty the response text area.
-                this.messageArea.find(SELECTORS.SENDMESSAGETEXT).val('').trigger('input');
-                // Scroll down.
-                this._scrollBottom();
-            }.bind(this));
+                return this._addMessagesToDom([data]);
+            }.bind(this)).fail(Notification.exception);;
         };
 
         /**
