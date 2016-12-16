@@ -75,6 +75,9 @@ define(['jquery', 'core/ajax', 'core/templates', 'core/notification', 'core/cust
         /** @type {int} the number of messagess displayed */
         Messages.prototype._numMessagesDisplayed = 0;
 
+        /** @type {array} the messages displayed or about to be displayed on the page */
+        Messages.prototype._messages = [];
+
         /** @type {int} the number of messages to retrieve */
         Messages.prototype._numMessagesToRetrieve = 20;
 
@@ -301,10 +304,14 @@ define(['jquery', 'core/ajax', 'core/templates', 'core/notification', 'core/cust
                 data.messages = data.messages.filter(function(message) {
                     var id = "" + message.id + message.isread;
                     var result = messagesArea.find(SELECTORS.MESSAGE + '[data-id="' + id + '"]');
+                    this._messages.filter(function(existingmessage) {
+                        return existingmessage.id == message.id && existingmessage.isread == message.isread;;
+                    }.bind(this));
                     return !result.length;
-                });
+                }.bind(this));
                 numberreceived = data.messages.length;
                 // We have the data - lets render the template with it.
+                this._messages = this._messages.concat(data.messages);
                 return Templates.render('core_message/message_area_messages', data);
             }.bind(this)).then(function(html, js) {
                 // Check if we got something to do.
@@ -435,7 +442,7 @@ define(['jquery', 'core/ajax', 'core/templates', 'core/notification', 'core/cust
                 // Fire an event to say the message was sent.
                 this.messageArea.trigger(Events.MESSAGESENT, [this._getUserId(), text]);
                 // Update the messaging area.
-                return this._addMessageToDom();
+                return this._addLastMessageToDom();
             }.bind(this)).then(function() {
                 // Ok, we are no longer sending a message.
                 this._isSendingMessage = false;
@@ -621,13 +628,14 @@ define(['jquery', 'core/ajax', 'core/templates', 'core/notification', 'core/cust
             this.messageArea.trigger(Events.CANCELDELETEMESSAGES);
         };
 
+
         /**
-         * Handles adding messages to the DOM.
+         * Handles adding the last message to the DOM.
          *
          * @return {Promise} The promise resolved when the message has been added to the DOM.
          * @private
          */
-        Messages.prototype._addMessageToDom = function() {
+        Messages.prototype._addLastMessageToDom = function() {
             // Call the web service to return how the message should look.
             var promises = Ajax.call([{
                 methodname: 'core_message_data_for_messagearea_get_most_recent_message',
@@ -639,14 +647,24 @@ define(['jquery', 'core/ajax', 'core/templates', 'core/notification', 'core/cust
 
             // Add the message.
             return promises[0].then(function(data) {
-                return Templates.render('core_message/message_area_message', data);
-            }).then(function(html, js) {
-                Templates.appendNodeContents(this.messageArea.find(SELECTORS.MESSAGES), html, js);
+                var messagesAlreadyExisting = this._messages.filter(function (message) {
+                    return message.id == data.id && message.isread == data.isread;
+                });
+                if (messagesAlreadyExisting.length) {
+                    return $.Deferred().resolve();
+                } else {
+                    this._messages.push(data);
+                    return Templates.render('core_message/message_area_message', data).then(function(html, js) {
+                        Templates.appendNodeContents(this.messageArea.find(SELECTORS.MESSAGES), html, js);
+                        return $.Deferred().resolve();
+                    }.bind(this)).fail(Notification.exception);
+                }
+            }.bind(this)).always(function () {
                 // Empty the response text area.
                 this.messageArea.find(SELECTORS.SENDMESSAGETEXT).val('').trigger('input');
                 // Scroll down.
                 this._scrollBottom();
-            }.bind(this)).fail(Notification.exception);
+            }.bind(this));
         };
 
         /**
