@@ -83,7 +83,7 @@ class sqlsrv_native_moodle_database extends moodle_database {
         return 'mssql';
     }
 
-   /**
+    /**
      * Returns more specific database driver type
      * Note: can be used before connect()
      * @return string db type mysqli, pgsql, oci, mssql, sqlsrv
@@ -92,7 +92,7 @@ class sqlsrv_native_moodle_database extends moodle_database {
         return 'sqlsrv';
     }
 
-   /**
+    /**
      * Returns general database library name
      * Note: can be used before connect()
      * @return string db type pdo, native
@@ -182,16 +182,15 @@ class sqlsrv_native_moodle_database extends moodle_database {
         sqlsrv_configure("LogSeverity", SQLSRV_LOG_SEVERITY_ERROR);
 
         $this->store_settings($dbhost, $dbuser, $dbpass, $dbname, $prefix, $dboptions);
-        $this->sqlsrv = sqlsrv_connect($this->dbhost, array
-         (
-          'UID' => $this->dbuser,
-          'PWD' => $this->dbpass,
-          'Database' => $this->dbname,
-          'CharacterSet' => 'UTF-8',
-          'MultipleActiveResultSets' => true,
-          'ConnectionPooling' => !empty($this->dboptions['dbpersist']),
-          'ReturnDatesAsStrings' => true,
-         ));
+        $this->sqlsrv = sqlsrv_connect($this->dbhost, array(
+            'UID' => $this->dbuser,
+            'PWD' => $this->dbpass,
+            'Database' => $this->dbname,
+            'CharacterSet' => 'UTF-8',
+            'MultipleActiveResultSets' => true,
+            'ConnectionPooling' => !empty($this->dboptions['dbpersist']),
+            'ReturnDatesAsStrings' => true,
+        ));
 
         if ($this->sqlsrv === false) {
             $this->sqlsrv = null;
