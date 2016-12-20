@@ -306,6 +306,7 @@ function url_display_embed($url, $cm, $course) {
     $extension = resourcelib_get_extension($url->externalurl);
 
     $mediamanager = core_media_manager::instance();
+    $mediamanager->setup($PAGE);
     $embedoptions = array(
         core_media_manager::OPTION_TRUSTED => true,
         core_media_manager::OPTION_BLOCK => true

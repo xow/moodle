@@ -52,7 +52,7 @@ class media_videojs_plugin extends core_media_player_native {
      * @return string
      */
     public function embed($urls, $name, $width, $height, $options) {
-        global $CFG;
+        global $CFG, $PAGE;
         require_once($CFG->libdir . '/filelib.php');
 
         $sources = array();

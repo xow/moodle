@@ -158,6 +158,8 @@ class core_media_manager {
     /**
      * Renders a media file (audio or video) using suitable embedded player.
      *
+     * Note you must call steup() before this will work.
+     *
      * See embed_alternatives function for full description of parameters.
      * This function calls through to that one.
      *
@@ -193,6 +195,8 @@ class core_media_manager {
      * The list of URLs should be alternative versions of the same content in
      * multiple formats. If there is only one format it should have a single
      * entry.
+     *
+     * Note you must call steup() before this will work.
      *
      * If the media files are not in a supported format, this will give students
      * a download link to each format. The download link uses the filename

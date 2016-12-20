@@ -619,6 +619,7 @@ function lesson_get_media_html($lesson, $context) {
     $extension = resourcelib_get_extension($url->out(false));
 
     $mediamanager = core_media_manager::instance();
+    $mediamanager->setup($PAGE);
     $embedoptions = array(
         core_media_manager::OPTION_TRUSTED => true,
         core_media_manager::OPTION_BLOCK => true
