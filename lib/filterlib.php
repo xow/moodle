@@ -284,6 +284,8 @@ class filter_manager {
      *
      * This should only ever be called once per request.
      *
+     * Note: This is no longer needed or used. It is deprecated in Moodle 3.3
+     *
      * @param moodle_page $page The page.
      * @since Moodle 3.2
      */
@@ -729,6 +731,8 @@ function filter_get_globally_enabled() {
  *
  * This returns the filters which could be used in any context. Essentially
  * the filters which are not disabled for the entire site.
+ *
+ * Note: This is no longer needed or used. It is deprecated in Moodle 3.3
  *
  * @return array Keys are filter names, and values the config.
  */

@@ -1600,8 +1600,9 @@ class moodle_page {
         }
 
         if (!during_initial_install()) {
-            $filtermanager = filter_manager::instance();
-            $filtermanager->setup_page_for_globally_available_filters($this);
+            // Set up mediamanager so that media plugins can initialise.
+            $mediamanager = core_media_manager::instance();
+            $mediamanager->setup($PAGE);
         }
 
         $this->_wherethemewasinitialised = debug_backtrace();
