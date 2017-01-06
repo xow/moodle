@@ -4,6 +4,7 @@ information provided here is intended especially for developers.
 === 3.3 ===
 * YUI module moodle-core-formautosubmit has been removed, use jquery .change() instead (see lib/templates/url_select.mustache for
   an example)
+* add_to_log() has been through final deprecation, please rewrite your code to the new events API.
 
 === 3.2 ===
 
