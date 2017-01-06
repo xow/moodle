@@ -298,6 +298,32 @@ class behat_deprecated extends behat_base {
     }
 
     /**
+     * Click link in navigation tree that matches the text in parentnode/s (seperated using greater-than character if more than one)
+     *
+     * @Given /^I navigate to "(?P<nodetext_string>(?:[^"]|\\")*)" node in "(?P<parentnodes_string>(?:[^"]|\\")*)"$/
+     *
+     * @throws ExpectationException
+     * @param string $nodetext navigation node to click.
+     * @param string $parentnodes comma seperated list of parent nodes.
+     * @return void
+     */
+    public function i_navigate_to_node_in($nodetext, $parentnodes) {
+        // This step needs to be deprecated and replaced with one of:
+        // - I navigate to "PATH" in current page administration
+        // - I navigate to "PATH" in site administration
+        // - I navigate to course participants
+        // - I navigate to "PATH" in the course gradebook
+        // - I click on "LINK" "link" in the "Navigation" "block" .
+        $parentnodes = array_map('trim', explode('>', $parentnodes));
+        $this->execute("behat_navigation::select_node_in_navigation", [$nodetext, $parentnodes]);
+        if (str_pos('Site administration', $parentnodes[0]) > -1) {
+            $behatnav->deprecated_message("I navigate to \"PATH\" in site administration", true);
+        } else {
+            $behatnav->deprecated_message("I navigate to \"PATH\" in current page administration", true);
+        }
+    }
+
+    /**
      * Throws an exception if $CFG->behat_usedeprecated is not allowed.
      *
      * @throws Exception
