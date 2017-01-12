@@ -6385,3 +6385,47 @@ function prevent_form_autofill_password() {
     debugging('prevent_form_autofill_password has been deprecated and is no longer in use.', DEBUG_DEVELOPER);
     return '';
 }
+
+/**
+ * Get the globally enabled filters.
+ *
+ * This returns the filters which could be used in any context. Essentially
+ * the filters which are not disabled for the entire site.
+ *
+ * @deprecated since Moodle 3.3 MDL-57316
+ * @todo MDL-57632 Final deprecation
+ * @return array Keys are filter names, and values the config.
+ */
+function filter_get_globally_enabled_filters_with_config() {
+    global $DB;
+
+    debugging('filter_get_globally_enabled_filters_with_config() is deprecated. ' .
+              'There is no need to set up the page for global filters any more.', DEBUG_DEVELOPER);
+    $sql = "SELECT f.filter, fc.name, fc.value
+              FROM {filter_active} f
+         LEFT JOIN {filter_config} fc
+                ON fc.filter = f.filter
+               AND fc.contextid = f.contextid
+             WHERE f.contextid = :contextid
+               AND f.active != :disabled
+          ORDER BY f.sortorder";
+
+    $rs = $DB->get_recordset_sql($sql, [
+        'contextid' => context_system::instance()->id,
+        'disabled' => TEXTFILTER_DISABLED
+    ]);
+
+    // Massage the data into the specified format to return.
+    $filters = array();
+    foreach ($rs as $row) {
+        if (!isset($filters[$row->filter])) {
+            $filters[$row->filter] = array();
+        }
+        if ($row->name !== null) {
+            $filters[$row->filter][$row->name] = $row->value;
+        }
+    }
+    $rs->close();
+
+    return $filters;
+}

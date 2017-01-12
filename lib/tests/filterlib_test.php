@@ -700,6 +700,8 @@ class core_filterlib_testcase extends advanced_testcase {
 
         // Check.
         $actual = filter_get_globally_enabled_filters_with_config();
+        $this->assertDebuggingCalled('filter_get_globally_enabled_filters_with_config() is deprecated. ' .
+                                     'There is no need to set up the page for global filters any more.');
         $this->assertCount(2, $actual);
         $this->assertEquals(['three', 'one'], array_keys($actual));     // Checks sortorder.
         $this->assertArrayHasKey('one', $actual);

@@ -284,10 +284,14 @@ class filter_manager {
      *
      * This should only ever be called once per request.
      *
+     * @deprecated since Moodle 3.3 MDL-57316
+     * @todo MDL-57632 Final deprecation
      * @param moodle_page $page The page.
      * @since Moodle 3.2
      */
     public function setup_page_for_globally_available_filters($page) {
+        debugging('filter_manager::setup_page_for_globally_available_filters() is deprecated. ' .
+                  'There is no need to set up the page for global filters any more.', DEBUG_DEVELOPER);
         $context = context_system::instance();
         $filterdata = filter_get_globally_enabled_filters_with_config();
         foreach ($filterdata as $name => $config) {
@@ -722,46 +726,6 @@ function filter_get_globally_enabled() {
         }
     }
     return $enabledfilters;
-}
-
-/**
- * Get the globally enabled filters.
- *
- * This returns the filters which could be used in any context. Essentially
- * the filters which are not disabled for the entire site.
- *
- * @return array Keys are filter names, and values the config.
- */
-function filter_get_globally_enabled_filters_with_config() {
-    global $DB;
-
-    $sql = "SELECT f.filter, fc.name, fc.value
-              FROM {filter_active} f
-         LEFT JOIN {filter_config} fc
-                ON fc.filter = f.filter
-               AND fc.contextid = f.contextid
-             WHERE f.contextid = :contextid
-               AND f.active != :disabled
-          ORDER BY f.sortorder";
-
-    $rs = $DB->get_recordset_sql($sql, [
-        'contextid' => context_system::instance()->id,
-        'disabled' => TEXTFILTER_DISABLED
-    ]);
-
-    // Massage the data into the specified format to return.
-    $filters = array();
-    foreach ($rs as $row) {
-        if (!isset($filters[$row->filter])) {
-            $filters[$row->filter] = array();
-        }
-        if ($row->name !== null) {
-            $filters[$row->filter][$row->name] = $row->value;
-        }
-    }
-    $rs->close();
-
-    return $filters;
 }
 
 /**
