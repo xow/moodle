@@ -474,6 +474,15 @@ class enrol_cohort_plugin extends enrol_plugin {
     }
 
     /**
+     * Returns because we want the "Add method and create another" button to appear.
+     *
+     * @return bool True
+     */
+    public function add_multiple() {
+        return true;
+    }
+
+    /**
      * Perform custom validation of the data used to edit the instance.
      *
      * @param array $data array of ("fieldname" => value) of submitted data
