@@ -96,7 +96,13 @@ if ($mform->is_cancelled()) {
         $plugin->add_instance($course, $fields);
     }
 
-    redirect($return);
+    if (!empty($data->submitbuttonnext)) {
+        \core\notification::add(get_string('instanceadded', 'enrol'),  \core\notification::SUCCESS);
+        redirect(new moodle_url('/enrol/editinstance.php',
+            array('type' => $data->type, 'courseid' => $course->id, 'message' => 'added')));
+    } else {
+        redirect($return);
+    }
 }
 
 $PAGE->set_heading($course->fullname);
@@ -104,5 +110,6 @@ $PAGE->set_title(get_string('pluginname', 'enrol_' . $type));
 
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('pluginname', 'enrol_' . $type));
+
 $mform->display();
 echo $OUTPUT->footer();
