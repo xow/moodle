@@ -64,9 +64,30 @@ class enrol_instance_edit_form extends moodleform {
         $mform->setType('returnurl', PARAM_LOCALURL);
         $mform->setConstant('returnurl', $returnurl);
 
-        $this->add_action_buttons(true, ($instance->id ? null : get_string('addinstance', 'enrol')));
+        if ($instance->id) {
+            $this->add_action_buttons(true, null);
+        } else {
+            if ($plugin->add_multiple()) {
+                $this->add_add_buttons();
+            } else {
+                $this->add_action_buttons(true, get_string('addinstance', 'enrol'));
+            }
+        }
 
         $this->set_data($instance);
+    }
+
+    /**
+     * Adds buttons on create new method form
+     */
+    protected function add_add_buttons() {
+        $mform = $this->_form;
+        $buttonarray = array();
+        $buttonarray[0] = $mform->createElement('submit', 'submitbutton', get_string('addinstance', 'enrol'));
+        $buttonarray[1] = $mform->createElement('submit', 'submitbuttonnext', get_string('addinstanceanother', 'enrol'));
+        $buttonarray[2] = $mform->createElement('cancel');
+        $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
+        $mform->closeHeaderBefore('buttonar');
     }
 
     /**

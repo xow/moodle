@@ -1700,6 +1700,17 @@ abstract class enrol_plugin {
     }
 
     /**
+     * Override and return true when this plugin is one where the user will often want to add multiple at once.
+     * This will make the "Add method and create another" button appear.
+     *
+     * @since Moodle 3.1.5
+     * @return bool True when we want the "Add method and create another" button to appear
+     */
+    public function add_multiple() {
+        return false;
+    }
+
+    /**
      * Perform custom validation of the data used to edit the instance.
      *
      * @since Moodle 3.1
