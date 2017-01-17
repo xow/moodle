@@ -51,6 +51,9 @@ define('IGNORE_MULTIPLE', 1);
 /** Indicates exactly one record must exist */
 define('MUST_EXIST', 2);
 
+/** Indicates that a SELECT should not lock the table/records (e.g. in a SELECT, modify, UPDATE loop). */
+define('HINT_NO_LOCK', 1);
+
 /**
  * DML exception class, use instead of print_error() in dml code.
  *

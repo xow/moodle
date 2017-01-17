@@ -120,6 +120,22 @@ class sqlsrv_native_moodle_database extends moodle_database {
     }
 
     /**
+     * Returns SQL WITH clause (or similar) derived from hint bitmask.
+     *
+     * @param int $hints
+     * @return string|null
+     */
+    public function get_hints($hints) {
+        $arguments = array();
+
+        if ($hints & HINT_NO_LOCK) {
+            $arguments[] = 'NOLOCK';
+        }
+
+        return $arguments ? 'WITH (' . implode(', ', $arguments) . ')' : '';
+    }
+
+    /**
      * Diagnose database and tables, this function is used
      * to verify database and driver settings, db engine types, etc.
      *
@@ -807,6 +823,39 @@ class sqlsrv_native_moodle_database extends moodle_database {
         }
         $this->do_query($sql, $params, SQL_QUERY_UPDATE);
         return true;
+    }
+
+    /**
+     * Get a number of records as a moodle_recordset which match a particular WHERE clause.
+     *
+     * If given, $select is used as the SELECT parameter in the SQL query,
+     * otherwise all records from the table are returned.
+     *
+     * Other arguments and the return type are like {@link function get_recordset}.
+     *
+     * @param string $table the table to query.
+     * @param string $select A fragment of SQL to be used in a where clause in the SQL call.
+     * @param array $params array of sql parameters
+     * @param string $sort an order to sort the results in (optional, a valid SQL ORDER BY parameter).
+     * @param string $fields a comma separated list of fields to return (optional, by default all fields are returned).
+     * @param int $limitfrom return a subset of records, starting at this point (optional).
+     * @param int $limitnum return a subset comprising this many records (optional, required if $limitfrom is set).
+     * @param int $hints optional bitmask of hints (e.g. locking).
+     * @return moodle_recordset A moodle_recordset instance.
+     * @throws dml_exception A DML specific exception is thrown for any errors.
+     */
+    public function get_recordset_select($table, $select, array $params=null, $sort='', $fields='*', $limitfrom=0, $limitnum=0, $hints=null) {
+        $sql = "SELECT $fields FROM {".$table."}";
+        if ($hintsclause = $this->get_hints($hints)) {
+            $sql .= " $hintsclause";
+        }
+        if ($select) {
+            $sql .= " WHERE $select";
+        }
+        if ($sort) {
+            $sql .= " ORDER BY $sort";
+        }
+        return $this->get_recordset_sql($sql, $params, $limitfrom, $limitnum);
     }
 
     /**

@@ -740,6 +740,16 @@ abstract class moodle_database {
     }
 
     /**
+     * Returns SQL WITH clause (or similar) derived from hint bitmask.
+     *
+     * @param int $hints
+     * @return string|null
+     */
+    public function get_hints($hints) {
+        return null;
+    }
+
+    /**
      * Constructs 'IN()' or '=' sql fragment
      * @param mixed $items A single value or array of values for the expression.
      * @param int $type Parameter bounding type : SQL_PARAMS_QM or SQL_PARAMS_NAMED.
@@ -1221,12 +1231,13 @@ abstract class moodle_database {
      * @param string $fields a comma separated list of fields to return (optional, by default all fields are returned).
      * @param int $limitfrom return a subset of records, starting at this point (optional).
      * @param int $limitnum return a subset comprising this many records (optional, required if $limitfrom is set).
+     * @param int $hints optional bitmask of hints (e.g. locking).
      * @return moodle_recordset A moodle_recordset instance
      * @throws dml_exception A DML specific exception is thrown for any errors.
      */
-    public function get_recordset($table, array $conditions=null, $sort='', $fields='*', $limitfrom=0, $limitnum=0) {
+    public function get_recordset($table, array $conditions=null, $sort='', $fields='*', $limitfrom=0, $limitnum=0, $hints=null) {
         list($select, $params) = $this->where_clause($table, $conditions);
-        return $this->get_recordset_select($table, $select, $params, $sort, $fields, $limitfrom, $limitnum);
+        return $this->get_recordset_select($table, $select, $params, $sort, $fields, $limitfrom, $limitnum, $hints);
     }
 
     /**
@@ -1244,12 +1255,13 @@ abstract class moodle_database {
      * @param string $fields a comma separated list of fields to return (optional, by default all fields are returned).
      * @param int $limitfrom return a subset of records, starting at this point (optional).
      * @param int $limitnum return a subset comprising this many records (optional, required if $limitfrom is set).
+     * @param int $hints optional bitmask of hints (e.g. locking).
      * @return moodle_recordset A moodle_recordset instance.
      * @throws dml_exception A DML specific exception is thrown for any errors.
      */
-    public function get_recordset_list($table, $field, array $values, $sort='', $fields='*', $limitfrom=0, $limitnum=0) {
+    public function get_recordset_list($table, $field, array $values, $sort='', $fields='*', $limitfrom=0, $limitnum=0, $hints=null) {
         list($select, $params) = $this->where_clause_list($field, $values);
-        return $this->get_recordset_select($table, $select, $params, $sort, $fields, $limitfrom, $limitnum);
+        return $this->get_recordset_select($table, $select, $params, $sort, $fields, $limitfrom, $limitnum, $hints);
     }
 
     /**
@@ -1267,10 +1279,11 @@ abstract class moodle_database {
      * @param string $fields a comma separated list of fields to return (optional, by default all fields are returned).
      * @param int $limitfrom return a subset of records, starting at this point (optional).
      * @param int $limitnum return a subset comprising this many records (optional, required if $limitfrom is set).
+     * @param int $hints optional bitmask of hints (e.g. locking).
      * @return moodle_recordset A moodle_recordset instance.
      * @throws dml_exception A DML specific exception is thrown for any errors.
      */
-    public function get_recordset_select($table, $select, array $params=null, $sort='', $fields='*', $limitfrom=0, $limitnum=0) {
+    public function get_recordset_select($table, $select, array $params=null, $sort='', $fields='*', $limitfrom=0, $limitnum=0, $hints=null) {
         $sql = "SELECT $fields FROM {".$table."}";
         if ($select) {
             $sql .= " WHERE $select";
