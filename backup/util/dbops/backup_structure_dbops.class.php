@@ -160,7 +160,7 @@ abstract class backup_structure_dbops extends backup_dbops {
     public static function move_annotations_to_final($backupid, $itemname, \core\progress\base $progress) {
         global $DB;
         $progress->start_progress('move_annotations_to_final');
-        $rs = $DB->get_recordset('backup_ids_temp', array('backupid' => $backupid, 'itemname' => $itemname));
+        $rs = $DB->get_recordset('backup_ids_temp', array('backupid' => $backupid, 'itemname' => $itemname), '', '*', 0, 0, HINT_NO_LOCK);
         $progress->progress();
         foreach($rs as $annotation) {
             // If corresponding 'itemfinal' annotation does not exist, update 'item' to 'itemfinal'

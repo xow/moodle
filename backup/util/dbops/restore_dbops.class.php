@@ -170,7 +170,7 @@ abstract class restore_dbops {
         $problems = array(); // To store warnings/errors
 
         // Get loaded roles from backup_ids
-        $rs = $DB->get_recordset('backup_ids_temp', array('backupid' => $restoreid, 'itemname' => 'role'), '', 'itemid, info');
+        $rs = $DB->get_recordset('backup_ids_temp', array('backupid' => $restoreid, 'itemname' => 'role'), '', 'itemid, info', 0, 0, HINT_NO_LOCK);
         foreach ($rs as $recrole) {
             // If the rolemappings->modified flag is set, that means that we are coming from
             // manually modified mappings (by UI), so accept those mappings an put them to backup_ids
@@ -1099,7 +1099,7 @@ abstract class restore_dbops {
         $themes    = get_list_of_themes(); // Get themes for quick search later
 
         // Iterate over all the included users with newitemid = 0, have to create them
-        $rs = $DB->get_recordset('backup_ids_temp', array('backupid' => $restoreid, 'itemname' => 'user', 'newitemid' => 0), '', 'itemid, parentitemid, info');
+        $rs = $DB->get_recordset('backup_ids_temp', array('backupid' => $restoreid, 'itemname' => 'user', 'newitemid' => 0), '', 'itemid, parentitemid, info', 0, 0, HINT_NO_LOCK);
         foreach ($rs as $recuser) {
             $progress->progress();
             $user = (object)backup_controller_dbops::decode_backup_temp_info($recuser->info);
@@ -1537,7 +1537,7 @@ abstract class restore_dbops {
         $progress->start_progress('Checking users', $max);
 
         // Iterate over all the included users
-        $rs = $DB->get_recordset('backup_ids_temp', $conditions, '', 'itemid, info');
+        $rs = $DB->get_recordset('backup_ids_temp', $conditions, '', 'itemid, info', 0, 0, HINT_NO_LOCK);
         foreach ($rs as $recuser) {
             $user = (object)backup_controller_dbops::decode_backup_temp_info($recuser->info);
 
