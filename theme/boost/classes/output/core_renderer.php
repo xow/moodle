@@ -504,6 +504,29 @@ class core_renderer extends \core_renderer {
     }
 
     /**
+     * Renders the login form with idps.
+     *
+     * @param \core_auth\output\login_idps $form The renderable.
+     * @return string
+     */
+    public function render_login_idps(\core_auth\output\login_idps $form) {
+        global $SITE;
+
+        $context = $form->export_for_template($this);
+
+        // Override because rendering is not supported in template yet.
+        $context->cookieshelpiconformatted = $this->help_icon('cookiesenabled');
+        $context->errorformatted = $this->error_text($context->error);
+        $url = $this->get_logo_url();
+        if ($url) {
+            $url = $url->out(false);
+        }
+        $context->logourl = $url;
+
+        return $this->render_from_template('core/login_idps', $context);
+    }
+
+    /**
      * Render the login signup form into a nice template for the theme.
      *
      * @param mform $form
