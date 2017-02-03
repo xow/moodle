@@ -1722,6 +1722,7 @@ $string['signoutofotherservices_help'] = 'If ticked, the account will be signed 
 $string['since'] = 'Since';
 $string['sincelast'] = 'since last login';
 $string['site'] = 'Site';
+$string['siteaccount'] = '{$a} account';
 $string['sitedefault'] = 'Site default';
 $string['siteerrors'] = 'Site errors';
 $string['sitefiles'] = 'Site files';

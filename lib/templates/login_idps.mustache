@@ -1,0 +1,142 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template core/login
+
+    Moodle template for the login page.
+
+    Example context (json):
+    {
+        "autofocusform": false,
+        "canloginasguest": true,
+        "canloginbyemail": true,
+        "cansignup": true,
+        "error": "testerror",
+        "errorformatted": "Test error formatted",
+        "forgotpasswordurl": "http://example.com/login/forgot_password.php",
+        "hasidentityproviders": false,
+        "hasinstructions": true,
+        "instructions": "For full access to this site, you first need to create an account.",
+        "loginurl": "http://example.com/stable_master/login/index.php",
+        "rememberusername": true,
+        "passwordautocomplete": false,
+        "signupurl": "http://localhost/stable_master/login/signup.php",
+        "cookieshelpiconformatted": "",
+        "username": "",
+        "sitename": "Example site"
+    }
+}}
+{{#hasinstructions}}
+<div class="loginbox clearfix twocolumns">
+{{/hasinstructions}}
+{{^hasinstructions}}
+<div class="loginbox clearfix onecolumn">
+{{/hasinstructions}}
+
+    <div class="loginpanel">
+        {{#cansignup}}
+            <div class="skiplinks">
+                <a class="skip" href="{{signupurl}}">{{#str}} tocreatenewaccount {{/str}}</a>
+            </div>
+        {{/cansignup}}
+
+        <h2>{{#str}} login {{/str}}</h2>
+
+        <div class="subcontent loginsub">
+            {{#error}}
+                <div class="loginerrors">
+                    <a href="#" id="loginerrormessage" class="accesshide">{{error}}</a>
+                    {{{errorformatted}}}
+                </div>
+            {{/error}}
+
+            <div class="desc">
+                {{#str}} cookiesenabled {{/str}}
+                {{{cookieshelpiconformatted}}}
+            </div>
+
+        </div>
+        <div class="subcontent">
+            {{#hasidentityproviders}}
+                {{#identityproviders}}
+                    <a href="{{url}}" title={{#quote}}{{name}}{{/quote}} class="btn btn-block btn-lineup btn-large">
+                        {{#icon}}
+                            {{>core/pix_icon}}
+                        {{/icon}}
+                        {{name}}
+                    </a>
+                {{/identityproviders}}
+            {{/hasidentityproviders}}
+            <a href="?forceloginpage=1" title={{#quote}}{{name}}{{/quote}} class="btn btn-block btn-lineup btn-large">
+                {{#pix}}favicon, theme, {{#str}}pluginname, auth_manual{{/str}}{{/pix}}
+                {{#str}}siteaccount, core, {{sitename}}{{/str}}
+            </a>
+            {{#canloginasguest}}
+                <form action="{{loginurl}}" method="post" id="guestlogin">
+                    <div class="guestform">
+                        <input type="hidden" name="username" value="guest" />
+                        <input type="hidden" name="password" value="guest" />
+                        <a href="#" onclick="document.getElementById('guestlogin').submit()" title={{#quote}}{{name}}{{/quote}} class="btn btn-block btn-lineup btn-large">
+                            {{#pix}}t/user, core, {{#str}}pluginname, auth_manual{{/str}}{{/pix}}
+                            {{#str}}loginguest{{/str}}
+                        </a>
+                    </div>
+                </form>
+                <div class="desc">{{#str}} someallowguest {{/str}}</div>
+            {{/canloginasguest}}
+        </div>
+
+    </div>
+
+    {{#hasinstructions}}
+        <div class="signuppanel">
+            <h2>{{#str}} firsttime {{/str}}</h2>
+            <div class="subcontent">
+                {{{instructions}}}
+                {{#cansignup}}
+                    <div class="signupform">
+                        <form action="{{signupurl}}" method="get" id="signup">
+                            <div>
+                                <input type="submit" value={{#quote}}{{#str}} startsignup {{/str}}{{/quote}} />
+                            </div>
+                        </form>
+                    </div>
+                {{/cansignup}}
+            </div>
+        </div>
+    {{/hasinstructions}}
+
+</div>
+
+{{#js}}
+    {{#error}}
+        require(['jquery'], function($) {
+            $('#loginerrormessage').focus();
+        });
+    {{/error}}
+    {{^error}}
+        {{#autofocusform}}
+            require(['jquery'], function($) {
+                if ($('#username').val()) {
+                    $('#password').focus();
+                } else {
+                    $('#username').focus();
+                }
+            });
+        {{/autofocusform}}
+    {{/error}}
+{{/js}}

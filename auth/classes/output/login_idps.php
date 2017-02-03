@@ -34,6 +34,7 @@ use renderable;
 use renderer_base;
 use stdClass;
 use templatable;
+use context_course;
 
 /**
  * Login renderable class.
@@ -42,36 +43,26 @@ use templatable;
  * @copyright  2016 Frédéric Massart - FMCorz.net
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class login implements renderable, templatable {
+class login_idps implements renderable, templatable {
 
-    /** @var bool Whether to auto focus the form fields. */
-    public $autofocusform;
     /** @var bool Whether we can login as guest. */
     public $canloginasguest;
-    /** @var bool Whether we can login by e-mail. */
-    public $canloginbyemail;
     /** @var bool Whether we can sign-up. */
     public $cansignup;
     /** @var help_icon The cookies help icon. */
     public $cookieshelpicon;
     /** @var string The error message, if any. */
     public $error;
-    /** @var moodle_url Forgot password URL. */
-    public $forgotpasswordurl;
     /** @var array Additional identify providers, contains the keys 'url', 'name' and 'icon'. */
     public $identityproviders;
     /** @var string Login instructions, if any. */
     public $instructions;
     /** @var moodle_url The form action login URL. */
     public $loginurl;
-    /** @var bool Whether the password can be auto completed. */
-    public $passwordautocomplete;
-    /** @var bool Whether the username should be remembered. */
-    public $rememberusername;
     /** @var moodle_url The sign-up URL. */
     public $signupurl;
     /** @var string The user name to pre-fill the form with. */
-    public $username;
+    public $sitename;
 
     /**
      * Constructor.
@@ -79,8 +70,8 @@ class login implements renderable, templatable {
      * @param array $authsequence The enabled sequence of authentication plugins.
      * @param string $username The username to display.
      */
-    public function __construct(array $authsequence, $username = '', $forceloginpage) {
-        global $CFG, $SESSION;
+    public function __construct(array $authsequence, $username = '') {
+        global $CFG, $SESSION, $SITE;
 
         $this->username = $username;
 
@@ -97,6 +88,8 @@ class login implements renderable, templatable {
         $this->loginurl = new moodle_url($CFG->httpswwwroot . '/login/index.php');
         $this->signupurl = new moodle_url('/login/signup.php');
 
+        $this->sitename = format_string($SITE->fullname, true, ['context' => context_course::instance(SITEID), "escape" => false]);
+
         // Authentication instructions.
         $this->instructions = $CFG->auth_instructions;
         if (is_enabled_auth('none')) {
@@ -107,17 +100,9 @@ class login implements renderable, templatable {
 
         // Identity providers.
         $identityproviders = [];
-        if ($forceloginpage == '0') {
-            // Only fill out identity providers if the user hasn't already skipped past them.
-            foreach ($authsequence as $authname) {
-                $authplugin = get_auth_plugin($authname);
-                $identityproviders = array_merge($identityproviders, $authplugin->loginpage_idp_list($SESSION->wantsurl));
-            }
-        } else {
-            // If we are forcing login, we can omit information the user has already seen.
-            $this->canloginasguest = false;
-            $this->cansignup = false;
-            $this->instructions = "";
+        foreach ($authsequence as $authname) {
+            $authplugin = get_auth_plugin($authname);
+            $identityproviders = array_merge($identityproviders, $authplugin->loginpage_idp_list($SESSION->wantsurl));
         }
         $this->identityproviders = $identityproviders;
     }
@@ -160,6 +145,8 @@ class login implements renderable, templatable {
         $data->passwordautocomplete = $this->passwordautocomplete;
         $data->signupurl = $this->signupurl->out(false);
         $data->username = $this->username;
+
+        $data->sitename = $this->sitename;
 
         return $data;
     }

@@ -4176,6 +4176,22 @@ EOD;
     }
 
     /**
+     * Renders the identification providers.
+     *
+     * @param \core_auth\output\login_idps $form The renderable.
+     * @return string
+     */
+    public function render_login_idps(\core_auth\output\login_idps $form) {
+        $context = $form->export_for_template($this);
+
+        // Override because rendering is not supported in template yet.
+        $context->cookieshelpiconformatted = $this->help_icon('cookiesenabled');
+        $context->errorformatted = $this->error_text($context->error);
+
+        return $this->render_from_template('core/login_idps', $context);
+    }
+
+    /**
      * Renders an mform element from a template.
      *
      * @param HTML_QuickForm_element $element element

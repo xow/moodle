@@ -87,6 +87,8 @@ if ($hassiteconfig) {
     $temp->add(new admin_setting_manageauths());
     $temp->add(new admin_setting_heading('manageauthscommonheading', new lang_string('commonsettings', 'admin'), ''));
     $temp->add(new admin_setting_special_registerauth());
+    $temp->add(new admin_setting_configselect('defaultloginscreen', new lang_string('defaultloginscreen', 'auth'),
+                                              new lang_string('defaultloginscreen_help', 'auth'), '0', array('0' => new lang_string('usernamepassword', 'auth'), '1' => new lang_string('identityproviders', 'auth'))));
     $temp->add(new admin_setting_configcheckbox('authloginviaemail', new lang_string('authloginviaemail', 'core_auth'), new lang_string('authloginviaemail_desc', 'core_auth'), 0));
     $temp->add(new admin_setting_configcheckbox('allowaccountssameemail',
                     new lang_string('allowaccountssameemail', 'core_auth'),

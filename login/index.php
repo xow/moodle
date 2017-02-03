@@ -38,6 +38,7 @@ redirect_if_major_upgrade_required();
 $testsession = optional_param('testsession', 0, PARAM_INT); // test session works properly
 $cancel      = optional_param('cancel', 0, PARAM_BOOL);      // redirect to frontpage, needed for loginhttps
 $anchor      = optional_param('anchor', '', PARAM_RAW);      // Used to restore hash anchor to wantsurl.
+$forceloginpage = optional_param('forceloginpage', '', PARAM_RAW);      // Used to restore hash anchor to wantsurl.
 
 if ($cancel) {
     redirect(new moodle_url('/'));
@@ -350,9 +351,14 @@ if (isloggedin() and !isguestuser()) {
     echo $OUTPUT->confirm(get_string('alreadyloggedin', 'error', fullname($USER)), $logout, $continue);
     echo $OUTPUT->box_end();
 } else {
-    $loginform = new \core_auth\output\login($authsequence, $frm->username);
+    $loginform;
+    if (get_config('defaultloginscreen') == '0' || $forceloginpage) {
+        $loginform = new \core_auth\output\login($authsequence, $frm->username, $forceloginpage);
+    } else {
+        $loginform = new \core_auth\output\login_idps($authsequence, $frm->username);
+    }
     $loginform->set_error($errormsg);
-    echo $OUTPUT->render($loginform);
+    echo $OUTPUT->render($loginform); // here bruv
 }
 
 echo $OUTPUT->footer();
