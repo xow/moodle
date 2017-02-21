@@ -28,6 +28,13 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+/*Connection time-out to use when testing settings. Make sure we use a slightly
+ * lower value than the default PHP execution timeout (to avoid MDL-29536).
+ */
+if (!defined('ENROL_LDAP_SETTINGS_CONNECT_TIMEOUT')) {
+    define('ENROL_LDAP_SETTINGS_CONNECT_TIMEOUT', 25);
+}
+
 class enrol_ldap_plugin extends enrol_plugin {
     protected $enrol_localcoursefield = 'idnumber';
     protected $enroltype = 'enrol_ldap';
@@ -662,7 +669,8 @@ class enrol_ldap_plugin extends enrol_plugin {
         if ($ldapconnection = ldap_connect_moodle($this->get_config('host_url'), $this->get_config('ldap_version'),
                                                   $this->get_config('user_type'), $this->get_config('bind_dn'),
                                                   $this->get_config('bind_pw'), $this->get_config('opt_deref'),
-                                                  $debuginfo, $this->get_config('start_tls'))) {
+                                                  $debuginfo, $this->get_config('start_tls'),
+                                                  (integer)$this->get_config('connecttimeout'))) {
             $this->ldapconnection = $ldapconnection;
             return true;
         }
@@ -1172,6 +1180,58 @@ class enrol_ldap_plugin extends enrol_plugin {
         // Just restore every role.
         if ($DB->record_exists('user_enrolments', array('enrolid'=>$instance->id, 'userid'=>$userid))) {
             role_assign($roleid, $userid, $contextid, 'enrol_'.$instance->enrol, $instance->id);
+        }
+    }
+
+    /**
+     * Test if settings are correct, print info to output.
+     */
+    public function test_settings() {
+        global $CFG, $OUTPUT;
+
+        require_once($CFG->libdir.'/ldaplib.php');
+
+        if (!function_exists('ldap_connect')) { // Is php-ldap really there?
+            echo $OUTPUT->notification(get_string('auth_ldap_noextension', 'auth_ldap'));
+            return;
+        }
+
+        // Check to see if this is actually configured.
+        $hosturl = $this->get_config('host_url');
+        if ($hosturl !== '') {
+
+            /* Try to connect to the LDAP server. See if the page size setting is supported on this server.
+             * Don't use $this->ldap_connect() as we want to use a specific connect timeout just for the
+             * settings page (to avoid MDL-29536).
+             */
+            $connecttimeout = (integer)$this->get_config('connecttimeout');
+            if ($connecttimeout > 0) {
+                $connecttimeout = min(ENROL_LDAP_SETTINGS_CONNECT_TIMEOUT, $connecttimeout);
+            } else {
+                $connecttimeout = ENROL_LDAP_SETTINGS_CONNECT_TIMEOUT;
+            }
+            if ($ldapconn = ldap_connect_moodle($this->get_config('host_url'), $this->get_config('ldap_version'),
+                                                $this->get_config('user_type'), $this->get_config('bind_dn'),
+                                                $this->get_config('bind_pw'), $this->get_config('opt_deref'),
+                                                $debuginfo, $this->get_config('start_tls'), $connecttimeout)) {
+                $pagedresultssupported = ldap_paged_results_supported($this->get_config('ldap_version'), $ldapconn);
+            } else {
+                // If we couldn't connect and get the supported options, we can only assume we don't support paged results.
+                $pagedresultssupported = false;
+            }
+
+            // Display paged file results.
+            if ((!$pagedresultssupported)) {
+                echo $OUTPUT->notification(get_string('pagedresultsnotsupp', 'auth_ldap'), \core\output\notification::NOTIFY_INFO);
+            } else if ($ldapconn) {
+                // We were able to connect successfuly.
+                echo $OUTPUT->notification(get_string('connectingldapsuccess', 'auth_ldap'),
+                                           \core\output\notification::NOTIFY_SUCCESS);
+            }
+
+        } else {
+            // LDAP is not even configured.
+            echo $OUTPUT->notification(get_string('ldapnotconfigured', 'auth_ldap'), \core\output\notification::NOTIFY_INFO);
         }
     }
 }
