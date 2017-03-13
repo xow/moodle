@@ -31,6 +31,8 @@ define(['jquery', 'core/ajax', 'core/notification',
         PREFERENCES_CONTAINER: '[data-region="preferences-container"]',
         BLOCK_NON_CONTACTS: '[data-region="block-non-contacts-container"] [data-block-non-contacts]',
         BLOCK_NON_CONTACTS_CONTAINER: '[data-region="block-non-contacts-container"]',
+        ENTER_TO_SEND: '[data-region="enter-to-send-container"] [data-enter-to-send]',
+        ENTER_TO_SEND_CONTAINER: '[data-region="enter-to-send-container"]',
     };
 
     /**
@@ -92,6 +94,43 @@ define(['jquery', 'core/ajax', 'core/notification',
     };
 
     /**
+     * Update the enter to send user preference in the DOM and
+     * send a request to update on the server.
+     *
+     * @return {Promise}
+     * @method saveEnterToSendStatus
+     */
+    MessagePreferences.prototype.saveEnterToSendStatus = function() {
+        var checkbox = this.root.find(SELECTORS.ENTER_TO_SEND);
+        var container = this.root.find(SELECTORS.ENTER_TO_SEND_CONTAINER);
+        var ischecked = checkbox.prop('checked');
+
+        if (container.hasClass('loading')) {
+            return $.Deferred().resolve();
+        }
+
+        container.addClass('loading');
+
+        var request = {
+            methodname: 'core_user_update_user_preferences',
+            args: {
+                preferences: [
+                    {
+                        type: checkbox.attr('data-preference-key'),
+                        value: ischecked ? 1 : 0,
+                    }
+                ]
+            }
+        };
+
+        return Ajax.call([request])[0]
+            .fail(Notification.exception)
+            .always(function() {
+                container.removeClass('loading');
+            });
+    };
+
+    /**
      * Create all of the event listeners for the message preferences page.
      *
      * @method registerEventListeners
@@ -103,6 +142,10 @@ define(['jquery', 'core/ajax', 'core/notification',
 
         this.root.on(CustomEvents.events.activate, SELECTORS.BLOCK_NON_CONTACTS, function() {
             this.saveBlockNonContactsStatus();
+        }.bind(this));
+
+        this.root.on(CustomEvents.events.activate, SELECTORS.ENTER_TO_SEND, function() {
+            this.saveEnterToSendStatus();
         }.bind(this));
 
         this.root.on('change', function(e) {

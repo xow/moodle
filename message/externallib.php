@@ -2522,6 +2522,7 @@ class core_message_external extends external_api {
             'warnings' => array(),
             'preferences' => $notificationlistoutput->export_for_template($renderer),
             'blocknoncontacts' => get_user_preferences('message_blocknoncontacts', '', $user->id) ? true : false,
+            'entertosend' => get_user_preferences('message_entertosend', '', $user->id) ? true : false,
         );
         return $result;
     }
@@ -2537,6 +2538,7 @@ class core_message_external extends external_api {
             array(
                 'preferences' => self::get_preferences_structure(),
                 'blocknoncontacts' => new external_value(PARAM_BOOL, 'Whether to block or not messages from non contacts'),
+                'entertosend' => new external_value(PARAM_BOOL, 'Whether to send a message when enter is pressed'),
                 'warnings' => new external_warnings(),
             )
         );

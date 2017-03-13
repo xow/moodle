@@ -80,6 +80,16 @@
         <label for="block-non-contacts">{{#str}} blocknoncontacts, message {{/str}}</label>
         {{> core/loading }}
     </div>
+    <div class="checkbox-container" data-region="enter-to-send-container">
+        <input id="enter-to-send"
+                type="checkbox"
+                data-user-id="{{userid}}"
+                data-enter-to-send
+                data-preference-key="message_entertosend"
+                {{#entertosend}}checked{{/entertosend}} />
+        <label for="enter-to-send">{{#str}} entertosend, message {{/str}}</label>
+        {{> core/loading }}
+    </div>
     <div class="preferences-container {{#disableall}}disabled{{/disableall}}"
         data-user-id="{{userid}}"
         data-region="preferences-container">

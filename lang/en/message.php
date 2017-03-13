@@ -43,6 +43,7 @@ $string['disallowed'] = 'Disallowed';
 $string['editmessages'] = 'Edit messages';
 $string['emailtagline'] = 'This is a copy of a message sent to you at "{$a->sitename}". Go to {$a->url} to reply.';
 $string['enabled'] = 'Enabled';
+$string['entertosend'] = 'Press enter to send';
 $string['errorcallingprocessor'] = 'Error calling defined output';
 $string['errortranslatingdefault'] = 'Error translating default setting provided by plugin, using system defaults instead.';
 $string['eventmessagecontactadded'] = 'Message contact added';

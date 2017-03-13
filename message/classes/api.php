@@ -816,6 +816,7 @@ class api {
 
         // Load general messaging preferences.
         $preferences->blocknoncontacts = get_user_preferences('message_blocknoncontacts', '', $user->id);
+        $preferences->entertosend = get_user_preferences('message_entertosend', '', $user->id);
         $preferences->mailformat = $user->mailformat;
         $preferences->mailcharset = get_user_preferences('mailcharset', '', $user->id);
 

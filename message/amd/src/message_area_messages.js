@@ -49,12 +49,16 @@ define(['jquery', 'core/ajax', 'core/templates', 'core/notification', 'core/cust
             MESSAGINGAREA: "[data-region='messaging-area']",
             SENDMESSAGE: "[data-action='send-message']",
             SENDMESSAGETEXT: "[data-region='send-message-txt']",
+            ENTERTOSEND: "[data-action='enter-to-send']",
             SHOWCONTACTS: "[data-action='show-contacts']",
             STARTDELETEMESSAGES: "[data-action='start-delete-messages']",
         };
 
         /** @type {int} The number of milliseconds in a second. */
         var MILLISECONDSINSEC = 1000;
+
+        /** @type {int} The number of milliseconds in a second. */
+        var enterToSend = false; // TODO: Get from user preference
 
         /**
          * Messages class.
