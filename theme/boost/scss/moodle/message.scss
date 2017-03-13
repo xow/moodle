@@ -549,7 +549,7 @@
                     display: table-row;
 
                     .message-text-container {
-                        display: table-cell;
+                        width: 100%;
 
                         textarea {
                             line-height: 20px;
@@ -571,10 +571,15 @@
                     }
 
                     .send-button-container {
-                        display: table-cell;
                         width: 1px;
 
                         button {
+                            height: 30px;
+                        }
+                    }
+
+                    .enter-to-send {
+                        input {
                             height: 30px;
                         }
                     }
