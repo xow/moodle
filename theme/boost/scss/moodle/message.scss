@@ -571,16 +571,26 @@
                     }
 
                     .send-button-container {
-                        width: 1px;
+                        display: block;
+                        float: right;
 
                         button {
                             height: 30px;
                         }
                     }
 
-                    .enter-to-send {
-                        input {
-                            height: 30px;
+                    .enter-to-send-container {
+                        display: block;
+                        float: right;
+
+                        .loading-icon {
+                            display: none;
+                        }
+
+                        &.loading {
+                            .loading-icon {
+                                display: inline-block;
+                            }
                         }
                     }
                 }

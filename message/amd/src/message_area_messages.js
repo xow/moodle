@@ -50,6 +50,7 @@ define(['jquery', 'core/ajax', 'core/templates', 'core/notification', 'core/cust
             SENDMESSAGE: "[data-action='send-message']",
             SENDMESSAGETEXT: "[data-region='send-message-txt']",
             ENTERTOSEND: "[data-action='enter-to-send']",
+            ENTERTOSENDCONTAINER: ".enter-to-send-container",
             SHOWCONTACTS: "[data-action='show-contacts']",
             STARTDELETEMESSAGES: "[data-action='start-delete-messages']",
         };
@@ -135,6 +136,8 @@ define(['jquery', 'core/ajax', 'core/templates', 'core/notification', 'core/cust
                 this._toggleMessage.bind(this));
             this.messageArea.onDelegateEvent(CustomEvents.events.activate, SELECTORS.SHOWCONTACTS,
                 this._hideMessagingArea.bind(this));
+            this.messageArea.onDelegateEvent('change', SELECTORS.ENTERTOSEND,
+                this._enterToSend.bind(this));
 
             this.messageArea.onDelegateEvent(CustomEvents.events.up, SELECTORS.MESSAGE,
                 this._selectPreviousMessage.bind(this));
@@ -824,9 +827,51 @@ define(['jquery', 'core/ajax', 'core/templates', 'core/notification', 'core/cust
          * @private
          */
         Messages.prototype._sendMessageHandler = function(e, data) {
-            data.originalEvent.preventDefault();
+            if (enterToSend) {
+                data.originalEvent.preventDefault();
 
-            this._sendMessage();
+                this._sendMessage();
+            }
+        };
+
+        /**
+         * Handle clicking to toggle enterToSend
+         *
+         * @param {event} e The jquery event
+         * @param {object} data Additional event data
+         * @private
+         */
+        Messages.prototype._enterToSend = function(e, data) {
+            enterToSend = !enterToSend; // TODO Ajax
+            var checkbox = this.messageArea.find(SELECTORS.ENTERTOSEND);
+            var container = this.messageArea.find(SELECTORS.ENTERTOSENDCONTAINER);
+            var ischecked = checkbox.prop('checked');
+            console.log(ischecked);
+
+            if (container.hasClass('loading')) {
+                return;
+            }
+
+            container.addClass('loading');
+
+            var request = {
+                methodname: 'core_user_update_user_preferences',
+                args: {
+                    preferences: [
+                        {
+                            type: checkbox.attr('data-preference-key'),
+                            value: ischecked ? 1 : 0,
+                        }
+                    ]
+                }
+            };
+
+            Ajax.call([request])[0]
+                .fail(Notification.exception)
+                .always(function() {
+                    container.removeClass('loading');
+                });
+            return;
         };
 
         /**
