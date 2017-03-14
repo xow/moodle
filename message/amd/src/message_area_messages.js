@@ -59,7 +59,7 @@ define(['jquery', 'core/ajax', 'core/templates', 'core/notification', 'core/cust
         var MILLISECONDSINSEC = 1000;
 
         /** @type {int} The number of milliseconds in a second. */
-        var enterToSend = false; // TODO: Get from user preference
+        var enterToSend = true; // TODO: Get from user preference
 
         /**
          * Messages class.
@@ -163,6 +163,10 @@ define(['jquery', 'core/ajax', 'core/templates', 'core/notification', 'core/cust
             this._backoffTimer = new BackOffTimer(this._loadNewMessages.bind(this),
                 BackOffTimer.getIncrementalCallback(this.messageArea.pollmin * MILLISECONDSINSEC, MILLISECONDSINSEC,
                     this.messageArea.pollmax * MILLISECONDSINSEC, this.messageArea.polltimeout * MILLISECONDSINSEC));
+
+            var checkbox = this.messageArea.find(SELECTORS.ENTERTOSEND);
+            var ischecked = checkbox.prop('checked');
+            enterToSend = ischecked;
 
             // Start the timer.
             this._backoffTimer.start();

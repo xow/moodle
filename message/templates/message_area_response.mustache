@@ -27,6 +27,13 @@
     <button class="btn btn-link" data-action="send-message">{{#str}}send, message{{/str}}</button>
 </div>
 <div class="enter-to-send-container">
-    <label><input type="checkbox" data-action="enter-to-send" data-preference-key="message_entertosend" /> {{#str}}entertosend, message{{/str}}</label>
     {{> core/loading }}
+    <label>
+        <input
+            type="checkbox"
+            data-action="enter-to-send"
+            data-preference-key="message_entertosend"
+            {{#entertosend}}checked{{/entertosend}} />
+                {{#str}}entertosend, message{{/str}}
+    </label>
 </div>

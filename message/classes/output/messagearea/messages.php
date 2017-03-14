@@ -103,6 +103,8 @@ class messages implements templatable, renderable {
 
         $data->isblocked = api::is_user_blocked($this->currentuserid, $this->otheruserid);
 
+        $data->entertosend = get_user_preferences('message_entertosend', 1, $data->currentuserid); // TODO actual default.
+
         return $data;
     }
 }
