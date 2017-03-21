@@ -78,15 +78,15 @@ class MoodleQuickForm_assignsubmission_file_types extends MoodleQuickForm_group 
 
         $labelhtml = html_writer::div('', 'formctl_types',
             array('id' => $this->getAttribute('id') . '_label'));
-        $this->_elements['label'] = @MoodleQuickForm::createElement('static', 'label', null, $labelhtml);
-        $this->_elements['choose'] = @MoodleQuickForm::createElement('button', 'choose',
+        $this->_elements['label'] = $this->createFormElement('static', 'label', null, $labelhtml);
+        $this->_elements['choose'] = $this->createFormElement('button', 'choose',
             get_string('formctl_types_choose', 'assignsubmission_file'),
             array(
                 'id' => $this->getAttribute('id') . '_choose',
                 'class' => 'formctl_types_choose',
             )
         );
-        $this->_elements['value'] = @MoodleQuickForm::createElement('text', 'value', '',
+        $this->_elements['value'] = $this->createFormElement('text', 'value', '',
             array(
                 'id' => $this->getAttribute('id'),
                 'class' => 'formctl_types_value',
