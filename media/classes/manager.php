@@ -125,15 +125,16 @@ class core_media_manager {
      * @param moodle_page $page The page we are going to add requirements to.
      * @see core_media_manager::instance()
      */
-    protected function __construct($page) {
-        if ($page) {
-            $this->page = $page;
-            $players = $this->get_players();
-            foreach ($players as $player) {
-                $player->setup($page);
-            }
-        } else {
-            debugging('Could not determine the $PAGE. Media plugins will not be set up', DEBUG_DEVELOPER);
+    protected function __construct($page = null) {
+        global $PAGE;
+        // Use the passed $page if given, otherwise the $PAGE global.
+        if (!$page) {
+            $page = $PAGE;
+        }
+        $this->page = $page;
+        $players = $this->get_players();
+        foreach ($players as $player) {
+            $player->setup($page);
         }
     }
 
