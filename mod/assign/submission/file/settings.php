@@ -46,7 +46,7 @@ if (isset($CFG->maxbytes)) {
     $settings->add($element);
 }
 
-$settings->add(new \assignsubmission_file\admin_setting_filetypes('assignsubmission_file/filetypes',
+$settings->add(new admin_setting_configtext('assignsubmission_file/filetypes',
     get_string('setting_filetypes', 'assignsubmission_file'),
     get_string('setting_filetypes_desc', 'assignsubmission_file'),
     implode(';', array(
