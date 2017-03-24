@@ -27,14 +27,14 @@ Feature: In an assignment, limit submittable file types
     And I log in as "teacher1"
     And I follow "Course 1"
     And I follow "Test assignment name"
-    And I click on "Edit settings" "link" in the "Administration" "block"
+    And I navigate to "Edit settings" in current page administration
     When I set the field "assignsubmission_file_restricttypes" to "Yes"
     And I click on "assignsubmission_file_filetypes[choose]" "button"
     And I click on "Image (PNG)" "checkbox"
     And I click on "Spreadsheet files" "checkbox"
     And I press "Save choices"
     And I press "Save and display"
-    And I click on "Edit settings" "link" in the "Administration" "block"
+    And I navigate to "Edit settings" in current page administration
     Then the field "assignsubmission_file_restricttypes" matches value "Yes"
     And the field "assignsubmission_file_filetypes[value]" matches value "image/png;spreadsheet"
     And I should see "Image (PNG)" in the ".assignsubmission_file_label" "css_element"
