@@ -24,6 +24,8 @@
 
 
 $string['acceptedfiletypes'] = 'Accepted file types';
+$string['acceptedfiletypes_help'] = 'Accepted file types can be restricted by entering a semicolon-separated list of mimetypes, for example \'video/mp4, audio/mp3, image/png, image/jpg\'. If the field is left empty, then all file types are allowed.';
+$string['siteuploadlimit'] = 'Site upload limit';
 $string['configmaxbytes'] = 'Maximum file size';
 $string['countfiles'] = '{$a} files';
 $string['default'] = 'Enabled by default';
@@ -46,6 +48,6 @@ $string['pluginname'] = 'File submissions';
 $string['restricttypes'] = 'Restrict file types';
 $string['restricttypes_help'] = 'If \'Yes\', files that students are able to upload for their submission will be restricted to the selected types.';
 $string['setting_filetypes'] = 'Permitted file types';
-$string['setting_filetypes_desc'] = 'File types and groups chosen here become the options selectable for configuration of the submission method.';
+$string['setting_filetypes_desc'] = 'File types and groups chosen here become the options selectable for configuration of the submission method. Allowed file types can be restricted by entering a semicolon-separated list of mimetypes, for example \'video/mp4, audio/mp3, image/png, image/jpg\'. If the field is left empty, then all file types are allowed.';
 $string['siteuploadlimit'] = 'Site upload limit';
 $string['submissionfilearea'] = 'Uploaded submission files';
