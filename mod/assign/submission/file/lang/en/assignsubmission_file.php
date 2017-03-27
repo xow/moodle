@@ -24,6 +24,8 @@
 
 
 $string['acceptedfiletypes'] = 'Accepted file types';
+$string['acceptedfiletypes_help'] = 'Accepted file types can be restricted by entering a semicolon-separated list of mimetypes, for example \'video/mp4; audio/mp3; image/png; image/jpg\'. You may also limit to extensions by including the dot, for example \'.png; .jpg\' If the field is left empty, then all file types are allowed.';
+$string['siteuploadlimit'] = 'Site upload limit';
 $string['configmaxbytes'] = 'Maximum file size';
 $string['countfiles'] = '{$a} files';
 $string['default'] = 'Enabled by default';
