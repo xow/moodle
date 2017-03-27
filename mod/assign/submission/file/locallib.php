@@ -626,7 +626,7 @@ class assign_submission_file extends assign_submission_plugin {
         $typeslist = (string)$this->get_config('filetypeslist');
 
         $sets = array();
-        if ($typeslist !== '') {
+        if (!empty($typeslist)) {
             $sets = explode(';', $typeslist);
         }
         return $sets;
