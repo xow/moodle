@@ -69,10 +69,6 @@ class assign_submission_file extends assign_submission_plugin {
     public function get_settings(MoodleQuickForm $mform) {
         global $CFG, $COURSE;
 
-        MoodleQuickForm::registerElementType('assignsubmission_file_types',
-            dirname(__FILE__) . '/formctl_types.php',
-            'MoodleQuickForm_assignsubmission_file_types');
-
         $defaultmaxfilesubmissions = $this->get_config('maxfilesubmissions');
         $defaultmaxsubmissionsizebytes = $this->get_config('maxsubmissionsizebytes');
         $defaultrestricttypes = $this->get_config('restricttypes');
