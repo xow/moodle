@@ -44,6 +44,25 @@ Feature: In an assignment, limit submittable file types
     And I follow "Course 1"
     And I follow "Test assignment name"
     When I press "Add submission"
+    And I should see "Files of these types may be added to the submission"
+    And I should see "Image (PNG) — .png"
+    And I should see "Spreadsheet files — .csv .ods .ots .xls .xlsx .xlsm"
+    And I upload "lib/tests/fixtures/gd-logo.png" file to "File submissions" filemanager
+    And I upload "lib/tests/fixtures/tabfile.csv" file to "File submissions" filemanager
+    And I press "Save changes"
+    Then "gd-logo.png" "link" should exist
+    And "tabfile.csv" "link" should exist
+
+  @javascript @_file_upload
+  Scenario: No filetypes allows all
+    Given the following "activities" exist:
+      | activity | course | idnumber | name                 | intro                       | duedate    | assignsubmission_onlinetext_enabled | assignsubmission_file_enabled | assignsubmission_file_maxfiles | assignsubmission_file_maxsizebytes | assignsubmission_file_restricttypes | assignsubmission_file_filetypes |
+      | assign   | C1     | assign1  | Test assignment name | Test assignment description | 1388534400 | 0                                   | 1                             | 2                              | 0                                  | 1                                   |                                 |
+    And I log in as "student1"
+    And I follow "Course 1"
+    And I follow "Test assignment name"
+    When I press "Add submission"
+    And I should not see "Files of these types may be added to the submission"
     And I upload "lib/tests/fixtures/gd-logo.png" file to "File submissions" filemanager
     And I upload "lib/tests/fixtures/tabfile.csv" file to "File submissions" filemanager
     And I press "Save changes"
