@@ -1,0 +1,113 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template core_form/filetypes-browser
+
+    The template is used to render the content of the UI widget allowing the
+    user to select individual file types or their groups.
+
+    Classes required for JS:
+    * none
+
+    Data attributes required for JS:
+    * none
+
+    Context variables required for this template:
+    * groups
+        * key
+        * name
+        * selectable
+        * ext
+        * types
+            * key
+            * name
+            * selected
+            * ext
+
+    Example context (json):
+    {
+        "groups": [
+            {
+                "key": "web_file",
+                "name": "Web files",
+                "selectable": true,
+                "selected": false,
+                "ext": ".css .html .xhtml .htm .js",
+                "types": [
+                    {
+                        "key": ".css",
+                        "name": "Cascading Style-Sheet",
+                        "selected": true,
+                        "ext": ".css"
+                    },
+                    {
+                        "key": ".htm",
+                        "name": "HTML text",
+                        "selected": false,
+                        "ext": ".htm .xhtml .html"
+                    },
+                ]
+            },
+            {
+                "key": "web_audio",
+                "name": "Web-safe audio files",
+                "selectable": false,
+                "selected": false,
+                "ext": null,
+                "types": [
+                    {
+                        "key": "audio/mp3",
+                        "name": "Audio file (MP3)",
+                        "selected": false,
+                        "ext": ".mp3"
+                    }
+                ]
+            }
+        ]
+    }
+}}
+<div data-filetypesbrowserbody="{{elementid}}">
+{{#groups}}
+    <div role="treeitem">
+        <label>
+            {{#selectable}}
+            <input type="checkbox" {{#selected}}checked{{/selected}}>
+            {{/selectable}}
+            <strong>{{name}}</strong>
+            {{#selectable}}
+            <span class="muted">
+                {{ext}}
+            </span>
+        </label>
+        {{/selectable}}
+        <ul class="unstyled list-unstyled" role="group">
+            {{#types}}
+            <li style="margin-left: 2em" role="treeitem">
+                <label>
+                    <input type="checkbox" {{#selected}}checked{{/selected}}>
+                    {{name}}
+                    <span class="muted">
+                        {{ext}}
+                    </span>
+                </label>
+            </li>
+            {{/types}}
+        </ul>
+    </div>
+    <hr>
+{{/groups}}
+</div>

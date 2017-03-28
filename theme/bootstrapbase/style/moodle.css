@@ -16493,6 +16493,9 @@ div[data-passwordunmask="wrapper"] {
   line-height: 30px;
   margin-bottom: 10px;
 }
+[data-filetypesbrowserbody] [aria-expanded="false"] > [role="group"] {
+  display: none;
+}
 body.modal-open {
   overflow: hidden;
 }
