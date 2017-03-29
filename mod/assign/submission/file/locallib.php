@@ -71,7 +71,6 @@ class assign_submission_file extends assign_submission_plugin {
 
         $defaultmaxfilesubmissions = $this->get_config('maxfilesubmissions');
         $defaultmaxsubmissionsizebytes = $this->get_config('maxsubmissionsizebytes');
-        $defaultrestricttypes = $this->get_config('restricttypes');
         $defaultfiletypes = (string)$this->get_config('filetypeslist');
 
         $settings = array();
@@ -108,18 +107,11 @@ class assign_submission_file extends assign_submission_plugin {
                            'assignsubmission_file_enabled',
                            'notchecked');
 
-        $name = get_string('restricttypes', 'assignsubmission_file');
-        $mform->addElement('selectyesno', 'assignsubmission_file_restricttypes', $name);
-        $mform->addHelpButton('assignsubmission_file_restricttypes', 'restricttypes', 'assignsubmission_file');
-        $mform->setDefault('assignsubmission_file_restricttypes', $defaultrestricttypes);
-        $mform->disabledIf('assignsubmission_file_restricttypes', 'assignsubmission_file_enabled', 'notchecked');
-
         $name = get_string('acceptedfiletypes', 'assignsubmission_file');
         $mform->addElement('text', 'assignsubmission_file_filetypes', $name);
         $mform->addHelpButton('assignsubmission_file_filetypes', 'acceptedfiletypes', 'assignsubmission_file');
         $mform->setType('assignsubmission_file_filetypes', PARAM_RAW);
         $mform->setDefault('assignsubmission_file_filetypes', $defaultfiletypes);
-        $mform->disabledIf('assignsubmission_file_filetypes', 'assignsubmission_file_restricttypes', 'eq', '0');
         $mform->disabledIf('assignsubmission_file_filetypes', 'assignsubmission_file_enabled', 'notchecked');
     }
 
@@ -132,12 +124,10 @@ class assign_submission_file extends assign_submission_plugin {
     public function save_settings(stdClass $data) {
         $this->set_config('maxfilesubmissions', $data->assignsubmission_file_maxfiles);
         $this->set_config('maxsubmissionsizebytes', $data->assignsubmission_file_maxsizebytes);
-        $this->set_config('restricttypes', !empty($data->assignsubmission_file_restricttypes));
 
         if (!empty($data->assignsubmission_file_filetypes)) {
             $this->set_config('filetypeslist', $data->assignsubmission_file_filetypes);
         } else {
-            $this->set_config('restricttypes', 0);
             $this->set_config('filetypeslist', '');
         }
 
@@ -188,7 +178,7 @@ class assign_submission_file extends assign_submission_plugin {
                                                   $submissionid);
         $mform->addElement('filemanager', 'files_filemanager', $this->get_name(), null, $fileoptions);
 
-        if ($this->get_config('restricttypes')) {
+        if (!empty($this->get_config('filetypeslist'))) {
             $text = html_writer::tag('p', get_string('filesofthesetypes', 'assignsubmission_file'));
             $text .= html_writer::start_tag('ul');
 
@@ -639,10 +629,9 @@ class assign_submission_file extends assign_submission_plugin {
      * @return array|string
      */
     private function get_accepted_types() {
-        $restricttypes = $this->get_config('restricttypes');
         $acceptedtypes = $this->get_configured_typesets();
 
-        if ($restricttypes && $acceptedtypes) {
+        if (!empty($acceptedtypes)) {
             return $acceptedtypes;
         }
 

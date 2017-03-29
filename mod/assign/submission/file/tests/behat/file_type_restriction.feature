@@ -22,24 +22,22 @@ Feature: In an assignment, limit submittable file types
   @javascript
   Scenario: Configuring permitted file types for an assignment
     Given the following "activities" exist:
-      | activity | course | idnumber | name                 | intro                       | duedate    | assignsubmission_onlinetext_enabled | assignsubmission_file_enabled | assignsubmission_file_maxfiles | assignsubmission_file_maxsizebytes | assignsubmission_file_restricttypes |
-      | assign   | C1     | assign1  | Test assignment name | Test assignment description | 1388534400 | 0                                   | 1                             | 1                              | 0                                  | 0                                   |
+      | activity | course | idnumber | name                 | intro                       | duedate    | assignsubmission_onlinetext_enabled | assignsubmission_file_enabled | assignsubmission_file_maxfiles | assignsubmission_file_maxsizebytes |
+      | assign   | C1     | assign1  | Test assignment name | Test assignment description | 1388534400 | 0                                   | 1                             | 1                              | 0                                  |
     And I log in as "teacher1"
     And I follow "Course 1"
     And I follow "Test assignment name"
     And I navigate to "Edit settings" in current page administration
-    When I set the field "assignsubmission_file_restricttypes" to "Yes"
-    And I set the field "Accepted file types" to "image/png;spreadsheet"
+    When I set the field "Accepted file types" to "image/png;spreadsheet"
     And I press "Save and display"
     And I navigate to "Edit settings" in current page administration
-    Then the field "assignsubmission_file_restricttypes" matches value "Yes"
-    And the field "Accepted file types" matches value "image/png;spreadsheet"
+    Then the field "Accepted file types" matches value "image/png;spreadsheet"
 
   @javascript @_file_upload
   Scenario: Uploading permitted file types for an assignment
     Given the following "activities" exist:
-      | activity | course | idnumber | name                 | intro                       | duedate    | assignsubmission_onlinetext_enabled | assignsubmission_file_enabled | assignsubmission_file_maxfiles | assignsubmission_file_maxsizebytes | assignsubmission_file_restricttypes | assignsubmission_file_filetypes |
-      | assign   | C1     | assign1  | Test assignment name | Test assignment description | 1388534400 | 0                                   | 1                             | 2                              | 0                                  | 1                                   | image/png;spreadsheet           |
+      | activity | course | idnumber | name                 | intro                       | duedate    | assignsubmission_onlinetext_enabled | assignsubmission_file_enabled | assignsubmission_file_maxfiles | assignsubmission_file_maxsizebytes | assignsubmission_file_filetypes |
+      | assign   | C1     | assign1  | Test assignment name | Test assignment description | 1388534400 | 0                                   | 1                             | 2                              | 0                                  | image/png;spreadsheet           |
     And I log in as "student1"
     And I follow "Course 1"
     And I follow "Test assignment name"
@@ -56,8 +54,8 @@ Feature: In an assignment, limit submittable file types
   @javascript @_file_upload
   Scenario: No filetypes allows all
     Given the following "activities" exist:
-      | activity | course | idnumber | name                 | intro                       | duedate    | assignsubmission_onlinetext_enabled | assignsubmission_file_enabled | assignsubmission_file_maxfiles | assignsubmission_file_maxsizebytes | assignsubmission_file_restricttypes | assignsubmission_file_filetypes |
-      | assign   | C1     | assign1  | Test assignment name | Test assignment description | 1388534400 | 0                                   | 1                             | 2                              | 0                                  | 1                                   |                                 |
+      | activity | course | idnumber | name                 | intro                       | duedate    | assignsubmission_onlinetext_enabled | assignsubmission_file_enabled | assignsubmission_file_maxfiles | assignsubmission_file_maxsizebytes | assignsubmission_file_filetypes |
+      | assign   | C1     | assign1  | Test assignment name | Test assignment description | 1388534400 | 0                                   | 1                             | 2                              | 0                                  |                                 |
     And I log in as "student1"
     And I follow "Course 1"
     And I follow "Test assignment name"
