@@ -277,4 +277,66 @@ class filetypes_util_testcase extends advanced_testcase {
             $this->assertTrue(($group->key === 'image' || $group->key === 'web_image'));
         }
     }
+
+    /**
+     * Data provider for testing test_is_allowed_file_type.
+     *
+     * @return array
+     */
+    public function is_allowed_file_type_provider() {
+        return [
+            'Filetype not in extension whitelist' => [
+                'filename' => 'test.xml',
+                'whitelist' => '.png .jpg',
+                'expected' => false
+            ],
+            'Filetype not in mimetype whitelist' => [
+                'filename' => 'test.xml',
+                'whitelist' => 'image/png',
+                'expected' => false
+            ],
+            'Filetype not in group whitelist' => [
+                'filename' => 'test.xml',
+                'whitelist' => 'web_file',
+                'expected' => false
+            ],
+            'Filetype in whitelist as extension' => [
+                'filename' => 'test.xml',
+                'whitelist' => 'xml',
+                'expected' => true
+            ],
+            'Empty whitelist should allow all' => [
+                'filename' => 'test.xml',
+                'whitelist' => '',
+                'expected' => true
+            ],
+            'Filetype in whitelist but later on' => [
+                'filename' => 'test.xml',
+                'whitelist' => 'gif;jpeg,image/png xml xlsx',
+                'expected' => true
+            ],
+            'Filetype in whitelist as mimetype' => [
+                'filename' => 'test.xml',
+                'whitelist' => 'image/png application/xml',
+                'expected' => true
+            ],
+            'Filetype in whitelist as group' => [
+                'filename' => 'test.html',
+                'whitelist' => 'video,web_file',
+                'expected' => true
+            ],
+        ];
+    }
+
+    /**
+     * Test is_allowed_file_type().
+     * @dataProvider is_allowed_file_type_provider
+     * @param string $filename The filename to check
+     * @param string $whitelist The space , or ; separated list of types supported
+     * @param boolean $expected The expected result. True if the file is allowed, false if not.
+     */
+    public function test_is_allowed_file_type($filename, $whitelist, $expected) {
+        $util = new filetypes_util();
+        $this->assertSame($expected, $util->is_allowed_file_type($filename, $whitelist));
+    }
 }

@@ -425,4 +425,34 @@ class filetypes_util {
 
         return true;
     }
+
+    /**
+     * Is the given filename of an allowed file type?
+     *
+     * Empty whitelist is interpretted as "any file type is allowed" rather
+     * than "no file can be uploaded".
+     *
+     * @param string $filename the file name
+     * @param string|array $whitelist list of allowed file extensions
+     * @return boolean True if the file type is allowed, false if not
+     */
+    public function is_allowed_file_type($filename, $whitelist) {
+
+        $allowedextensions = $this->expand($whitelist);
+
+        if (empty($allowedextensions) || $allowedextensions == ['*']) {
+            return true;
+        }
+
+        $haystack = strrev(trim(strtolower($filename)));
+
+        foreach ($allowedextensions as $extension) {
+            if (strpos($haystack, strrev($extension)) === 0) {
+                // The file name ends with the extension.
+                return true;
+            }
+        }
+
+        return false;
+    }
 }
