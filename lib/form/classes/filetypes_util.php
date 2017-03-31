@@ -405,25 +405,23 @@ class filetypes_util {
      * If multiple types are provided, all of them must be part of the
      * whitelist.
      *
-     * @param string $type
-     * @param string|array $onlytypes
+     * @param string $types One or more types in a string (space , or ; separated)
+     * @param string|array $whitelist an array or string of whitelisted types
      * @return boolean
      */
-    public function is_whitelisted($type, $whitelist) {
+    public function is_whitelisted($types, $whitelist) {
 
-        $haystack = $this->expand($whitelist, true, true);
+        $whitelistedtypes = $this->expand($whitelist, true, true);
 
-        if (empty($haystack) || $haystack == ['*']) {
+        if (empty($whitelistedtypes) || $whitelistedtypes == ['*']) {
             return true;
         }
 
-        foreach ($this->normalize_file_types($type) as $needle) {
-            if (!in_array($needle, $haystack)) {
-                return false;
-            }
-        }
+        $giventypes = $this->normalize_file_types($types);
 
-        return true;
+        $intersection = array_intersect($giventypes, $whitelistedtypes);
+
+        return !empty($intersection);
     }
 
     /**
