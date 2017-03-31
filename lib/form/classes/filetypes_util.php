@@ -453,4 +453,34 @@ class filetypes_util {
 
         return false;
     }
+
+    /**
+     * List the nonexistant file types that need to be removed.
+     *
+     * @param string $types space , or ; separated types
+     * @return array A list of the nonexistant file types.
+     */
+    public function get_nonexistant_file_types($types) {
+        $nonexistant = [];
+
+        foreach ($this->normalize_file_types($types) as $type) { // TODO: stop it from automatically appending a period.
+            if ($this->is_filetype_group($type)) {
+                // The type is a group that exists.
+            } else if ($this->looks_like_mimetype($type)) {
+                // If there's no extensions under that mimetype, it doesn't exist.
+                if (empty(file_get_typegroup('extension', [$type]))) {
+                    $nonexistant[$type] = true;
+                }
+            } else {
+                $coretypes = core_filetypes::get_types();
+                $typecleaned = str_replace(".", "", $type);
+                if (empty($coretypes[$typecleaned])) {
+                    // If there's no extension, it doesn't exist.
+                    $nonexistant[$type] = true;
+                }
+            }
+        }
+
+        return array_keys($nonexistant);
+    }
 }

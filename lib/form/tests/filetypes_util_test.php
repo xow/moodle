@@ -339,4 +339,61 @@ class filetypes_util_testcase extends advanced_testcase {
         $util = new filetypes_util();
         $this->assertSame($expected, $util->is_allowed_file_type($filename, $whitelist));
     }
+
+    /**
+     * Data provider for testing test_get_nonexistant_file_types.
+     *
+     * @return array
+     */
+    public function get_nonexistant_file_types_provider() {
+        return [
+            'Nonexistant extension' => [
+                'filetypes' => '.rat',
+                'expected' => ['.rat']
+            ],
+            'Multiple nonexistant extensions' => [
+                'filetypes' => '.ricefield .rat',
+                'expected' => ['.ricefield', '.rat']
+            ],
+            'Existant extension' => [
+                'filetypes' => '.xml',
+                'expected' => []
+            ],
+            'Existant group' => [
+                'filetypes' => 'web_file',
+                'expected' => []
+            ],
+            'Nonexistant mimetypes' => [
+                'filetypes' => 'ricefield/rat',
+                'expected' => ['ricefield/rat']
+            ],
+            'Existant mimetype' => [
+                'filetypes' => 'application/xml',
+                'expected' => []
+            ],
+            'Multiple nonexistant mimetypes' => [
+                'filetypes' => 'ricefield/rat cam/ball',
+                'expected' => ['ricefield/rat', 'cam/ball']
+            ],
+            'Strange characters in nonexistant extension/group' => [
+                'filetypes' => '©ç√√ß∂å√©åß©√',
+                'expected' => ['.©ç√√ß∂å√©åß©√']
+            ],
+            'Some existant some not' => [
+                'filetypes' => '.txt application/xml web_file ©ç√√ß∂å√©åß©√ .png ricefield/rat document',
+                'expected' => ['.©ç√√ß∂å√©åß©√', 'ricefield/rat']
+            ],
+        ];
+    }
+
+    /**
+     * Test get_nonexistant_file_types().
+     * @dataProvider get_nonexistant_file_types_provider
+     * @param string $filetypes The filetypes to check
+     * @param array $expected The expected result. The list of non existant file types.
+     */
+    public function test_get_nonexistant_file_types($filetypes, $expected) {
+        $util = new filetypes_util();
+        $this->assertSame($expected, $util->get_nonexistant_file_types($filetypes));
+    }
 }
