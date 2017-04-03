@@ -137,5 +137,69 @@ class assignsubmission_file_locallib_testcase extends advanced_testcase {
         ];
     }
 
+    /**
+     * Data provider for testing test_get_nonexistent_file_types.
+     *
+     * @return array
+     */
+    public function get_nonexistent_file_types_provider() {
+        return [
+            'Nonexistent extension' => [
+                'filetypes' => '.rat',
+                'expected' => ['.rat']
+            ],
+            'Multiple nonexistent extensions' => [
+                'filetypes' => '.ricefield .rat',
+                'expected' => ['.ricefield', '.rat']
+            ],
+            'Existent extension' => [
+                'filetypes' => '.xml',
+                'expected' => []
+            ],
+            'Existent group' => [
+                'filetypes' => 'web_file',
+                'expected' => []
+            ],
+            'Nonexistent mimetypes' => [
+                'filetypes' => 'ricefield/rat',
+                'expected' => ['ricefield/rat']
+            ],
+            'Existent mimetype' => [
+                'filetypes' => 'application/xml',
+                'expected' => []
+            ],
+            'Multiple nonexistent mimetypes' => [
+                'filetypes' => 'ricefield/rat cam/ball',
+                'expected' => ['ricefield/rat', 'cam/ball']
+            ],
+            'Strange characters in nonexistent extension/group' => [
+                'filetypes' => '.©ç√√ß∂å√©åß©√',
+                'expected' => ['.©ç√√ß∂å√©åß©√']
+            ],
+            'Missing dot' => [
+                'filetypes' => 'png',
+                'expected' => ['png']
+            ],
+            'Some existent some not' => [
+                'filetypes' => '.txt application/xml web_file ©ç√√ß∂å√©åß©√ .png ricefield/rat document png',
+                'expected' => ['©ç√√ß∂å√©åß©√', 'ricefield/rat', 'png']
+            ]
+        ];
+    }
+
+    /**
+     * Test get_nonexistent_file_types().
+     * @dataProvider get_nonexistent_file_types_provider
+     * @param string $filetypes The filetypes to check
+     * @param array $expected The expected result. The list of non existent file types.
+     */
+    public function test_get_nonexistent_file_types($filetypes, $expected) {
+        $this->resetAfterTest();
+        $method = new ReflectionMethod(assign_submission_file::class, 'get_nonexistent_file_types');
+        $method->setAccessible(true);
+        $plugin = $this->assign->get_submission_plugin_by_type('file');
+        $nonexistentfiletypes = $method->invokeArgs($plugin, [$filetypes]);
+        $this->assertSame($expected, $nonexistentfiletypes);
+    }
 
 }
