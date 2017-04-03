@@ -20,7 +20,7 @@ Feature: In an assignment, limit submittable file types
       | filetypes | image/png;spreadsheet | assignsubmission_file |
 
   @javascript
-  Scenario: Configuring permitted file types for an assignment
+  Scenario: File types validation for an assignment
     Given the following "activities" exist:
       | activity | course | idnumber | name                 | intro                       | duedate    | assignsubmission_onlinetext_enabled | assignsubmission_file_enabled | assignsubmission_file_maxfiles | assignsubmission_file_maxsizebytes |
       | assign   | C1     | assign1  | Test assignment name | Test assignment description | 1388534400 | 0                                   | 1                             | 1                              | 0                                  |
@@ -28,7 +28,10 @@ Feature: In an assignment, limit submittable file types
     And I follow "Course 1"
     And I follow "Test assignment name"
     And I navigate to "Edit settings" in current page administration
-    When I set the field "Accepted file types" to "image/png;spreadsheet"
+    When I set the field "Accepted file types" to "image/png;doesntexist;.fake;unreal/mimetype"
+    And I press "Save and display"
+    And I should see "The following file types were not recognised: doesntexist .fake unreal/mimetype"
+    And I set the field "Accepted file types" to "image/png;spreadsheet"
     And I press "Save and display"
     And I navigate to "Edit settings" in current page administration
     Then the field "Accepted file types" matches value "image/png;spreadsheet"
@@ -37,7 +40,7 @@ Feature: In an assignment, limit submittable file types
   Scenario: Uploading permitted file types for an assignment
     Given the following "activities" exist:
       | activity | course | idnumber | name                 | intro                       | duedate    | assignsubmission_onlinetext_enabled | assignsubmission_file_enabled | assignsubmission_file_maxfiles | assignsubmission_file_maxsizebytes | assignsubmission_file_filetypes |
-      | assign   | C1     | assign1  | Test assignment name | Test assignment description | 1388534400 | 0                                   | 1                             | 2                              | 0                                  | image/png;spreadsheet           |
+      | assign   | C1     | assign1  | Test assignment name | Test assignment description | 1388534400 | 0                                   | 1                             | 2                              | 0                                  | image/png;spreadsheet;.xml;jpg  |
     And I log in as "student1"
     And I follow "Course 1"
     And I follow "Test assignment name"
@@ -45,6 +48,8 @@ Feature: In an assignment, limit submittable file types
     And I should see "Files of these types may be added to the submission"
     And I should see "Image (PNG) — .png"
     And I should see "Spreadsheet files — .csv .ods .ots .xls .xlsx .xlsm"
+    And I should see ".xml"
+    And I should see "jpg"
     And I upload "lib/tests/fixtures/gd-logo.png" file to "File submissions" filemanager
     And I upload "lib/tests/fixtures/tabfile.csv" file to "File submissions" filemanager
     And I press "Save changes"

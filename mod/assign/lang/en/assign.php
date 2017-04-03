@@ -327,6 +327,7 @@ $string['nograde'] = 'No grade. ';
 $string['nolatesubmissions'] = 'No late submissions accepted. ';
 $string['nomoresubmissionsaccepted'] = 'Only allowed for participants who have been granted an extension';
 $string['none'] = 'None';
+$string['nonexistentfiletypes'] = 'The following file types were not recognised: {$a}';
 $string['noonlinesubmissions'] = 'This assignment does not require you to submit anything online';
 $string['noopen'] = 'No open date';
 $string['nooverridedata'] = 'You must override at least one of the assignment settings.';

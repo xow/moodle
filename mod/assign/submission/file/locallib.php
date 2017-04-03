@@ -41,6 +41,10 @@ define('ASSIGNSUBMISSION_FILE_FILEAREA', 'submission_files');
  */
 class assign_submission_file extends assign_submission_plugin {
 
+     /** @var array Cache of all file type groups for the {@link self::get_groups_info()}. */
+    private $cachegroups = null;
+
+
     /**
      * Get the name of the file submission plugin
      * @return string
@@ -113,6 +117,15 @@ class assign_submission_file extends assign_submission_plugin {
         $mform->setType('assignsubmission_file_filetypes', PARAM_RAW);
         $mform->setDefault('assignsubmission_file_filetypes', $defaultfiletypes);
         $mform->disabledIf('assignsubmission_file_filetypes', 'assignsubmission_file_enabled', 'notchecked');
+        $mform->addFormRule(function ($values, $files) {
+                $nonexistent = $this->get_nonexistent_file_types($values['assignsubmission_file_filetypes']);
+                if (empty($nonexistent)) {
+                    return true;
+                } else {
+                    $a = join(' ', $nonexistent);
+                    return ["assignsubmission_file_filetypes" => get_string('nonexistentfiletypes', 'assign', $a)];
+                }
+            });
     }
 
     /**
@@ -185,13 +198,21 @@ class assign_submission_file extends assign_submission_plugin {
             $typesets = $this->get_configured_typesets();
             foreach ($typesets as $type) {
                 $a = new stdClass();
-                if (strpos($type, '/') !== false) {
-                    $a->name = get_mimetype_description($type);
-                } else {
-                    $a->name = get_string("group:$type", 'mimetypes');
+                $extensions = file_get_typegroup('extension', $type);
+                $typetext = html_writer::tag('li', $type);
+                // Only bother checking if it's a mimetype or group if it has extensions in the group
+                if (!empty($extensions)) {
+                    if (strpos($type, '/') !== false) {
+                        $a->name = get_mimetype_description($type);
+                        $a->extlist = implode(' ', $extensions);
+                        $typetext = html_writer::tag('li', get_string('filetypewithexts', 'assignsubmission_file', $a));
+                    } else if($this->is_filetype_group($type)) {
+                        $a->name = get_string("group:$type", 'mimetypes');
+                        $a->extlist = implode(' ', $extensions);
+                        $typetext = html_writer::tag('li', get_string('filetypewithexts', 'assignsubmission_file', $a));
+                    }
                 }
-                $a->extlist = implode(' ', file_get_typegroup('extension', $type));
-                $text .= html_writer::tag('li', get_string('filetypewithexts', 'assignsubmission_file', $a));
+                $text .= $typetext;
             }
 
             $text .= html_writer::end_tag('ul');
@@ -608,16 +629,28 @@ class assign_submission_file extends assign_submission_plugin {
     }
 
     /**
-     * Get the type sets configured for this assignment.
+     * get the type sets configured for this assignment.
      *
      * @return array('groupname', 'mime/type', ...)
      */
     private function get_configured_typesets() {
         $typeslist = (string)$this->get_config('filetypeslist');
 
+        $sets = $this->get_typesets($typeslist);
+
+        return $sets;
+    }
+
+    /**
+     * Get the type sets passed.
+     *
+     * @param string $types The space , ; separated list of types
+     * @return array('groupname', 'mime/type', ...)
+     */
+    private function get_typesets($types) {
         $sets = array();
-        if (!empty($typeslist)) {
-            $sets = explode(';', $typeslist);
+        if (!empty($types)) {
+            $sets = preg_split('/[\s,;:"\']+/', $types, null, PREG_SPLIT_NO_EMPTY);
         }
         return $sets;
     }
@@ -636,5 +669,77 @@ class assign_submission_file extends assign_submission_plugin {
         }
 
         return '*';
+    }
+
+    /**
+     * List the nonexistent file types that need to be removed.
+     *
+     * @param string $types space , or ; separated types
+     * @return array A list of the nonexistent file types.
+     */
+    private function get_nonexistent_file_types($types) {
+        $nonexistent = [];
+        foreach ($this->get_typesets($types) as $type) {
+            $coretypes = core_filetypes::get_types();
+            $typecleaned = str_replace(".", "", $type);
+            if (empty($coretypes[$typecleaned])) {
+                // If there's no extension, check if it's a group.
+                $extensions = file_get_typegroup('extension', [$type]);
+                if (empty($extensions)) {
+                    // If there's no extensions under that group, it doesn't exist.
+                    $nonexistent[$type] = true;
+                }
+            }
+        }
+        return array_keys($nonexistent);
+    }
+
+    /**
+     * Is the given string a known filetype group?
+     *
+     * @param string $type
+     * @return bool|object false or the group info
+     */
+    private function is_filetype_group($type) {
+        $info = $this->get_groups_info();
+        if (isset($info[$type])) {
+            return $info[$type];
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Provides a list of all known file type groups and their properties.
+     *
+     * @return array The groups
+     */
+    private function get_groups_info() {
+        if ($this->cachegroups !== null) {
+            return $this->cachegroups;
+        }
+        $groups = [];
+        foreach (core_filetypes::get_types() as $ext => $info) {
+            if (isset($info['groups']) && is_array($info['groups'])) {
+                foreach ($info['groups'] as $group) {
+                    if (!isset($groups[$group])) {
+                        $groups[$group] = (object) [
+                            'extensions' => [],
+                            'mimetypes' => [],
+                        ];
+                    }
+                    $groups[$group]->extensions['.'.$ext] = true;
+                    if (isset($info['type'])) {
+                        $groups[$group]->mimetypes[$info['type']] = true;
+                    }
+                }
+            }
+        }
+        foreach ($groups as $group => $info) {
+            $info->extensions = array_keys($info->extensions);
+            $info->mimetypes = array_keys($info->mimetypes);
+        }
+        $this->cachegroups = $groups;
+        return $this->cachegroups;
     }
 }
