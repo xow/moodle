@@ -202,7 +202,11 @@ function report_stats_report($course, $report, $mode, $user, $roleid, $time) {
 
             echo $OUTPUT->heading(format_string($course->shortname).' - '.get_string('statsreport'.$report)
                     .((!empty($user)) ? ' '.get_string('statsreportforuser').' ' .fullname($user,true) : '')
-                    .((!empty($roleid)) ? ' '.$DB->get_field('role','name', array('id'=>$roleid)) : ''));
+                    . ((!empty($roleid)) ? ' ' . format_string(
+                            $DB->get_field('role', 'name', array('id' => $roleid)),
+                            true,
+                            ['context' => $context]
+                        ) : ''));
 
 
             if ($mode == STATS_MODE_DETAILED) {
