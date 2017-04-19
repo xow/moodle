@@ -1730,9 +1730,10 @@ function get_mimetype_description($obj, $capitalise=false) {
  *
  * @param string $element name of the element we are interested in, usually 'type' or 'extension'
  * @param string|array $groups one group or array of groups/extensions/mimetypes
+ * @param bool $allowunknownextensions If true, extensions unknown to Moodle will be allowed in 'extension' returns.
  * @return array
  */
-function file_get_typegroup($element, $groups) {
+function file_get_typegroup($element, $groups, $allowunknownextensions = false) {
     static $cached = array();
     if (!is_array($groups)) {
         $groups = array($groups);
@@ -1746,6 +1747,7 @@ function file_get_typegroup($element, $groups) {
             // retrieive and cache all elements of type $element for group $group
             $mimeinfo = & get_mimetypes_array();
             $cached[$element][$group] = array();
+            $groupfound = false;
             foreach ($mimeinfo as $extension => $value) {
                 $value['extension'] = '.'.$extension;
                 if (empty($value[$element])) {
@@ -1755,7 +1757,12 @@ function file_get_typegroup($element, $groups) {
                         (!empty($value['groups']) && in_array($group, $value['groups']))) &&
                         !in_array($value[$element], $cached[$element][$group])) {
                     $cached[$element][$group][] = $value[$element];
+                    $groupfound = true;
                 }
+            }
+            // Allow unknown file extensions.
+            if ($allowunknownextensions && !$groupfound && substr($group, 0, 1) === '.' && $element === 'extension') {
+                $cached[$element][$group][] = $group;
             }
         }
         $result = array_merge($result, $cached[$element][$group]);
