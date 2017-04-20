@@ -1743,11 +1743,11 @@ function file_get_typegroup($element, $groups, $allowunknownextensions = false) 
     }
     $result = array();
     foreach ($groups as $group) {
+        $groupfound = false;
         if (!array_key_exists($group, $cached[$element])) {
             // retrieive and cache all elements of type $element for group $group
             $mimeinfo = & get_mimetypes_array();
             $cached[$element][$group] = array();
-            $groupfound = false;
             foreach ($mimeinfo as $extension => $value) {
                 $value['extension'] = '.'.$extension;
                 if (empty($value[$element])) {
@@ -1760,10 +1760,11 @@ function file_get_typegroup($element, $groups, $allowunknownextensions = false) 
                     $groupfound = true;
                 }
             }
-            // Allow unknown file extensions.
-            if ($allowunknownextensions && !$groupfound && substr($group, 0, 1) === '.' && $element === 'extension') {
-                $cached[$element][$group][] = $group;
-            }
+        }
+        // Allow unknown file extensions.
+        if ($allowunknownextensions && !$groupfound && substr($group, 0, 1) === '.' && $element === 'extension') {
+            /// Don't add it to the cache, it doesn't really exist.
+            $result = array_merge($result, [$group]);
         }
         $result = array_merge($result, $cached[$element][$group]);
     }

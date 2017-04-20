@@ -1229,6 +1229,80 @@ EOF;
         $file = array_shift($files);
         $this->assertTrue($file->is_directory());
     }
+
+    public function file_get_typegroup_provider() {
+        return [
+            'Custom extension returns nothing when disallowed' => [
+                'element' => 'extension',
+                'groups' => '.gmx',
+                'allowunknownextensions' => false,
+                'expected' => []
+            ],
+            'Extension returns itself' => [
+                'element' => 'extension',
+                'groups' => '.txt',
+                'allowunknownextensions' => false,
+                'expected' => ['.txt']
+            ],
+            'Multiple extensions return themselves' => [
+                'element' => 'extension',
+                'groups' => ['.txt', '.png', '.jpg'],
+                'allowunknownextensions' => false,
+                'expected' => ['.txt', '.png', '.jpg']
+            ],
+            'Multiple extensions return all not custom when disallowed' => [
+                'element' => 'extension',
+                'groups' => ['.txt', '.png', '.jpg', '.gmx'],
+                'allowunknownextensions' => false,
+                'expected' => ['.txt', '.png', '.jpg']
+            ],
+            'Custom extension returns itself when allowed' => [
+                'element' => 'extension',
+                'groups' => '.gmx',
+                'allowunknownextensions' => true,
+                'expected' => ['.gmx']
+            ],
+            'Multiple extensions return all when custom allowed' => [
+                'element' => 'extension',
+                'groups' => ['.txt', '.png', '.jpg', '.gmx'],
+                'allowunknownextensions' => true,
+                'expected' => ['.txt', '.png', '.jpg', '.gmx']
+            ],
+            'Custom mimetype returns nothing even when custom allowed' => [
+                'element' => 'extension',
+                'groups' => 'application/vnd.gmx',
+                'allowunknownextensions' => true,
+                'expected' => []
+            ],
+            'Mimetype returns extensions' => [
+                'element' => 'extension',
+                'groups' => 'image/png',
+                'allowunknownextensions' => false,
+                'expected' => ['.png']
+            ],
+            'Custom group returns nothing even when custom allowed' => [
+                'element' => 'extension',
+                'groups' => 'math_files',
+                'allowunknownextensions' => true,
+                'expected' => []
+            ],
+            'Group returns extensions' => [
+                'element' => 'extension',
+                'groups' => 'web_file',
+                'allowunknownextensions' => false,
+                'expected' => ['.css', '.html', '.xhtml', '.htm', '.js', '.scss']
+            ],
+        ];
+    }
+
+    /**
+     * Test get_typegroup
+     * @dataProvider file_get_typegroup_provider
+     */
+    public function test_file_get_typegroup($element, $groups, $allowunknownextensions, $expected) {
+        $result = file_get_typegroup($element, $groups, $allowunknownextensions);
+        $this->assertSame($expected, $result);
+    }
 }
 
 /**
