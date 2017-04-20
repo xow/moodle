@@ -140,7 +140,8 @@ switch ($action) {
         if ((is_array($accepted_types) and in_array('*', $accepted_types)) or $accepted_types == '*') {
             $mimetypes = '*';
         } else {
-            $unknowntype = mimeinfo('type', 'file.xxx');
+            // The xxx extension is used as a 'unknown type' placeholder in core.
+            $unknowntype = mimeinfo('type', '.xxx');
             foreach ($accepted_types as $type) {
                 $mimetype = mimeinfo('type', $type);
                 // If it is an unknown type, and started with a dot, then it just an unknown extension type.
