@@ -161,6 +161,10 @@ if ($ADMIN->fulltree) {
                 new lang_string('start_tls_key', 'auth_ldap'),
                 new lang_string('start_tls', 'auth_ldap'), 0 , $yesno));
 
+        // Network time-out (Must be blank string, or non-negative integer).
+        $settings->add(new admin_setting_configtext('auth_cas/connecttimeout',
+                get_string('connecttimeout_key', 'auth_ldap'),
+                get_string('connecttimeout', 'auth_ldap'), '0', PARAM_INT));
 
         // Encoding.
         $settings->add(new admin_setting_configtext('auth_cas/ldapencoding',

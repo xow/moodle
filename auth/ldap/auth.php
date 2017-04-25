@@ -76,6 +76,13 @@ if (!defined('LDAP_OPT_DIAGNOSTIC_MESSAGE')) {
     define('LDAP_OPT_DIAGNOSTIC_MESSAGE', 0x0032);
 }
 
+/*Connection time-out to use when testing settings. Make sure we use a slightly
+ * lower value than the default PHP execution timeout (to avoid MDL-29536).
+ */
+if (!defined('AUTH_LDAP_SETTINGS_CONNECT_TIMEOUT')) {
+    define('AUTH_LDAP_SETTINGS_CONNECT_TIMEOUT', 25);
+}
+
 require_once($CFG->libdir.'/authlib.php');
 require_once($CFG->libdir.'/ldaplib.php');
 require_once($CFG->dirroot.'/user/lib.php');
@@ -1987,7 +1994,8 @@ class auth_plugin_ldap extends auth_plugin_base {
         if($ldapconnection = ldap_connect_moodle($this->config->host_url, $this->config->ldap_version,
                                                  $this->config->user_type, $this->config->bind_dn,
                                                  $this->config->bind_pw, $this->config->opt_deref,
-                                                 $debuginfo, $this->config->start_tls)) {
+                                                 $debuginfo, $this->config->start_tls,
+                                                 (integer)$this->config->connecttimeout)) {
             $this->ldapconns = 1;
             $this->ldapconnection = $ldapconnection;
             return $ldapconnection;
@@ -2128,12 +2136,22 @@ class auth_plugin_ldap extends auth_plugin_base {
         // Check to see if this is actually configured.
         if ((isset($this->config->host_url)) && ($this->config->host_url !== '')) {
 
-            try {
-                $ldapconn = $this->ldap_connect();
-                // Try to connect to the LDAP server.  See if the page size setting is supported on this server.
+            /* Try to connect to the LDAP server. See if the page size setting is supported on this server.
+             * Don't use $this->ldap_connect() as we want to use a specific connect timeout just for the
+             * settings page (to avoid MDL-29536).
+             */
+            $connecttimeout = (integer)$this->config->connecttimeout;
+            if ($connecttimeout > 0) {
+                $connecttimeout = min(AUTH_LDAP_SETTINGS_CONNECT_TIMEOUT, $connecttimeout);
+            } else {
+                $connecttimeout = AUTH_LDAP_SETTINGS_CONNECT_TIMEOUT;
+            }
+            if ($ldapconn = ldap_connect_moodle($this->config->host_url, $this->config->ldap_version,
+                                                $this->config->user_type, $this->config->bind_dn,
+                                                $this->config->bind_pw, $this->config->opt_deref,
+                                                $debuginfo, $this->config->start_tls, $connecttimeout)) {
                 $pagedresultssupported = ldap_paged_results_supported($this->config->ldap_version, $ldapconn);
-            } catch (Exception $e) {
-
+            } else {
                 // If we couldn't connect and get the supported options, we can only assume we don't support paged results.
                 $pagedresultssupported = false;
             }

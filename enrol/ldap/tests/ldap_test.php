@@ -101,6 +101,7 @@ class enrol_ldap_testcase extends advanced_testcase {
         $enrol->set_config('nested_groups', 0);
         $enrol->set_config('autocreate', 0);
         $enrol->set_config('unenrolaction', ENROL_EXT_REMOVED_KEEP);
+        $enrol->set_config('connecttimeout', 0);
 
         $roles = get_all_roles();
         foreach ($roles as $role) {
