@@ -38,11 +38,12 @@ class admin_setting_configtext_trim_lower extends admin_setting_configtext {
      * @param string $defaultsetting default value for the setting
      * @param boolean $lowercase if true, lowercase the value before writing it to the db.
      * @param boolean $enabled if true, the input field is enabled, otherwise it's disabled.
+     * @param mixed $paramtype int means PARAM_XXX type, string is an allowed format in regex
      */
-    public function __construct($name, $visiblename, $description, $defaultsetting, $lowercase=false, $enabled=true) {
+    public function __construct($name, $visiblename, $description, $defaultsetting, $lowercase=false, $enabled=true, $paramtype=PARAM_RAW) {
         $this->lowercase = $lowercase;
         $this->enabled = $enabled;
-        parent::__construct($name, $visiblename, $description, $defaultsetting);
+        parent::__construct($name, $visiblename, $description, $defaultsetting, $paramtype);
     }
 
     /**
@@ -52,6 +53,7 @@ class admin_setting_configtext_trim_lower extends admin_setting_configtext {
      * @return mixed empty string on useless data or success, error string if failed
      */
     public function write_setting($data) {
+        $data = trim($data);
         if ($this->paramtype === PARAM_INT and $data === '') {
             // do not complain if '' used instead of 0
             $data = 0;
@@ -68,7 +70,7 @@ class admin_setting_configtext_trim_lower extends admin_setting_configtext {
         if (!$this->enabled) {
             return '';
         }
-        return ($this->config_write($this->name, trim($data)) ? '' : get_string('errorsetting', 'admin'));
+        return ($this->config_write($this->name, $data) ? '' : get_string('errorsetting', 'admin'));
     }
 
 }

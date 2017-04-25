@@ -207,4 +207,76 @@ class core_ldaplib_testcase extends advanced_testcase {
             ),
         );
     }
+
+    /**
+     * Tests for ldap_connect_moodle.
+     *
+     * NOTE: in order to execute this test you need to set up OpenLDAP server with core,
+     *       cosine, nis and internet schemas and add configuration constants to
+     *       config.php or phpunit.xml configuration file. Also, some of the sub-tests need
+     *       a non-reachable LDAP server, in order to test connection timeouts, LDAP
+     *       server failover, etc., so you also need to define a non-reachable LDAP server.
+     *
+     * define('TEST_LDAPLIB_HOST_URL', 'ldap://127.0.0.1');
+     * define('TEST_LDAPLIB_NON_REACHABLE_HOST_URL', 'ldap://10.255.255.1');
+     * define('TEST_LDAPLIB_BIND_DN', 'cn=someuser,dc=example,dc=local');
+     * define('TEST_LDAPLIB_BIND_PW', 'somepassword');
+     * define('TEST_LDAPLIB_DOMAIN',  'dc=example,dc=local');
+     *
+     */
+    public function test_ldap_connect_moodle() {
+        $this->resetAfterTest();
+
+        if (!defined('TEST_LDAPLIB_HOST_URL') or !defined('TEST_LDAPLIB_NON_REACHABLE_HOST_URL') or
+                !defined('TEST_LDAPLIB_BIND_DN') or !defined('TEST_LDAPLIB_BIND_PW') or
+                !defined('TEST_LDAPLIB_DOMAIN')) {
+            $this->markTestSkipped('External LDAP test server not configured.');
+        }
+
+        // Run each indidivual test.
+        $this->ldap_connect_timeout();
+    }
+
+    /**
+     * Test that the ldap connection timeout option works as expected.
+     */
+    protected function ldap_connect_timeout() {
+        $tests = array(
+            array(
+                'hosturl' => TEST_LDAPLIB_HOST_URL, // Url of the LDAP server to connect to.
+                'timeout' => -1,    // Configured timeout (in integral seconds). -1 means no timeout (use operating system default timeout).
+                'maxexpected' => 2, // Maximum expected elapsed connection/timeout time (in integral seconds).
+                                    // Make it a bit higher than the specified timeout, to account for additional unknown latency sources.
+                'shouldconnect' => true,
+            ),
+            array(
+                'hosturl' => TEST_LDAPLIB_NON_REACHABLE_HOST_URL,
+                'timeout' => 5,
+                'maxexpected' => 7,
+                'shouldconnect' => false,
+            ),
+            array(
+                'hosturl' => TEST_LDAPLIB_NON_REACHABLE_HOST_URL,
+                'timeout' => -1,
+                'maxexpected' => 185, // According to http://man7.org/linux/man-pages/man7/tcp.7.html, the default value
+                                      // of tcp_syn_retries in Linux corresponds to approximately 180 seconds. So play on
+                                      // the safe side.
+                'shouldconnect' => false,
+            ),
+        );
+
+        $debuginfo = '';
+        foreach ($tests as $test) {
+            // Try to connect the server.
+            $startime = microtime(true);
+            $connection = ldap_connect_moodle($test['hosturl'], 3, 'rfc2307', TEST_LDAPLIB_BIND_DN,
+                                              TEST_LDAPLIB_BIND_PW, LDAP_DEREF_NEVER, $debuginfo,
+                                              false, $test['timeout']);
+            $elapsed = microtime(true) - $startime;
+            if (($connection === false) && ($test['shouldconnect'])) {
+                $this->markTestSkipped('Cannot connect to LDAP test server (and we expected to!). Debug info: '.$debuginfo);
+            }
+            $this->assertLessThanOrEqual($test['maxexpected'], $elapsed);
+        }
+    }
 }

@@ -1987,7 +1987,8 @@ class auth_plugin_ldap extends auth_plugin_base {
         if($ldapconnection = ldap_connect_moodle($this->config->host_url, $this->config->ldap_version,
                                                  $this->config->user_type, $this->config->bind_dn,
                                                  $this->config->bind_pw, $this->config->opt_deref,
-                                                 $debuginfo, $this->config->start_tls)) {
+                                                 $debuginfo, $this->config->start_tls,
+                                                 (integer)$this->config->connecttimeout)) {
             $this->ldapconns = 1;
             $this->ldapconnection = $ldapconnection;
             return $ldapconnection;
