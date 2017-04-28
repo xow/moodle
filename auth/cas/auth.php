@@ -269,6 +269,24 @@ class auth_plugin_cas extends auth_plugin_ldap {
         if ($form->certificate_check && empty($certificate_path)) {
             $err['certificate_path'] = get_string('auth_cas_certificate_path_empty', 'auth_cas');
         }
+
+        // Connection timeout must be either a blank string, or an integer.
+        $errcontimeout = false;
+        $connecttimeout = trim($form->connecttimeout);
+        if ($connecttimeout !== '') {
+            if (!is_numeric($connecttimeout)) {
+                $errcontimeout = true;
+            } else {
+                $intcontimeout = intval($connecttimeout, 10);
+                $strintcontimeout = (string)$intcontimeout;
+                if ($strintcontimeout !== $connecttimeout) {
+                    $errcontimeout = true;
+                }
+            }
+            if ($errcontimeout) {
+                $err['connecttimeout'] = get_string('connecttimeout_invalid', 'auth_ldap');
+            }
+        }
     }
 
     /**
@@ -327,6 +345,9 @@ class auth_plugin_cas extends auth_plugin_ldap {
         // LDAP settings
         if (!isset($config->host_url)) {
             $config->host_url = '';
+        }
+        if (!isset($config->connecttimeout)) {
+             $config->connecttimeout = '';
         }
         if (!isset($config->start_tls)) {
              $config->start_tls = false;
@@ -397,6 +418,7 @@ class auth_plugin_cas extends auth_plugin_ldap {
 
         // save LDAP settings
         set_config('host_url', trim($config->host_url), $this->pluginconfig);
+        set_config('connecttimeout', trim($config->connecttimeout), $this->pluginconfig);
         set_config('start_tls', $config->start_tls, $this->pluginconfig);
         set_config('ldapencoding', trim($config->ldapencoding), $this->pluginconfig);
         set_config('pagesize', (int)trim($config->pagesize), $this->pluginconfig);

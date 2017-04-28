@@ -4,6 +4,9 @@
 if (!isset($config->host_url)) {
     $config->host_url = '';
 }
+if (!isset($config->connecttimeout)) {
+    $config->connecttimeout = '';
+}
 if (!isset($config->start_tls)) {
     $config->start_tls = false;
 }
@@ -125,14 +128,27 @@ if ($config->host_url !== '') {
      * pagination or not, and to notify the user about it. If the user changed the LDAP server (or
      * the LDAP protocol version) last time, it might happen that paged results are no longer
      * available and we want to show that to the user the next time she goes to the settings page.
+     *
+     * Don't use $this->ldap_connect() as we want to use a specific connect timeout just for the
+     * settings page (to avoid MDL-29536).
      */
-    try {
-        $ldapconn = $this->ldap_connect();
+    $connecttimeout = (integer)$config->connecttimeout;
+    if ($connecttimeout > 0) {
+        $connecttimeout = min(AUTH_LDAP_SETTINGS_CONNECT_TIMEOUT, $connecttimeout);
+    } else {
+        $connecttimeout = AUTH_LDAP_SETTINGS_CONNECT_TIMEOUT;
+    }
+    if ($ldapconn = ldap_connect_moodle($this->config->host_url, $this->config->ldap_version,
+                                        $this->config->user_type, $this->config->bind_dn,
+                                        $this->config->bind_pw, $this->config->opt_deref,
+                                        $debuginfo, $this->config->start_tls, $connecttimeout)) {
         $pagedresultssupported = ldap_paged_results_supported($config->ldap_version, $ldapconn);
-    } catch (Exception $e) {
+    } else {
         // If we couldn't connect and get the supported options, we can only assume we don't support paged results.
         $pagedresultssupported = false;
     }
+    @ldap_close($ldapconn);
+    unset($ldapconn);
 }
 /* Make sure we only disable the paged result size setting and show the notification about it if
  * there is a configured server that we tried to contact.  Othersiwe, if someone's LDAP server does
@@ -178,6 +194,18 @@ if (($config->host_url !== '') && (!$pagedresultssupported)) {
     </td>
     <td>
         <?php print_string('auth_ldap_version', 'auth_ldap') ?>
+    </td>
+</tr>
+<tr valign="top">
+    <td align="right">
+        <label for="connecttimeout"><?php print_string('connecttimeout_key', 'auth_ldap') ?></label>
+    </td>
+    <td>
+        <input id="connecttimeout" name="connecttimeout" type="text" class="text-ltr" value="<?php echo $config->connecttimeout ?>" />
+        <?php if (isset($err['connecttimeout'])) { echo $OUTPUT->error_text($err['connecttimeout']); } ?>
+    </td>
+    <td>
+        <?php print_string('connecttimeout', 'auth_ldap') ?>
     </td>
 </tr>
 <tr valign="top">

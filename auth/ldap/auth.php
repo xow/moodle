@@ -76,6 +76,13 @@ if (!defined('LDAP_OPT_DIAGNOSTIC_MESSAGE')) {
     define('LDAP_OPT_DIAGNOSTIC_MESSAGE', 0x0032);
 }
 
+/*Connection time-out to use when testing settings. Make sure we use a slightly
+ * lower value than the default PHP execution timeout (to avoid MDL-29536).
+ */
+if (!defined('AUTH_LDAP_SETTINGS_CONNECT_TIMEOUT')) {
+    define('AUTH_LDAP_SETTINGS_CONNECT_TIMEOUT', 25);
+}
+
 require_once($CFG->libdir.'/authlib.php');
 require_once($CFG->libdir.'/ldaplib.php');
 require_once($CFG->dirroot.'/user/lib.php');
@@ -1842,11 +1849,14 @@ class auth_plugin_ldap extends auth_plugin_base {
         if (!isset($config->host_url)) {
              $config->host_url = '';
         }
+        if (!isset($config->connecttimeout)) {
+             $config->connecttimeout = '';
+        }
         if (!isset($config->start_tls)) {
              $config->start_tls = false;
         }
         if (empty($config->ldapencoding)) {
-         $config->ldapencoding = 'utf-8';
+             $config->ldapencoding = 'utf-8';
         }
         if (!isset($config->pagesize)) {
             $config->pagesize = LDAP_DEFAULT_PAGESIZE;
@@ -1956,6 +1966,7 @@ class auth_plugin_ldap extends auth_plugin_base {
 
         // Save settings
         set_config('host_url', trim($config->host_url), $this->pluginconfig);
+        set_config('connecttimeout', trim($config->connecttimeout), $this->pluginconfig);
         set_config('start_tls', $config->start_tls, $this->pluginconfig);
         set_config('ldapencoding', trim($config->ldapencoding), $this->pluginconfig);
         set_config('pagesize', (int)trim($config->pagesize), $this->pluginconfig);
@@ -2167,7 +2178,8 @@ class auth_plugin_ldap extends auth_plugin_base {
         if($ldapconnection = ldap_connect_moodle($this->config->host_url, $this->config->ldap_version,
                                                  $this->config->user_type, $this->config->bind_dn,
                                                  $this->config->bind_pw, $this->config->opt_deref,
-                                                 $debuginfo, $this->config->start_tls)) {
+                                                 $debuginfo, $this->config->start_tls,
+                                                 (integer)$this->config->connecttimeout)) {
             $this->ldapconns = 1;
             $this->ldapconnection = $ldapconnection;
             return $ldapconnection;
@@ -2224,6 +2236,23 @@ class auth_plugin_ldap extends auth_plugin_base {
             $format = trim($form->ntlmsso_remoteuserformat);
             if (!empty($format) && !preg_match('/%username%/i', $format)) {
                 $err['ntlmsso_remoteuserformat'] = get_string('auth_ntlmsso_missing_username', 'auth_ldap');
+            }
+        }
+        // Connection timeout must be either a blank string, or an integer.
+        $errcontimeout = false;
+        $connecttimeout = trim($form->connecttimeout);
+        if ($connecttimeout !== '') {
+            if (!is_numeric($connecttimeout)) {
+                $errcontimeout = true;
+            } else {
+                $intcontimeout = intval($connecttimeout, 10);
+                $strintcontimeout = (string)$intcontimeout;
+                if ($strintcontimeout !== $connecttimeout) {
+                    $errcontimeout = true;
+                }
+            }
+            if ($errcontimeout) {
+                $err['connecttimeout'] = get_string('connecttimeout_invalid', 'auth_ldap');
             }
         }
     }
