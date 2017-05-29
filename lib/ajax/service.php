@@ -64,4 +64,7 @@ foreach ($requests as $request) {
     }
 }
 
+sleep(15);
+
+
 echo json_encode($responses);
