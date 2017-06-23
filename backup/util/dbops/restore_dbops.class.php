@@ -907,7 +907,7 @@ abstract class restore_dbops {
         // itemname = null, we are going to match only by context, no need to use itemid (all them are 0)
         if ($itemname == null) {
             $sql = "SELECT id AS bftid, contextid, component, filearea, itemid, itemid AS newitemid, info
-                      FROM {backup_files_temp}
+                      FROM {backup_files_temp} WITH (NOLOCK)
                      WHERE backupid = ?
                        AND contextid = ?
                        AND component = ?
@@ -917,7 +917,7 @@ abstract class restore_dbops {
         // itemname not null, going to join with backup_ids to perform the old-new mapping of itemids
         } else {
             $sql = "SELECT f.id AS bftid, f.contextid, f.component, f.filearea, f.itemid, i.newitemid, f.info
-                      FROM {backup_files_temp} f
+                      FROM {backup_files_temp} f WITH (NOLOCK)
                       JOIN {backup_ids_temp} i ON i.backupid = f.backupid
                                               $parentitemctxmatchsql
                                               AND i.itemid = f.itemid
