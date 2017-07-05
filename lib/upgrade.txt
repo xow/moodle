@@ -1,6 +1,10 @@
 This files describes API changes in core libraries and APIs,
 information provided here is intended especially for developers.
 
+=== 3.2.5 ===
+
+* sqlsrv driver will now allow uncommitted reads for get_recordset calls to prevent deadlocks
+
 === 3.2.3 ===
 
 * Behat compatibility changes are now being documented at
