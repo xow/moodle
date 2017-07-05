@@ -50,6 +50,24 @@ class sqlsrv_native_moodle_database extends moodle_database {
     /** @var array list of open recordsets */
     protected $recordsets = array();
 
+    /** @var array list of reserve words / commands in MSSQL / Transact */
+    protected $reservewords = "ADD|EXTERNAL|PROCEDURE|ALL|FETCH|PUBLIC|ALTER|FILE|RAISERROR|AND|FILLFACTOR|READ|ANY|FOR|" .
+                              "READTEXT|AS|FOREIGN|RECONFIGURE|ASC|FREETEXT|REFERENCES|AUTHORIZATION|FREETEXTTABLE|REPLICATION|" .
+                              "BACKUP|FROM|RESTORE|BEGIN|FULL|RESTRICT|BETWEEN|FUNCTION|RETURN|BREAK|GOTO|REVERT|BROWSE|GRANT|" .
+                              "REVOKE|BULK|GROUP|RIGHT|BY|HAVING|ROLLBACK|CASCADE|HOLDLOCK|ROWCOUNT|CASE|IDENTITY|ROWGUIDCOL|" .
+                              "CHECK|IDENTITY_INSERT|RULE|CHECKPOINT|IDENTITYCOL|SAVE|CLOSE|IF|SCHEMA|CLUSTERED|IN|" .
+                              "SECURITYAUDIT|COALESCE|INDEX|SELECT|COLLATE|INNER|SEMANTICKEYPHRASETABLE|COLUMN|INSERT|" .
+                              "SEMANTICSIMILARITYDETAILSTABLE|COMMIT|INTERSECT|SEMANTICSIMILARITYTABLE|COMPUTE|INTO|" .
+                              "SESSION_USER|CONSTRAINT|IS|SET|CONTAINS|JOIN|SETUSER|CONTAINSTABLE|KEY|SHUTDOWN|CONTINUE|KILL|" .
+                              "SOME|CONVERT|LEFT|STATISTICS|CREATE|LIKE|SYSTEM_USER|CROSS|LINENO|TABLE|CURRENT|LOAD|TABLESAMPLE|" .
+                              "CURRENT_DATE|MERGE|TEXTSIZE|CURRENT_TIME|NATIONAL|THEN|CURRENT_TIMESTAMP|NOCHECK|TO|CURRENT_USER|" .
+                              "NONCLUSTERED|TOP|CURSOR|NOT|TRAN|DATABASE|NULL|TRANSACTION|DBCC|NULLIF|TRIGGER|DEALLOCATE|OF|" .
+                              "TRUNCATE|DECLARE|OFF|TRY_CONVERT|DEFAULT|OFFSETS|TSEQUAL|DELETE|ON|UNION|DENY|OPEN|UNIQUE|DESC|" .
+                              "OPENDATASOURCE|UNPIVOT|DISK|OPENQUERY|UPDATE|DISTINCT|OPENROWSET|UPDATETEXT|DISTRIBUTED|OPENXML|" .
+                              "USE|DOUBLE|OPTION|USER|DROP|OR|VALUES|DUMP|ORDER|VARYING|ELSE|OUTER|VIEW|END|OVER|WAITFOR|ERRLVL|" .
+                              "PERCENT|WHEN|ESCAPE|PIVOT|WHERE|EXCEPT|PLAN|WHILE|EXEC|PRECISION|WITH|EXECUTE|PRIMARY|" .
+                              "WITHIN GROUP|EXISTS|PRINT|WRITETEXT|EXIT|PROC";
+
     /**
      * Constructor - instantiates the database, specifying if it's external (connect to other systems) or no (Moodle DB)
      *              note this has effect to decide if prefix checks must be performed or no
@@ -862,12 +880,47 @@ class sqlsrv_native_moodle_database extends moodle_database {
                 }
             }
         }
+
+        // Add WITH (NOLOCK) to any temp tables.
+        $sql = $this->add_no_lock_to_temp_tables($sql);
+
         $result = $this->do_query($sql, $params, SQL_QUERY_SELECT, false, $needscrollable);
 
         if ($needscrollable) { // Skip $limitfrom records.
             sqlsrv_fetch($result, SQLSRV_SCROLL_ABSOLUTE, $limitfrom - 1);
         }
         return $this->create_recordset($result);
+    }
+
+    /**
+     * Use NOLOCK on any temp tables. Since it's a temp table and uncommitted reads are low risk anyway.
+     *
+     * @param string $sql the SQL select query to execute.
+     * @return string The SQL, with WITH (NOLOCK) added to all temp tables
+     * @since Moodle 3.2.5
+     */
+    protected function add_no_lock_to_temp_tables($sql) {
+        return preg_replace_callback('/(\{([a-z][a-z0-9_]*)\})(\s+(\w+))?/', function($matches) {
+            $table = $matches[1]; // With the braces, so we can put it back in the query.
+            $name = $matches[2]; // Without the braces, so we can check if it's a temptable.
+            $replacement = $matches[0];
+            $tail = isset($matches[3]) ? $matches[3] : ''; // Catch the next word afterwards so that we can check if it's an alias.
+
+            if ($this->temptables && $this->temptables->is_temptable($name)) {
+                if (!empty($tail)) {
+                    $matches = [];
+                    // Only return us the tail back if it's a valid alias and isn't a reserve word.
+                    preg_match('/(\s+(?=(?!(' . $this->reservewords . ')))([a-z][a-z0-9_]*))?/i', $tail, $matches);
+                    if (empty($matches[0])) {
+                        // If it's empty, it must be a reserve word, so put with NOLOCK before it.
+                        return $table . ' WITH (NOLOCK)' . $tail;
+                    }
+                }
+                return $replacement . ' WITH (NOLOCK)';
+            } else {
+                return $replacement;
+            }
+        }, $sql);
     }
 
     /**
