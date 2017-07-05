@@ -858,10 +858,31 @@ class sqlsrv_native_moodle_database extends moodle_database {
                 }
             }
         }
+
+        $usestemptables = false;
+        if (preg_match_all('/\{([a-z][a-z0-9_]*)\}/i', $sql, $matches)) {
+            foreach ($matches[0] as $key => $match) {
+                $name = $matches[1][$key];
+
+                if ($this->temptables->is_temptable($name)) {
+                    $usestemptables = true;
+                    break;
+                }
+            }
+        }
+        if ($usestemptables) {
+            // To prevent deadlocks when reading a recordset and updating with sqlsrv driver, allow uncommitted reads.
+            $this->execute("SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED");
+        }
+
         $result = $this->do_query($sql, $params, SQL_QUERY_SELECT, false, $needscrollable);
 
         if ($needscrollable) { // Skip $limitfrom records.
             sqlsrv_fetch($result, SQLSRV_SCROLL_ABSOLUTE, $limitfrom - 1);
+        }
+
+        if ($usestemptables) {
+            $this->execute("SET TRANSACTION ISOLATION LEVEL READ COMMITTED");
         }
         return $this->create_recordset($result);
     }
