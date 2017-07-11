@@ -152,6 +152,7 @@ class core_backup_controller_testcase extends advanced_testcase {
 
     /**
      * Test restore of deadlock causing backup.
+     * @medium
      */
     public function test_restore_of_deadlock_causing_backup() {
         global $USER, $CFG;
