@@ -903,10 +903,8 @@ class sqlsrv_native_moodle_database extends moodle_database {
 
             if ($this->temptables && $this->temptables->is_temptable($name)) {
                 if (!empty($tail)) {
-                    $matches = [];
                     // Only return us the tail back if it's a valid alias and isn't a reserve word.
-                    preg_match('/(\s+(?=(?!(' . $this->reservewords . ')))([a-z][a-z0-9_]*))?/i', $tail, $matches);
-                    if (empty($matches[0])) {
+                    if (in_array(strtoupper(trim($tail)), explode('|', $this->reservewords))) {
                         // If it's empty, it must be a reserve word, so put with NOLOCK before it.
                         return $table . ' WITH (NOLOCK)' . $tail;
                     }

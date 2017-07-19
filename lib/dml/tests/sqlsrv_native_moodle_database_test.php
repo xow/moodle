@@ -72,7 +72,11 @@ class sqlsrv_native_moodle_database_testcase extends advanced_testcase {
             "Another reserve word test" => [
                 'input' => 'SELECT DISTINCT * FROM {table_temp} PIVOT y in (SELECT y from {table2} nottemp)',
                 'expected' => 'SELECT DISTINCT * FROM {table_temp} WITH (NOLOCK) PIVOT y in (SELECT y from {table2} nottemp)'
-            ]
+            ],
+            "Temp table with an alias starting with a keyword" => [
+                'input' => 'SELECT * FROM {table_temp} asx',
+                'expected' => 'SELECT * FROM {table_temp} asx WITH (NOLOCK)'
+            ],
         ];
     }
 
