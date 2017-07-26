@@ -79,7 +79,7 @@ abstract class format_section_renderer_base extends plugin_renderer_base {
      */
     public function section_title($section, $course) {
         $title = get_section_name($course, $section);
-        $url = course_get_url($course, $section->section, array('navigation' => true));
+        $url = course_get_url($course, $section->section);
         if ($url) {
             $title = html_writer::link($url, $title);
         }

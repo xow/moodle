@@ -431,7 +431,7 @@ abstract class format_base {
      * @param int|stdClass $section Section object from database or just field course_sections.section
      *     if null the course view page is returned
      * @param array $options options for view URL. At the moment core uses:
-     *     'navigation' (bool) if true and section has no separate page, the function returns null
+     *     'navigation' (bool) Navigation should always show link unless this is for a section but there's no seperate page for it
      *     'sr' (int) used by multipage formats to specify to which section to return
      * @return null|moodle_url
      */
@@ -447,7 +447,7 @@ abstract class format_base {
         } else {
             $sectionno = $section;
         }
-        if (empty($CFG->linkcoursesections) && !empty($options['navigation']) && $sectionno !== null) {
+        if (empty($CFG->linkcoursesections) && empty($options['navigation']) && $sectionno !== null) {
             // by default assume that sections are never displayed on separate pages
             return null;
         }
@@ -1088,7 +1088,7 @@ abstract class format_base {
         $displayvalue = $title = get_section_name($section->course, $section);
         if ($linkifneeded) {
             // Display link under the section name if the course format setting is to display one section per page.
-            $url = course_get_url($section->course, $section->section, array('navigation' => true));
+            $url = course_get_url($section->course, $section->section);
             if ($url) {
                 $displayvalue = html_writer::link($url, $title);
             }

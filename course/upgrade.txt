@@ -1,6 +1,12 @@
 This files describes API changes in /course/*,
 information provided here is intended especially for developers.
 
+== 3.4 ===
+
+* Navigation is no longer passed to get_view_url for the in page sections. Always add section link when navigation is passed
+because it is now the nav tree only. Only return null if navigation IS passed and link course sections is off and the section
+has no separate page.
+
 === 3.3 ===
 
  * External function core_course_external::get_courses_by_field now returns the course filters list and status.

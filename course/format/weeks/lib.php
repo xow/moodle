@@ -92,7 +92,7 @@ class format_weeks extends format_base {
      * @param int|stdClass $section Section object from database or just field course_sections.section
      *     if omitted the course view page is returned
      * @param array $options options for view URL. At the moment core uses:
-     *     'navigation' (bool) if true and section has no separate page, the function returns null
+     *     'navigation' (bool) Navigation should always show link unless this is for a section but there's no seperate page for it
      *     'sr' (int) used by multipage formats to specify to which section to return
      * @return null|moodle_url
      */
@@ -124,6 +124,9 @@ class format_weeks extends format_base {
             if ($sectionno != 0 && $usercoursedisplay == COURSE_DISPLAY_MULTIPAGE) {
                 $url->param('section', $sectionno);
             } else {
+                if (empty($CFG->linkcoursesections) && empty($options['navigation'])) {
+                    return null;
+                }
                 $url->set_anchor('section-'.$sectionno);
             }
         }
