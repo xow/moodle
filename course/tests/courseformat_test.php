@@ -162,6 +162,47 @@ class core_course_courseformat_testcase extends advanced_testcase {
         $format = course_get_format((object)['format' => 'testlegacy']);
         $this->assertTrue($format->supports_news());
     }
+
+    /**
+     * Test for get_view_url() to ensure that the url is only given for the correct cases
+     */
+    public function test_get_view_url() {
+        global $CFG;
+        $this->resetAfterTest();
+
+        $linkcoursesections = $CFG->linkcoursesections;
+
+        // Generate a course with two sections (0 and 1) and two modules. Course format is set to 'testformat'.
+        // This will allow us to test the default implementation of get_view_url.
+        $generator = $this->getDataGenerator();
+        $course1 = $generator->create_course(array('format' => 'testformat'));
+        course_create_sections_if_missing($course1, array(0, 1));
+        $assign0 = $generator->create_module('assign', array('course' => $course1, 'section' => 0));
+        $assign1 = $generator->create_module('assign', array('course' => $course1, 'section' => 1));
+        $assign2 = $generator->create_module('assign', array('course' => $course1, 'section' => 0, 'visible' => 0));
+
+        $data = (object)['id' => $course1->id];
+        $format = course_get_format($course1);
+        $format->update_course_format_options($data);
+
+        // In page.
+        $CFG->linkcoursesections = 0;
+        $this->assertNull($format->get_view_url(1));
+        $this->assertNotEmpty($format->get_view_url(null));
+        $CFG->linkcoursesections = 1;
+        $this->assertNotEmpty($format->get_view_url(1));
+        $this->assertNotEmpty($format->get_view_url(null));
+
+        // Navigation.
+        $CFG->linkcoursesections = 0;
+        $this->assertNotEmpty($format->get_view_url(1, ['navigation' => 1]));
+        $this->assertNotEmpty($format->get_view_url(null, ['navigation' => 1]));
+        $CFG->linkcoursesections = 1;
+        $this->assertNotEmpty($format->get_view_url(1, ['navigation' => 1]));
+        $this->assertNotEmpty($format->get_view_url(null, ['navigation' => 1]));
+
+        $CFG->linkcoursesections = $linkcoursesections;
+    }
 }
 
 /**
