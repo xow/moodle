@@ -31,3 +31,5 @@ $string['settingformats'] = 'Apply to formats';
 $string['settingformats_desc'] = 'The filter will be applied only if the text was inserted in one of the selected formats.';
 $string['settingblacklist'] = 'Blacklist';
 $string['settingblacklist_desc'] = 'These sites will not have their protocols converted.';
+$string['settingwhitelist'] = 'Whitelist';
+$string['settingwhitelist_desc'] = 'These sites will be the only ones to have their protocols converted.';

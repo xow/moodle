@@ -49,14 +49,10 @@ class filter_externalprotocol extends moodle_text_filter {
             // if the format is not specified, we are probably called by {@see format_string()}
         }
         if (in_array($options['originalformat'], explode(',', $this->get_global_config('formats')))) {
-            $this->convert_protocols($text);
+            $text = $this->convert_protocols($text);
         }
         return $text;
     }
-
-    ////////////////////////////////////////////////////////////////////////////
-    // internal implementation starts here
-    ////////////////////////////////////////////////////////////////////////////
 
     /**
      * Returns the global filter setting
@@ -97,19 +93,30 @@ class filter_externalprotocol extends moodle_text_filter {
      *
      * @param string $text Passed in by reference. The string to be searched for external content.
      */
-    protected function convert_protocols(&$text) {
+    protected function convert_protocols($text) {
         global $CFG;
 
-        # TODO: Convert this function to be passed an array, then it generates a regex
         $text = $this->convert_tags(array(array('[A-Za-z]*', 'src')), 'http', 'https', $text);
+        $text = $this->convert_tags(array(array('link', 'href')), 'http', 'https', $text);
+        return $text;
     }
 
-    protected function convert_tags($pairs, $old_protocol, $new_protocol, $text) {
+    /**
+     * Converts given attributes of given tags
+     *
+     * @param array[] $pairs An array of hashes: tag as the key and attribute as the value
+     * @param $oldprotocol Old protocol, e.g. http
+     * @param $oldprotocol New protocol, e.g. https
+     * @param $text Text to be converted
+     */
+    protected function convert_tags($pairs, $oldprotocol, $newprotocol, $text) {
 
-        $domains = implode(explode(',', self::$globalconfig->blacklist), '|'); # TODO replace dots with \.
+        $whitelist = $this->get_blacklist();
+
+        $blacklist = $this->get_whitelist();
 
         foreach ($pairs as $pair) {
-            $text = $this->convert_tag_protocol($pair[0], $pair[1], $old_protocol, $new_protocol, $text, $domains);
+            $text = $this->convert_tag_protocol($pair[0], $pair[1], $oldprotocol, $newprotocol, $text, $whitelist, $blacklist);
         }
 
         return $text;
@@ -121,9 +128,26 @@ class filter_externalprotocol extends moodle_text_filter {
      * @param string $text The string to be searched for the tags.
      * @return string The string, with protocols replaced
      */
-    protected function convert_tag_protocol($tag, $attribute, $old_protocol, $new_protocol, $text, $domains) {
+    protected function convert_tag_protocol($tag, $attribute, $oldprotocol, $newprotocol, $text, $whitelist, $blacklist) {
+        $search = '/(<' . $tag . '\s[^>]*' . $attribute . '\s*=\s*["\'])' . $oldprotocol .
+                            '(:\/\/)([^"\'\/]*)(' . $whitelist . ')([^"\'])/';
 
-        return preg_replace('/(<' . $tag . '\s[^>]*' . $attribute . '\s*=\s*["\'])' . $old_protocol .
-                            '(:\/\/)([^"\'\/]*)(' . $domains . ')([^"\'])/', '$1' . $new_protocol . '$2' . '$3$4$5', $text);
+        return preg_replace($search, '$1' . $newprotocol . '$2' . '$3$4$5', $text);
+    }
+
+    protected function get_blacklist() {
+        if (!empty(self::$globalconfig->blacklist)) {
+            return implode(explode(',', self::$globalconfig->blacklist), '|');
+        } else {
+            return '[A-Za-z]+'; // Any.
+        }
+    }
+
+    protected function get_whitelist() {
+        if (!empty(self::$globalconfig->whitelist)) {
+            return implode(explode(',', self::$globalconfig->whitelist), '|');
+        } else {
+            return '[A-Za-z]+'; // Any.
+        }
     }
 }

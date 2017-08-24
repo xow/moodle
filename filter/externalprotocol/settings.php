@@ -26,13 +26,31 @@ defined('MOODLE_INTERNAL') || die();
 
 if ($ADMIN->fulltree) {
 
-    $settings->add(new admin_setting_configmulticheckbox('filter_externalprotocol/formats',
+    $settings->add(
+        new admin_setting_configmulticheckbox(
+            'filter_externalprotocol/formats',
             get_string('settingformats', 'filter_externalprotocol'),
             get_string('settingformats_desc', 'filter_externalprotocol'),
-            array(FORMAT_MOODLE => 1, FORMAT_HTML => 1, FORMAT_PLAIN => 1, FORMAT_MARKDOWN => 1), format_text_menu()));
+            [FORMAT_MOODLE => 1, FORMAT_HTML => 1, FORMAT_PLAIN => 1, FORMAT_MARKDOWN => 1],
+            format_text_menu()
+        )
+    );
 
-    $settings->add(new admin_setting_configtextarea('filter_externalprotocol/blacklist',
+    $settings->add(
+        new admin_setting_configtextarea(
+            'filter_externalprotocol/blacklist',
             get_string('settingblacklist', 'filter_externalprotocol'),
             get_string('settingblacklist_desc', 'filter_externalprotocol'),
-            ''));
+            ''
+        )
+    );
+
+    $settings->add(
+        new admin_setting_configtextarea(
+            'filter_externalprotocol/whitelist',
+            get_string('settingwhitelist', 'filter_externalprotocol'),
+            get_string('settingwhitelist_desc', 'filter_externalprotocol'),
+            ''
+        )
+    );
 }
