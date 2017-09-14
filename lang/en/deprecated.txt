@@ -152,3 +152,5 @@ xmlrpcdisabledpublish,core_hub
 xmlrpcdisabledregistration,core_hub
 moodleorghubname,core_admin
 hubs,core_admin
+configloginhttps,core_admin
+loginhttps,core_admin
