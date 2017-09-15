@@ -870,6 +870,8 @@ if (is_dir($CFG->dirroot.'/vendor') || is_dir($CFG->dirroot.'/node_modules')) {
 } else {
     $devlibdir = false;
 }
+// Check if the site is being foced onto ssl.
+$overridetossl = !empty($CFG->overridetossl);
 
 admin_externalpage_setup('adminnotifications');
 
@@ -877,4 +879,5 @@ $output = $PAGE->get_renderer('core', 'admin');
 
 echo $output->admin_notifications_page($maturity, $insecuredataroot, $errorsdisplayed, $cronoverdue, $dbproblems,
                                        $maintenancemode, $availableupdates, $availableupdatesfetch, $buggyiconvnomb,
-                                       $registered, $cachewarnings, $eventshandlers, $themedesignermode, $devlibdir);
+                                       $registered, $cachewarnings, $eventshandlers, $themedesignermode, $devlibdir,
+                                       $overridetossl);

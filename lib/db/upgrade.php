@@ -2570,5 +2570,16 @@ function xmldb_main_upgrade($oldversion) {
         upgrade_main_savepoint(true, 2017092700.00);
     }
 
+    if ($oldversion < 2017092800.01) {
+        // We will need to force them onto ssl if loginhttps is not set.
+        if (!empty($CFG->loginhttps)) {
+            set_config('overridetossl', 1);
+        }
+        // Loginhttps should no longer be set.
+        unset_config('loginhttps');
+        // Main savepoint reached.
+        upgrade_main_savepoint(true, 2017092800.01);
+    }
+
     return true;
 }

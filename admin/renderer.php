@@ -284,7 +284,7 @@ class core_admin_renderer extends plugin_renderer_base {
     public function admin_notifications_page($maturity, $insecuredataroot, $errorsdisplayed,
             $cronoverdue, $dbproblems, $maintenancemode, $availableupdates, $availableupdatesfetch,
             $buggyiconvnomb, $registered, array $cachewarnings = array(), $eventshandlers = 0,
-            $themedesignermode = false, $devlibdir = false) {
+            $themedesignermode = false, $devlibdir = false, $overridetossl = false) {
         global $CFG;
         $output = '';
 
@@ -300,6 +300,7 @@ class core_admin_renderer extends plugin_renderer_base {
         $output .= $this->cron_overdue_warning($cronoverdue);
         $output .= $this->db_problems($dbproblems);
         $output .= $this->maintenance_mode_warning($maintenancemode);
+        $output .= $this->overridetossl_warning($overridetossl);
         $output .= $this->cache_warnings($cachewarnings);
         $output .= $this->events_handlers($eventshandlers);
         $output .= $this->registration_warning($registered);
@@ -664,6 +665,20 @@ class core_admin_renderer extends plugin_renderer_base {
         $url = $url->out(); // get_string() does not support objects in params
 
         return $this->warning(get_string('sitemaintenancewarning2', 'admin', $url));
+    }
+
+    /**
+     * Render a warning that ssl is forced because the site was on loginhttps.
+     *
+     * @param bool $overridetossl Whether or not ssl is being forced.
+     * @return string
+     */
+    protected function overridetossl_warning($overridetossl) {
+        if (!$overridetossl) {
+            return '';
+        }
+        $warning = get_string('overridetossl', 'core_admin');
+        return $this->warning($warning, 'warning');
     }
 
     /**
